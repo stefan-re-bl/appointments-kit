@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SetTimezone; // <-- Import añadido
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,6 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+        ]);
+
+        // Añadimos el middleware al grupo 'web' para que se ejecute en cada petición
+        $middleware->web(append: [
+            SetTimezone::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
