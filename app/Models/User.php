@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\Therapist;
 
 #[Fillable(['name', 'email', 'password', 'role'])] // <-- 'role' AÑADIDO AL FILLABLE
 #[Hidden(['password', 'remember_token'])]
@@ -38,5 +40,9 @@ class User extends Authenticatable
     public function isAdmin(): bool // <-- MÉTODO AÑADIDO
     {
         return $this->role === Role::ADMIN;
+    }
+    public function therapist(): HasOne
+    {
+        return $this->hasOne(Therapist::class);
     }
 }
