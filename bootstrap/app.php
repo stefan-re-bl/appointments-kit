@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Middleware\SetTimezone; // <-- Import añadido
+use App\Http\Middleware\SetLocale;   // <-- Import añadido Ticket #7
+use App\Http\Middleware\SetTimezone; // <-- Import añadido Ticket #2
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,9 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
 
-        // Añadimos el middleware al grupo 'web' para que se ejecute en cada petición
+        // Añadimos los middleware al grupo 'web' para que se ejecuten en cada petición
         $middleware->web(append: [
             SetTimezone::class,
+            SetLocale::class, // <-- Añadido en Ticket #7
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
