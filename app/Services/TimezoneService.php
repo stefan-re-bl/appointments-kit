@@ -42,4 +42,49 @@ class TimezoneService
     {
         return $this->toLocal($datetime, $toTimezone)->format($format);
     }
+
+    /**
+     * Convierte una hora local (HH:mm) a hora UTC (HH:mm:ss) para un día específico.
+     */
+    public function timeToUtc(string|Carbon $localTime, string $timezone, int $dayOfWeek): string
+    {
+        $date = $this->getReferenceDateForDay($dayOfWeek);
+        $timeString = $localTime instanceof Carbon ? $localTime->format('H:i') : $localTime;
+        
+        $datetime = Carbon::createFromFormat('Y-m-d H:i', $date . ' ' . $timeString, $timezone);
+        $datetime->setTimezone('UTC');
+        
+        return $datetime->format('H:i:s');
+    }
+
+    /**
+     * Convierte una hora UTC (HH:mm:ss) a hora local (HH:mm) para un día específico.
+     */
+    public function timeToLocal(string|Carbon $utcTime, string $timezone, int $dayOfWeek): string
+    {
+        $date = $this->getReferenceDateForDay($dayOfWeek);
+        $timeString = $utcTime instanceof Carbon ? $utcTime->format('H:i:s') : $utcTime;
+        
+        $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $date . ' ' . $timeString, 'UTC');
+        $datetime->setTimezone($timezone);
+        
+        return $datetime->format('H:i');
+    }
+
+    /**
+     * Helper para obtener una fecha estándar asociada al día de la semana.
+     */
+    private function getReferenceDateForDay(int $dayOfWeek): string
+    {
+        return match($dayOfWeek) {
+            1 => '2024-01-01',
+            2 => '2024-01-02',
+            3 => '2024-01-03',
+            4 => '2024-01-04',
+            5 => '2024-01-05',
+            6 => '2024-01-06',
+            7 => '2024-01-07',
+            default => '2024-01-01',
+        };
+    }
 }

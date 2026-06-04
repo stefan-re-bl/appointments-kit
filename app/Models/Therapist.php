@@ -40,4 +40,8 @@ class Therapist extends Model
         }
         $this->attributes['timezone'] = $value;
     }
+    public function availabilities(): HasMany
+    {
+        return $this->hasMany(Availability::class);
+    }
 }
