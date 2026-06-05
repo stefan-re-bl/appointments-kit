@@ -1,0 +1,19 @@
+[90m= [39m[34;4mIlluminate\Database\Eloquent\Collection[39;24m {#8736
+    [34mall[39m: [
+      [34;4mApp\Models\Therapist[39;24m {#8678
+        [34mid[39m: [35m1[39m,
+        [34mtimezone[39m: [32m"[39m[32mAmerica/Argentina/Buenos_Aires[39m[32m"[39m,
+        [34muser[39m: [36mnull[39m,
+      },
+      [34;4mApp\Models\Therapist[39;24m {#8679
+        [34mid[39m: [35m2[39m,
+        [34mtimezone[39m: [32m"[39m[32mEurope/Madrid[39m[32m"[39m,
+        [34muser[39m: [36mnull[39m,
+      },
+      [34;4mApp\Models\Therapist[39;24m {#8676
+        [34mid[39m: [35m3[39m,
+        [34mtimezone[39m: [32m"[39m[32mAmerica/Mexico_City[39m[32m"[39m,
+        [34muser[39m: [36mnull[39m,
+      },
+    ],
+  }

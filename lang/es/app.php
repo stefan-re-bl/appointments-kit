@@ -29,4 +29,7 @@ return [
     'day_5' => 'Viernes',
     'day_6' => 'Sábado',
     'day_7' => 'Domingo',
+
+    'slots_generated' => 'Horarios disponibles generados',
+    'no_slots' => 'No hay horarios disponibles para esta fecha',
 ];

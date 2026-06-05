@@ -29,4 +29,7 @@ return [
     'day_5' => 'Friday',
     'day_6' => 'Saturday',
     'day_7' => 'Sunday',
+
+    'slots_generated' => 'Available slots generated',
+    'no_slots' => 'No available slots for this date',
 ];

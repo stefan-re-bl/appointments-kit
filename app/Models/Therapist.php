@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory; // <-- Import añadido
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Hidden([])]
 class Therapist extends Model
 {
-    use HasFactory; // <-- Trait añadido
+    use HasFactory;
 
     protected function casts(): array
     {
@@ -27,10 +27,23 @@ class Therapist extends Model
     {
         return $this->belongsTo(User::class);
     }
-        public function sessionTypes(): HasMany
+
+    public function sessionTypes(): HasMany
     {
         return $this->hasMany(SessionType::class);
     }
+
+    public function availabilities(): HasMany
+    {
+        return $this->hasMany(Availability::class);
+    }
+
+    // Relación añadida para el Ticket #8
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
     // Mutador para garantizar a nivel de modelo que el timezone sea válido
     // (Cumple el criterio de aceptación de rechazar valores inválidos)
     public function setTimezoneAttribute($value)
@@ -39,9 +52,5 @@ class Therapist extends Model
             throw new \InvalidArgumentException("La zona horaria '{$value}' no es válida en PHP.");
         }
         $this->attributes['timezone'] = $value;
-    }
-    public function availabilities(): HasMany
-    {
-        return $this->hasMany(Availability::class);
     }
 }
