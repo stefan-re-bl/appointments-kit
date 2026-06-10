@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\PaymentStatus;
 use App\Enums\Role;
 use App\Models\Availability;
 use App\Models\Appointment;
@@ -95,7 +96,7 @@ class DemoDataSeeder extends Seeder
     {
         $now = Carbon::now('UTC');
 
-        // Cita 1: Pending (Pendiente de pago, creada hoy)
+        // Cita 1: Confirmada pero pendiente de pago manual (Flujo típico del nuevo backlog)
         Appointment::create([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session30->id,
@@ -104,12 +105,14 @@ class DemoDataSeeder extends Seeder
             'patient_timezone' => 'America/Argentina/Buenos_Aires',
             'starts_at' => $now->copy()->addDays(2)->setHour(10)->setMinute(0),
             'ends_at' => $now->copy()->addDays(2)->setHour(10)->setMinute(30),
-            'status' => AppointmentStatus::PENDING,
+            'status' => AppointmentStatus::CONFIRMED,
             'price' => $session30->price,
             'currency' => $session30->currency,
+            'payment_status' => PaymentStatus::PENDING,
+            'paid_at' => null,
         ]);
 
-        // Cita 2: Confirmed (Pagada y agendada para mañana)
+        // Cita 2: Confirmada y ya pagada (La terapeuta marcó el pago manualmente)
         Appointment::create([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session60->id,
@@ -121,11 +124,11 @@ class DemoDataSeeder extends Seeder
             'status' => AppointmentStatus::CONFIRMED,
             'price' => $session60->price,
             'currency' => $session60->currency,
-            'payment_transaction_id' => 'FAKE_TX_' . $therapist->id . '_1',
-            'payment_processed_at' => $now->copy()->subHour(),
+            'payment_status' => PaymentStatus::PAID,
+            'paid_at' => $now->copy()->subHour(),
         ]);
 
-        // Cita 3: Completed (Pasada y atendida)
+        // Cita 3: Completada (Sesión ya pasada y pagada)
         Appointment::create([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session60->id,
@@ -137,11 +140,11 @@ class DemoDataSeeder extends Seeder
             'status' => AppointmentStatus::COMPLETED,
             'price' => $session60->price,
             'currency' => $session60->currency,
-            'payment_transaction_id' => 'FAKE_TX_' . $therapist->id . '_2',
-            'payment_processed_at' => $now->copy()->subDays(4),
+            'payment_status' => PaymentStatus::PAID,
+            'paid_at' => $now->copy()->subDays(4),
         ]);
 
-        // Cita 4: Cancelled
+        // Cita 4: Cancelada (Nunca se pagó)
         Appointment::create([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session30->id,
@@ -153,6 +156,8 @@ class DemoDataSeeder extends Seeder
             'status' => AppointmentStatus::CANCELLED,
             'price' => $session30->price,
             'currency' => $session30->currency,
+            'payment_status' => PaymentStatus::PENDING,
+            'paid_at' => null,
         ]);
     }
 }

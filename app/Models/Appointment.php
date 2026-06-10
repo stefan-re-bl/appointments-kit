@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -20,21 +21,23 @@ use Illuminate\Support\Str;
     'status',
     'price',
     'currency',
-    'payment_transaction_id',
-    'payment_processed_at',
+    'payment_status', // Nuevo campo
+    'paid_at',        // Nuevo campo
     'token',
     'reschedule_count',
 ])]
 #[Hidden([
-    'payment_transaction_id',
+    'token', // Movido aquí por seguridad (evita que se filtre en arrays/JSON masivos)
 ])]
 class Appointment extends Model
 {
     protected $casts = [
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
-        'payment_processed_at' => 'datetime',
+        'paid_at' => 'datetime',              // Nuevo cast
         'status' => AppointmentStatus::class,
+        'payment_status' => PaymentStatus::class, // Nuevo cast con Enum
+        'price' => 'decimal:2',               // Añadido para precisión monetaria
     ];
 
     protected static function booted(): void
