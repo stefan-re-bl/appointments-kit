@@ -115,4 +115,26 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Settings
+    |--------------------------------------------------------------------------
+    |
+    | These paths allow Laravel's Markdown mail renderer to resolve the
+    | built-in mail components such as <x-mail::message> and <x-mail::button>.
+    |
+    */
+
+    'markdown' => [
+        'theme' => env('MAIL_MARKDOWN_THEME', 'default'),
+
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+
+        'extensions' => [
+            // \League\CommonMark\Extension\Strikethrough\StrikethroughExtension::class,
+        ],
+    ],
+
 ];

@@ -17,17 +17,18 @@ class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Crear Admin (si no existe)
-        if (!User::where('role', Role::ADMIN)->exists()) {
-            User::factory()->create([
+        // 1. Crear/Actualizar Admin
+        User::updateOrCreate(
+            ['email' => 'admin@umbralia.com'],
+            [
                 'name' => 'Admin Umbralia',
-                'email' => 'admin@umbralia.com',
-                'role' => Role::ADMIN,
                 'password' => bcrypt('password'),
-            ]);
-        }
+                'role' => Role::ADMIN,
+                'email_verified_at' => now(),
+            ]
+        );
 
-        // 2. Crear 3 Terapeutas en distintas zonas horarias
+        // 2. Crear/Actualizar 3 Terapeutas
         $therapistsData = [
             ['name' => 'Dra. Lucia (Argentina)', 'email' => 'lucia@umbralia.com', 'timezone' => 'America/Argentina/Buenos_Aires'],
             ['name' => 'Dr. Carlos (España)', 'email' => 'carlos@umbralia.com', 'timezone' => 'Europe/Madrid'],
@@ -35,42 +36,61 @@ class DemoDataSeeder extends Seeder
         ];
 
         foreach ($therapistsData as $data) {
-            $user = User::factory()->create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'role' => Role::THERAPIST,
-                'password' => bcrypt('password'),
-            ]);
+            // Crear o actualizar usuario (resetea password a 'password')
+            $user = User::updateOrCreate(
+                ['email' => $data['email']],
+                [
+                    'name' => $data['name'],
+                    'password' => bcrypt('password'),
+                    'role' => Role::THERAPIST,
+                    'email_verified_at' => now(),
+                ]
+            );
 
-            $therapist = Therapist::create([
-                'user_id' => $user->id,
-                'timezone' => $data['timezone'],
-                'bio' => "Terapeuta profesional ubicado en {$data['timezone']}.",
-                'google_meet_link' => 'https://meet.google.com/fake-link-' . $user->id,
-                'is_active' => true,
-            ]);
+            // Crear o actualizar perfil de terapeuta
+            $therapist = Therapist::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'timezone' => $data['timezone'],
+                    'bio' => "Terapeuta profesional ubicado en {$data['timezone']}.",
+                    'google_meet_link' => 'https://meet.google.com/fake-link-' . $user->id,
+                    'is_active' => true,
+                ]
+            );
 
-            // 3. Tipos de sesión para cada uno
-            $session30 = SessionType::create([
-                'therapist_id' => $therapist->id,
-                'name' => 'Sesión Introductoria 30m',
-                'duration_minutes' => 30,
-                'price' => $data['timezone'] === 'Europe/Madrid' ? 30.00 : 15000.00,
-                'currency' => $data['timezone'] === 'Europe/Madrid' ? 'USD' : 'ARS',
-                'is_active' => true,
-            ]);
+            // 3. Crear Tipos de Sesión (Si no existen)
+            $session30 = SessionType::firstOrCreate(
+                [
+                    'therapist_id' => $therapist->id,
+                    'name' => 'Sesión Introductoria 30m'
+                ],
+                [
+                    'duration_minutes' => 30,
+                    'price' => $data['timezone'] === 'Europe/Madrid' ? 30.00 : 15000.00,
+                    'currency' => $data['timezone'] === 'Europe/Madrid' ? 'USD' : 'ARS',
+                    'is_active' => true,
+                ]
+            );
 
-            $session60 = SessionType::create([
-                'therapist_id' => $therapist->id,
-                'name' => 'Terapia Regular 60m',
-                'duration_minutes' => 60,
-                'price' => $data['timezone'] === 'Europe/Madrid' ? 60.00 : 30000.00,
-                'currency' => $data['timezone'] === 'Europe/Madrid' ? 'USD' : 'ARS',
-                'is_active' => true,
-            ]);
+            $session60 = SessionType::firstOrCreate(
+                [
+                    'therapist_id' => $therapist->id,
+                    'name' => 'Terapia Regular 60m'
+                ],
+                [
+                    'duration_minutes' => 60,
+                    'price' => $data['timezone'] === 'Europe/Madrid' ? 60.00 : 30000.00,
+                    'currency' => $data['timezone'] === 'Europe/Madrid' ? 'USD' : 'ARS',
+                    'is_active' => true,
+                ]
+            );
 
-            // 4. Disponibilidades (Lunes, Miércoles y Viernes)
-            foreach ([1, 3, 5] as $dayOfWeek) { // 1=Lunes, 3=Miercoles, 5=Viernes (ISO-8601)
+            // 4. Disponibilidades
+            // Estrategia: Borramos las antiguas de este terapeuta y creamos las nuevas
+            // así el código del seeder refleja la "verdad" actual.
+            Availability::where('therapist_id', $therapist->id)->delete();
+
+            foreach ([1, 3, 5] as $dayOfWeek) { // 1=Lunes, 3=Miercoles, 5=Viernes
                 Availability::create([
                     'therapist_id' => $therapist->id,
                     'day_of_week' => $dayOfWeek,
@@ -87,8 +107,11 @@ class DemoDataSeeder extends Seeder
                 ]);
             }
 
-            // 5. Citas en distintos estados (Horarios en UTC estricto!)
-            $this->createAppointments($therapist, $session30, $session60);
+            // 5. Citas
+            // Estrategia: Solo crear si el terapeuta tiene 0 citas (para no duplicar histórico)
+            if ($therapist->appointments()->count() === 0) {
+                $this->createAppointments($therapist, $session30, $session60);
+            }
         }
     }
 
@@ -96,7 +119,7 @@ class DemoDataSeeder extends Seeder
     {
         $now = Carbon::now('UTC');
 
-        // Cita 1: Confirmada pero pendiente de pago manual (Flujo típico del nuevo backlog)
+        // Cita 1: Confirmada pendiente de pago
         Appointment::create([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session30->id,
@@ -112,7 +135,7 @@ class DemoDataSeeder extends Seeder
             'paid_at' => null,
         ]);
 
-        // Cita 2: Confirmada y ya pagada (La terapeuta marcó el pago manualmente)
+        // Cita 2: Confirmada y pagada
         Appointment::create([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session60->id,
@@ -128,7 +151,7 @@ class DemoDataSeeder extends Seeder
             'paid_at' => $now->copy()->subHour(),
         ]);
 
-        // Cita 3: Completada (Sesión ya pasada y pagada)
+        // Cita 3: Completada
         Appointment::create([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session60->id,
@@ -144,7 +167,7 @@ class DemoDataSeeder extends Seeder
             'paid_at' => $now->copy()->subDays(4),
         ]);
 
-        // Cita 4: Cancelada (Nunca se pagó)
+        // Cita 4: Cancelada
         Appointment::create([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session30->id,

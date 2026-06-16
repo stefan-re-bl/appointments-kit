@@ -1,0 +1,20 @@
+# .codex/config.toml
+
+# Mantener el AGENTS.md chico aunque crezca accidentalmente.
+project_doc_max_bytes = 6000
+
+# Evitar que Codex tome una carpeta padre como raíz por error.
+project_root_markers = [".git", "artisan", "composer.json"]
+
+# Modo seguro: puede leer y escribir en el workspace, pero no fuera.
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false
+exclude_slash_tmp = true
+exclude_tmpdir_env_var = true
+
+# Evitar filtrar variables sensibles al entorno del shell.
+[shell_environment_policy]
+inherit = "core"
+exclude = ["*KEY*", "*SECRET*", "*TOKEN*", "*PASSWORD*", "*PASS*", "*DATABASE_URL*"]

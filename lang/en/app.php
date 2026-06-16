@@ -32,4 +32,42 @@ return [
 
     'slots_generated' => 'Available slots generated',
     'no_slots' => 'No available slots for this date',
-];
+
+    'booking_title' => 'Book Appointment',
+    'select_therapist' => 'Choose your Therapist',
+    'select_session_type' => 'Select Session Type',
+    'select_date' => 'Select Date',
+    'select_time' => 'Select Time',
+    'confirm_booking' => 'Confirm Booking',
+    'continue' => 'Continue',
+    'back' => 'Back',
+    'duration' => 'Duration',
+    'minutes' => 'minutes',
+    'date' => 'Date',
+    'time' => 'Time',
+    'total' => 'Total',
+    'your_details' => 'Your Details',
+    'name' => 'Full Name',
+    'email' => 'Email Address',
+    'find_slots' => 'Find Available Slots',
+    'no_slots_available' => 'No available slots for this date.',
+    'confirm_and_book' => 'Confirm and Book',
+    'booking_confirmed' => 'Booking Confirmed!',
+    'booking_success_message' => 'Your appointment has been successfully scheduled. We have sent the details to your email.',
+    'next_steps' => 'Next Steps',
+    'step_check_email' => 'Check your email for appointment details.',
+    'step_await_payment' => 'Wait for payment instructions from the therapist.',
+    'step_join_link' => 'You will receive the video call link before the session.',
+    'book_another' => 'Book Another',
+    'timezone_note' => 'Showing times for :tz',
+    'payment_coordination_title' => 'Payment Note',
+    'payment_coordination_text' => 'Payment is coordinated directly with the therapist. By confirming, you are holding the spot, but the payment status will remain pending until the agreed transaction is completed.',
+    'error_booking_slot' => 'The selected time is no longer available. Please choose another.',
+    
+    // Mails
+    'mail_patient_subject' => 'Your Appointment Confirmation - Umbralia',
+    'mail_therapist_subject' => 'New Appointment Booking - Umbralia',
+    'all_rights_reserved' => 'All rights reserved.',
+
+    'change_date' => 'Change date',
+    ];

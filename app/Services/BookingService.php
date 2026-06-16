@@ -23,23 +23,20 @@ class BookingService
             $startsAt = $data['starts_at'];
             $endsAt = $data['ends_at'];
 
-            // 1. Buscar citas que se solapan en ese rango horario para ese terapeuta
-            // 2. lockForUpdate() bloquea estas filas. Si otra transacción intenta leerlas
-            //    al mismo tiempo, esperará hasta que esta transacción termine (commit o rollback).
+            // 1. Buscamos citas solapadas y bloqueamos las filas (Pessimistic Locking)
             $overlappingAppointments = Appointment::overlappingSlot($therapistId, $startsAt, $endsAt)
                 ->lockForUpdate()
                 ->get();
 
-            // 3. Si ya hay citas solapadas (no canceladas), abortamos la creación
+            // 2. Si hay solapamiento, abortamos
             if ($overlappingAppointments->isNotEmpty()) {
                 Log::warning("Booking failed: Overlapping detected for therapist {$therapistId} at {$startsAt}");
                 return false;
             }
 
-            // 4. Si no hay solapamiento, creamos la cita de forma segura.
-            // Nadie más puede crear en este rango mientras la transacción no haya terminado.
-            $data['status'] = AppointmentStatus::PENDING;
-            $data['payment_status'] = PaymentStatus::PENDING;
+            // 3. Si no hay solapamiento, creamos la cita
+            $data['status'] = AppointmentStatus::CONFIRMED; // Ticket #10
+            $data['payment_status'] = PaymentStatus::PENDING; // Ticket #10
 
             return Appointment::create($data);
         });
