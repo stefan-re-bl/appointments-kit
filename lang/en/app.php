@@ -70,4 +70,50 @@ return [
     'all_rights_reserved' => 'All rights reserved.',
 
     'change_date' => 'Change date',
+
+    'appointment_public' => [
+    'title' => 'My appointment',
+    'subtitle' => 'Check your booking details and available options.',
+    'appointment_code' => 'Appointment code',
+    'unavailable' => 'Unavailable',
+    'not_found_icon' => '!',
+    'not_found_title' => 'We could not find this appointment',
+    'not_found_message' => 'The link may be incorrect, expired, or linked to an appointment that does not exist. Please check the email link or contact your therapist.',
+    'payment_manual_note' => 'Payment is recorded manually by the therapist. If you already paid and it still appears as pending, it may not have been updated yet.',
+    'sections' => [
+        'patient' => 'Patient details',
+        'appointment' => 'Appointment details',
+        'payment' => 'Payment status',
+        'actions' => 'Management options',
+    ],
+    'fields' => [
+        'patient_name' => 'Name',
+        'patient_email' => 'Email',
+        'therapist' => 'Therapist',
+        'session_type' => 'Session type',
+        'starts_at' => 'Starts at',
+        'ends_at' => 'Ends at',
+        'timezone' => 'Timezone',
+        'status' => 'Appointment status',
+        'paid_at' => 'Payment recorded at',
+    ],
+    'status' => [
+        'pending' => 'Pending',
+        'confirmed' => 'Confirmed',
+        'cancelled' => 'Cancelled',
+        'completed' => 'Completed',
+    ],
+    'payment' => [
+        'pending' => 'Payment pending',
+        'paid' => 'Payment recorded',
+        'waived' => 'Payment waived',
+    ],
+    'actions' => [
+        'join_meet' => 'Join Google Meet',
+        'contact_therapist' => 'Contact therapist',
+        'contact_subject' => 'Question about my appointment',
+        'no_actions_available' => 'There are no actions available for this appointment.',
+        'back_home' => 'Back home',
+    ],
+    ],
     ];
