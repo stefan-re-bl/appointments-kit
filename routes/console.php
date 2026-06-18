@@ -14,3 +14,8 @@ Schedule::command('appointments:cleanup-expired')
     ->everyFiveMinutes()
     ->withoutOverlapping()
     ->onOneServer();
+
+Schedule::command('appointments:send-reminders')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->onOneServer();
