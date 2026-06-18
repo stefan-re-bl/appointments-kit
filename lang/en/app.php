@@ -116,4 +116,31 @@ return [
         'back_home' => 'Back home',
     ],
     ],
+
+    'emails' => [
+    'booking_confirmed' => [
+        'subject' => 'Booking confirmed',
+        'title' => 'Booking confirmed',
+        'greeting_patient' => 'Hi :name,',
+        'greeting_therapist' => 'Hi :name,',
+        'intro' => 'The appointment was booked successfully. Here are the details:',
+        'patient' => 'Patient',
+        'therapist' => 'Therapist',
+        'session_type' => 'Session type',
+        'starts_at' => 'Starts at',
+        'ends_at' => 'Ends at',
+        'timezone' => 'Timezone',
+        'payment_patient_notice' => 'Payment is coordinated directly with the therapist. Please contact her to agree on the payment method and details.',
+        'payment_therapist_notice' => 'The payment for this appointment is still pending and must be coordinated manually with the patient.',
+        'my_appointment_button' => 'View My Appointment',
+        'meet_button' => 'Join Google Meet',
+        'footer' => 'Thank you for using Umbralia.',
+    ],
+],
+
+'booking' => [
+    'errors' => [
+        'slot_unavailable' => 'The selected time slot is no longer available. Please choose another appointment time.',
+    ],
+],
     ];

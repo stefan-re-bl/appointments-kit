@@ -114,4 +114,31 @@ return [
         'back_home' => 'Volver al inicio',
     ],
     ],
+
+    'emails' => [
+    'booking_confirmed' => [
+        'subject' => 'Reserva confirmada',
+        'title' => 'Reserva confirmada',
+        'greeting_patient' => 'Hola :name,',
+        'greeting_therapist' => 'Hola :name,',
+        'intro' => 'La cita fue reservada correctamente. Estos son los detalles:',
+        'patient' => 'Paciente',
+        'therapist' => 'Terapeuta',
+        'session_type' => 'Tipo de sesión',
+        'starts_at' => 'Inicio',
+        'ends_at' => 'Fin',
+        'timezone' => 'Zona horaria',
+        'payment_patient_notice' => 'El pago se coordina directamente con la terapeuta. Por favor, contactala para acordar el método y los detalles del pago.',
+        'payment_therapist_notice' => 'El pago de esta cita quedó pendiente y debe coordinarse manualmente con el paciente.',
+        'my_appointment_button' => 'Ver Mi Cita',
+        'meet_button' => 'Ingresar a Google Meet',
+        'footer' => 'Gracias por usar Umbralia.',
+    ],
+],
+
+'booking' => [
+    'errors' => [
+        'slot_unavailable' => 'El horario seleccionado ya no está disponible. Por favor, elegí otro turno.',
+    ],
+],
     ];

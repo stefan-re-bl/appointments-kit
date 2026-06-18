@@ -1,35 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Events\AppointmentBooked;
+use App\Jobs\SendBookingConfirmedEmails;
 use App\Models\SessionType;
 use App\Models\Therapist;
+use App\Rules\ValidTimezone;
 use App\Services\BookingService;
+use App\Services\SlotGenerationService;
 use App\Services\TimezoneService;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log; // <--- ESTE ES EL IMPORT FALTANTE
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
+use Throwable;
 
-class BookingController extends Controller
+class BookingController extends Controller implements HasMiddleware
 {
-    public function __construct(
-        private TimezoneService $timezoneService,
-        private BookingService $bookingService
-    ) {}
+    public static function middleware(): array
+    {
+        return [];
+    }
 
     /**
      * Paso 1: Lista de Terapeutas
      */
-    public function index()
+    public function index(): View
     {
-        // Limpiamos sesión previa por seguridad
-        session()->forget(['booking.therapist_id', 'booking.session_type_id', 'booking.date', 'booking.starts_at_utc']);
+        session()->forget('booking');
 
         $therapists = Therapist::with('user')
             ->where('is_active', true)
-            ->whereHas('user', fn($q) => $q->where('role', 'therapist'))
+            ->whereHas('user', fn ($q) => $q->where('role', 'therapist'))
             ->get();
 
         return view('book.index', compact('therapists'));
@@ -38,20 +47,27 @@ class BookingController extends Controller
     /**
      * Procesar Paso 1: Guardar Terapeuta
      */
-    public function storeTherapist(Request $request)
+    public function storeTherapist(Request $request): RedirectResponse
     {
-        $request->validate(['therapist_id' => 'required|exists:therapists,id']);
-        session()->put('booking.therapist_id', $request->therapist_id);
+        $request->validate([
+            'therapist_id' => ['required', 'integer', 'exists:therapists,id'],
+        ]);
+
+        session()->put('booking.therapist_id', (int) $request->therapist_id);
+
         return Redirect::route('book.session');
     }
 
     /**
      * Paso 2: Tipos de Sesión
      */
-    public function session()
+    public function session(): View|RedirectResponse
     {
         $therapistId = session('booking.therapist_id');
-        if (!$therapistId) return Redirect::route('book');
+
+        if (! $therapistId) {
+            return Redirect::route('book.index');
+        }
 
         $sessions = SessionType::where('therapist_id', $therapistId)
             ->where('is_active', true)
@@ -63,23 +79,36 @@ class BookingController extends Controller
     /**
      * Procesar Paso 2: Guardar Sesión
      */
-    public function storeSession(Request $request)
+    public function storeSession(Request $request): RedirectResponse
     {
-        $request->validate(['session_type_id' => 'required|exists:session_types,id']);
-        session()->put('booking.session_type_id', $request->session_type_id);
+        $therapistId = session('booking.therapist_id');
+
+        if (! $therapistId) {
+            return Redirect::route('book.index');
+        }
+
+        $request->validate([
+            'session_type_id' => ['required', 'integer', 'exists:session_types,id'],
+        ]);
+
+        $sessionType = SessionType::where('therapist_id', $therapistId)
+            ->where('is_active', true)
+            ->findOrFail((int) $request->session_type_id);
+
+        session()->put('booking.session_type_id', $sessionType->id);
+
         return Redirect::route('book.date');
     }
 
     /**
      * Paso 3: Selección de Fecha
      */
-    public function date()
+    public function date(): View|RedirectResponse
     {
-        if (!session('booking.therapist_id') || !session('booking.session_type_id')) {
-            return Redirect::route('book');
+        if (! session('booking.therapist_id') || ! session('booking.session_type_id')) {
+            return Redirect::route('book.index');
         }
-        
-        // Min date = hoy en zona local del usuario
+
         $minDate = now(app('user.timezone'))->toDateString();
 
         return view('book.date', compact('minDate'));
@@ -88,62 +117,78 @@ class BookingController extends Controller
     /**
      * Procesar Paso 3: Guardar Fecha
      */
-    public function storeDate(Request $request)
+    public function storeDate(Request $request): RedirectResponse
     {
-        $request->validate(['date' => 'required|date|after_or_equal:today']);
+        if (! session('booking.therapist_id') || ! session('booking.session_type_id')) {
+            return Redirect::route('book.index');
+        }
+
+        $minDate = now(app('user.timezone'))->toDateString();
+
+        $request->validate([
+            'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:' . $minDate],
+        ]);
+
         session()->put('booking.date', $request->date);
+
         return Redirect::route('book.time');
     }
 
     /**
      * Paso 4: Selección de Hora (Alpine + API)
      */
-    public function time()
+    public function time(): View|RedirectResponse
     {
-        if (!session('booking.therapist_id') || !session('booking.session_type_id') || !session('booking.date')) {
-            return Redirect::route('book');
+        if (! session('booking.therapist_id') || ! session('booking.session_type_id') || ! session('booking.date')) {
+            return Redirect::route('book.index');
         }
 
-        $sessionType = SessionType::find(session('booking.session_type_id'));
-        $date = session('booking.date'); // YYYY-MM-DD
+        $sessionType = SessionType::findOrFail((int) session('booking.session_type_id'));
+        $date = session('booking.date');
 
         return view('book.time', [
             'sessionType' => $sessionType,
             'date' => $date,
-            'therapistId' => session('booking.therapist_id')
+            'therapistId' => session('booking.therapist_id'),
         ]);
     }
 
     /**
      * Procesar Paso 4: Guardar Hora (UTC)
      */
-    public function storeTime(Request $request)
+    public function storeTime(Request $request): RedirectResponse
     {
-        $request->validate(['starts_at_utc' => 'required|date']);
+        if (! session('booking.therapist_id') || ! session('booking.session_type_id') || ! session('booking.date')) {
+            return Redirect::route('book.index');
+        }
+
+        $request->validate([
+            'starts_at_utc' => ['required', 'date'],
+        ]);
+
         session()->put('booking.starts_at_utc', $request->starts_at_utc);
+
         return Redirect::route('book.confirm');
     }
 
     /**
      * Paso 5: Confirmación y Datos del Paciente
      */
-    public function confirm()
+    public function confirm(TimezoneService $timezoneService): View|RedirectResponse
     {
         $therapistId = session('booking.therapist_id');
         $sessionTypeId = session('booking.session_type_id');
         $dateLocal = session('booking.date');
         $startsAtUtc = session('booking.starts_at_utc');
 
-        if (!$therapistId || !$sessionTypeId || !$dateLocal || !$startsAtUtc) {
-            return Redirect::route('book');
+        if (! $therapistId || ! $sessionTypeId || ! $dateLocal || ! $startsAtUtc) {
+            return Redirect::route('book.index');
         }
 
-        $therapist = Therapist::with('user')->find($therapistId);
-        $sessionType = SessionType::find($sessionTypeId);
-        
-        // Calcular hora local para display
-        $userTz = app('user.timezone');
-        $localTime = $this->timezoneService->formatForDisplay($startsAtUtc, 'H:i', $userTz);
+        $therapist = Therapist::with('user')->findOrFail((int) $therapistId);
+        $sessionType = SessionType::findOrFail((int) $sessionTypeId);
+
+        $localTime = $timezoneService->formatForDisplay($startsAtUtc, 'H:i');
 
         return view('book.confirm', compact('therapist', 'sessionType', 'dateLocal', 'localTime'));
     }
@@ -151,60 +196,83 @@ class BookingController extends Controller
     /**
      * Paso Final: Crear Cita
      */
-
-    public function store(Request $request)
+    public function store(Request $request, BookingService $bookingService): RedirectResponse
     {
+        if (
+            ! session('booking.therapist_id') ||
+            ! session('booking.session_type_id') ||
+            ! session('booking.date') ||
+            ! session('booking.starts_at_utc')
+        ) {
+            return Redirect::route('book.index');
+        }
+        $request->merge([
+    'patient_timezone' => match ($request->input('patient_timezone')) {
+        'America/Buenos_Aires' => 'America/Argentina/Buenos_Aires',
+        'America/Cordoba' => 'America/Argentina/Cordoba',
+        default => $request->input('patient_timezone', 'UTC'),
+        },
+        ]);
         $validated = $request->validate([
-            'patient_name' => 'required|string|max:255',
-            'patient_email' => 'required|email|max:255',
+            'patient_name' => ['required', 'string', 'max:255'],
+            'patient_email' => ['required', 'email', 'max:255'],
+            'patient_timezone' => ['required', 'string', new ValidTimezone()],
         ]);
 
-        // 1. Obtener sesión type (PRIMERO)
-        $sessionType = SessionType::find(session('booking.session_type_id'));
+        $sessionType = SessionType::findOrFail((int) session('booking.session_type_id'));
 
-        // 2. Preparar datos (DESPUÉS, usando $sessionType)
+        $startUtc = Carbon::parse(session('booking.starts_at_utc'), 'UTC');
+
         $data = [
             'therapist_id' => session('booking.therapist_id'),
             'session_type_id' => session('booking.session_type_id'),
             'patient_name' => $validated['patient_name'],
             'patient_email' => $validated['patient_email'],
-            'patient_timezone' => app('user.timezone'),
+            'patient_timezone' => $validated['patient_timezone'],
             'price' => $sessionType->price,
             'currency' => $sessionType->currency,
+            'starts_at' => $startUtc->toDateTimeString(),
+            'ends_at' => $startUtc->copy()->addMinutes((int) $sessionType->duration_minutes)->toDateTimeString(),
         ];
 
-        // 3. Calcular fechas para la BD
-        $startUtc = \Carbon\Carbon::parse(session('booking.starts_at_utc'), 'UTC');
-
-        $data['starts_at'] = $startUtc->toDateTimeString();
-        $data['ends_at'] = $startUtc->copy()->addMinutes($sessionType->duration_minutes)->toDateTimeString();
-
         try {
-            $appointment = $this->bookingService->bookSlot($data);
+            $appointment = $bookingService->bookSlot($data);
 
-            if (!$appointment) {
+            if (! $appointment) {
                 throw ValidationException::withMessages([
                     'general' => __('app.error_booking_slot'),
                 ]);
             }
 
-            AppointmentBooked::dispatch($appointment);
+            $appointment->loadMissing(['therapist.user', 'sessionType']);
 
-            session()->forget(['booking.therapist_id', 'booking.session_type_id', 'booking.date', 'booking.starts_at_utc']);
+            SendBookingConfirmedEmails::dispatch($appointment->id);
+
+            session()->put('booking.appointment_token', $appointment->token);
+
+            session()->forget([
+                'booking.therapist_id',
+                'booking.session_type_id',
+                'booking.date',
+                'booking.starts_at_utc',
+            ]);
 
             return Redirect::route('book.success');
-
         } catch (ValidationException $e) {
             throw $e;
-        } catch (\Exception $e) {
-            Log::error('Booking error: ' . $e->getMessage());
+        } catch (Throwable $e) {
+            Log::error('Booking error', [
+                'message' => $e->getMessage(),
+                'exception' => $e,
+            ]);
+
             throw ValidationException::withMessages([
                 'general' => __('app.error_booking_slot'),
             ]);
         }
     }
 
-    public function success()
+    public function success(): View
     {
         return view('book.success');
     }
@@ -212,21 +280,20 @@ class BookingController extends Controller
     /**
      * API para obtener slots (Usada por Alpine.js)
      */
-    public function getSlotsApi(Request $request)
+    public function getSlotsApi(Request $request, SlotGenerationService $slotGenerationService): JsonResponse
     {
         $request->validate([
-            'therapist_id' => 'required|integer|exists:therapists,id',
-            'date' => 'required|date_format:Y-m-d',
-            'duration' => 'required|integer'
+            'therapist_id' => ['required', 'integer', 'exists:therapists,id'],
+            'date' => ['required', 'date_format:Y-m-d'],
+            'duration' => ['required', 'integer'],
         ]);
 
-        $therapist = Therapist::find($request->therapist_id);
-        
-        // Generar slots
-        $slots = app(\App\Services\SlotGenerationService::class)->generate(
-            $therapist, 
-            $request->date, 
-            $request->duration
+        $therapist = Therapist::findOrFail((int) $request->therapist_id);
+
+        $slots = $slotGenerationService->generate(
+            $therapist,
+            $request->date,
+            (int) $request->duration,
         );
 
         return response()->json($slots);
