@@ -62,4 +62,7 @@ return [
             'waived' => 'Waived',
         ],
     ],
+    'sections' => [
+        'policy' => 'Cancellation and rescheduling policy',
+    ],
 ];

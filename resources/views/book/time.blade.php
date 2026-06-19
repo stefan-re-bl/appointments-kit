@@ -10,7 +10,8 @@
     duration: '{{ $sessionType->duration_minutes }}',
     
     fetchSlots() {
-        const url = `/api/slots?therapist_id=${this.therapistId}&date=${this.bookingDate}&duration=${this.duration}`;
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+        const url = `/api/slots?therapist_id=${this.therapistId}&date=${this.bookingDate}&duration=${this.duration}&timezone=${encodeURIComponent(timezone)}`;
         
         fetch(url)
             .then(response => response.json())

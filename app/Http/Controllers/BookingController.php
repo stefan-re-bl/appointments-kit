@@ -206,13 +206,15 @@ class BookingController extends Controller implements HasMiddleware
         ) {
             return Redirect::route('book.index');
         }
+
+        $inputTimezone = $request->input('patient_timezone', 'UTC');
+
         $request->merge([
-    'patient_timezone' => match ($request->input('patient_timezone')) {
-        'America/Buenos_Aires' => 'America/Argentina/Buenos_Aires',
-        'America/Cordoba' => 'America/Argentina/Cordoba',
-        default => $request->input('patient_timezone', 'UTC'),
-        },
+            'patient_timezone' => $this->normalizeTimezone(
+                is_string($inputTimezone) ? $inputTimezone : 'UTC',
+            ),
         ]);
+
         $validated = $request->validate([
             'patient_name' => ['required', 'string', 'max:255'],
             'patient_email' => ['required', 'email', 'max:255'],
@@ -282,10 +284,13 @@ class BookingController extends Controller implements HasMiddleware
      */
     public function getSlotsApi(Request $request, SlotGenerationService $slotGenerationService): JsonResponse
     {
+        $this->applyRequestedTimezone($request);
+
         $request->validate([
             'therapist_id' => ['required', 'integer', 'exists:therapists,id'],
             'date' => ['required', 'date_format:Y-m-d'],
             'duration' => ['required', 'integer'],
+            'timezone' => ['nullable', 'string'],
         ]);
 
         $therapist = Therapist::findOrFail((int) $request->therapist_id);
@@ -297,5 +302,31 @@ class BookingController extends Controller implements HasMiddleware
         );
 
         return response()->json($slots);
+    }
+
+    private function applyRequestedTimezone(Request $request): void
+    {
+        $requestedTimezone = $request->query('timezone');
+
+        if (! is_string($requestedTimezone)) {
+            return;
+        }
+
+        $timezone = $this->normalizeTimezone($requestedTimezone);
+
+        if (! in_array($timezone, timezone_identifiers_list(), true)) {
+            return;
+        }
+
+        app()->instance('user.timezone', $timezone);
+    }
+
+    private function normalizeTimezone(string $timezone): string
+    {
+        return match ($timezone) {
+            'America/Buenos_Aires' => 'America/Argentina/Buenos_Aires',
+            'America/Cordoba' => 'America/Argentina/Cordoba',
+            default => $timezone,
+        };
     }
 }

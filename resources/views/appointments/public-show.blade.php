@@ -196,9 +196,9 @@
                                 </form>
                             @endif
 
-                            @if ($canReschedule && filled($rescheduleMailto))
+                            @if ($canReschedule && filled($rescheduleUrl ?? null))
                                 <a
-                                    href="{{ $rescheduleMailto }}"
+                                    href="{{ $rescheduleUrl }}"
                                     class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
                                 >
                                     {{ __('appointment_policy.actions.request_reschedule') }}

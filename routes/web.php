@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicAppointmentCancellationController;
 use App\Http\Controllers\PublicAppointmentController;
 use App\Http\Controllers\PublicAppointmentRescheduleController;
+use App\Http\Controllers\PublicAppointmentRescheduleStoreController;
 use App\Http\Controllers\SessionTypeController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,10 @@ Route::get('/appointment/{token}', PublicAppointmentController::class)
 // --- Link firmado de reprogramación pública (Ticket #18) ---
 Route::get('/appointment/{token}/reschedule', PublicAppointmentRescheduleController::class)
     ->name('appointments.public.reschedule');
+
+// --- Confirmación de reprogramación pública (Ticket #19) ---
+Route::post('/appointment/{token}/reschedule', PublicAppointmentRescheduleStoreController::class)
+    ->name('appointments.public.reschedule.store');
 
 // --- Cancelación pública por token (Ticket #17) ---
 Route::post('/appointment/{token}/cancel', PublicAppointmentCancellationController::class)

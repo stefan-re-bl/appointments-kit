@@ -14,7 +14,7 @@ final class PublicAppointmentSignedRescheduleUrlTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_signed_reschedule_url_redirects_to_public_appointment_page(): void
+    public function test_signed_reschedule_url_shows_reschedule_page(): void
     {
         $appointment = Appointment::factory()->create();
 
@@ -26,7 +26,12 @@ final class PublicAppointmentSignedRescheduleUrlTest extends TestCase
 
         $this
             ->get($url)
-            ->assertRedirect(route('appointments.public.show', ['token' => $appointment->token]));
+            ->assertOk()
+            ->assertViewIs('appointments.public.reschedule')
+            ->assertViewHas('appointment', function (Appointment $viewAppointment) use ($appointment): bool {
+                return $viewAppointment->is($appointment);
+            })
+            ->assertViewHas('canReschedule');
     }
 
     public function test_tampered_signed_reschedule_url_returns_403(): void

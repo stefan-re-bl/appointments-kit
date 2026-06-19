@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Appointment;
+use App\Services\AppointmentSignedUrlService;
 use App\Services\CancellationPolicyService;
 use App\Services\TimezoneService;
 use Illuminate\Contracts\View\View;
@@ -24,6 +25,7 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
         string $token,
         TimezoneService $timezoneService,
         CancellationPolicyService $cancellationPolicyService,
+        AppointmentSignedUrlService $appointmentSignedUrlService,
     ): View|Response {
         $appointment = Appointment::query()
             ->with(['therapist.user', 'sessionType'])
@@ -80,7 +82,9 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
             'canCancel' => $canCancel,
             'canReschedule' => $canReschedule,
             'policyMessage' => $policyMessage,
-            'rescheduleMailto' => $this->buildRescheduleMailto($appointment),
+            'rescheduleUrl' => $canReschedule
+                ? $appointmentSignedUrlService->rescheduleUrl($appointment)
+                : null,
         ]);
     }
 
@@ -110,28 +114,5 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
             PaymentStatus::PAID => __('app.appointment_public.payment.paid'),
             PaymentStatus::WAIVED => __('app.appointment_public.payment.waived'),
         };
-    }
-
-    private function buildRescheduleMailto(Appointment $appointment): ?string
-    {
-        $therapistEmail = $appointment->therapist?->user?->email;
-
-        if (! filled($therapistEmail)) {
-            return null;
-        }
-
-        $subject = __('appointment_policy.mail.reschedule_subject');
-
-        $body = __('appointment_policy.mail.reschedule_body', [
-            'patient' => $appointment->patient_name,
-            'url' => route('appointments.public.show', $appointment->token),
-        ]);
-
-        return sprintf(
-            'mailto:%s?subject=%s&body=%s',
-            rawurlencode((string) $therapistEmail),
-            rawurlencode($subject),
-            rawurlencode($body),
-        );
     }
 }

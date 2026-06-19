@@ -62,4 +62,7 @@ return [
             'waived' => 'Eximido',
         ],
     ],
+    'sections' => [
+        'policy' => 'Política de cancelación y reprogramación',
+    ],
 ];
