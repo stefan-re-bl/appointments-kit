@@ -6,6 +6,7 @@ namespace App\Actions\Appointments;
 
 use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
+use App\Services\CancellationPolicyService;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
@@ -44,6 +45,10 @@ class RescheduleAppointment
                 return false;
             }
 
+            if (! app(CancellationPolicyService::class)->canReschedule($lockedAppointment)) {
+                return false;
+            }
+
             $hasOverlap = Appointment::query()
                 ->whereKeyNot($lockedAppointment->id)
                 ->overlappingSlot(
@@ -67,7 +72,9 @@ class RescheduleAppointment
                 'reschedule_count' => ((int) $lockedAppointment->reschedule_count) + 1,
             ])->save();
 
-            return $lockedAppointment->refresh();
+            return $lockedAppointment
+                ->refresh()
+                ->loadMissing(['therapist.user', 'sessionType']);
         });
 
         if (! $rescheduledAppointment instanceof Appointment) {

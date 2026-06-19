@@ -6,6 +6,8 @@ namespace App\Actions\Appointments;
 
 use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
+use App\Services\CancellationPolicyService;
+use DomainException;
 use Illuminate\Support\Facades\DB;
 
 class CancelAppointment
@@ -25,13 +27,19 @@ class CancelAppointment
                 return $lockedAppointment;
             }
 
+            if (! app(CancellationPolicyService::class)->canCancel($lockedAppointment)) {
+                throw new DomainException('Appointment cancellation is not allowed by the current cancellation policy.');
+            }
+
             $lockedAppointment->forceFill([
                 'status' => AppointmentStatus::CANCELLED,
             ])->save();
 
             $shouldQueueEmails = true;
 
-            return $lockedAppointment->refresh();
+            return $lockedAppointment
+                ->refresh()
+                ->loadMissing(['therapist.user', 'sessionType']);
         });
 
         if ($shouldQueueEmails) {

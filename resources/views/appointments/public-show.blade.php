@@ -17,6 +17,18 @@
                 </p>
             </div>
 
+            @if (session('success'))
+                <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('warning'))
+                <div class="mb-6 rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3 text-sm font-medium text-yellow-800">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
             <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
                 <div class="border-b border-slate-200 bg-slate-900 px-6 py-5">
                     <p class="text-sm font-medium text-slate-300">
@@ -141,10 +153,22 @@
 
                     <section class="border-t border-slate-200 pt-6">
                         <h2 class="text-lg font-semibold text-slate-900">
+                            {{ __('appointment_policy.sections.policy') }}
+                        </h2>
+
+                        <div class="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4">
+                            <p class="text-sm text-blue-900">
+                                {{ $policyMessage }}
+                            </p>
+                        </div>
+                    </section>
+
+                    <section class="border-t border-slate-200 pt-6">
+                        <h2 class="text-lg font-semibold text-slate-900">
                             {{ __('app.appointment_public.sections.actions') }}
                         </h2>
 
-                        <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+                        <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                             @if ($canJoinMeet)
                                 <a
                                     href="{{ $appointment->therapist->google_meet_link }}"
@@ -153,6 +177,31 @@
                                     class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-700"
                                 >
                                     {{ __('app.appointment_public.actions.join_meet') }}
+                                </a>
+                            @endif
+
+                            @if ($canCancel)
+                                <form method="POST" action="{{ route('appointments.public.cancel', $appointment->token) }}">
+                                    @csrf
+
+                                    <button
+                                        type="submit"
+                                        class="inline-flex w-full items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-red-500 sm:w-auto"
+                                    >
+                                        {{ $canRefund
+                                            ? __('appointment_policy.actions.cancel_with_refund')
+                                            : __('appointment_policy.actions.cancel_without_refund')
+                                        }}
+                                    </button>
+                                </form>
+                            @endif
+
+                            @if ($canReschedule && filled($rescheduleMailto))
+                                <a
+                                    href="{{ $rescheduleMailto }}"
+                                    class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+                                >
+                                    {{ __('appointment_policy.actions.request_reschedule') }}
                                 </a>
                             @endif
 
@@ -165,7 +214,7 @@
                                 </a>
                             @endif
 
-                            @if (! $canJoinMeet && ! $canContactTherapist)
+                            @if (! $canJoinMeet && ! $canCancel && ! $canReschedule && ! $canContactTherapist)
                                 <p class="text-sm text-slate-600">
                                     {{ __('app.appointment_public.actions.no_actions_available') }}
                                 </p>

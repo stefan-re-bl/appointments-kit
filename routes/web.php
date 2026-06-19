@@ -3,6 +3,7 @@
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicAppointmentCancellationController;
 use App\Http\Controllers\PublicAppointmentController;
 use App\Http\Controllers\SessionTypeController;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,10 @@ Route::get('/', function () {
 // --- Página pública "Mi Cita" (Ticket #11) ---
 Route::get('/appointment/{token}', PublicAppointmentController::class)
     ->name('appointments.public.show');
+
+// --- Cancelación pública por token (Ticket #17) ---
+Route::post('/appointment/{token}/cancel', PublicAppointmentCancellationController::class)
+    ->name('appointments.public.cancel');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Appointment;
+use App\Services\CancellationPolicyService;
 use App\Services\TimezoneService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Response;
@@ -19,8 +20,11 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
         return [];
     }
 
-    public function __invoke(string $token, TimezoneService $timezoneService): View|Response
-    {
+    public function __invoke(
+        string $token,
+        TimezoneService $timezoneService,
+        CancellationPolicyService $cancellationPolicyService,
+    ): View|Response {
         $appointment = Appointment::query()
             ->with(['therapist.user', 'sessionType'])
             ->where('token', $token)
@@ -52,6 +56,16 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
             true
         ) && filled($appointment->therapist?->user?->email);
 
+        $canRefund = $cancellationPolicyService->canRefund($appointment);
+        $canCancel = $cancellationPolicyService->canCancel($appointment);
+        $canReschedule = $cancellationPolicyService->canReschedule($appointment);
+
+        $policyMessage = __($cancellationPolicyService->messageKey($appointment), [
+            'refund_hours' => $cancellationPolicyService->refundDeadlineHours(),
+            'reschedule_hours' => $cancellationPolicyService->rescheduleDeadlineHours(),
+            'max_reschedules' => $cancellationPolicyService->maxReschedules(),
+        ]);
+
         return view('appointments.public-show', [
             'appointment' => $appointment,
             'patientTimezone' => $patientTimezone,
@@ -62,6 +76,11 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
             'paymentStatusLabel' => $paymentStatusLabel,
             'canJoinMeet' => $canJoinMeet,
             'canContactTherapist' => $canContactTherapist,
+            'canRefund' => $canRefund,
+            'canCancel' => $canCancel,
+            'canReschedule' => $canReschedule,
+            'policyMessage' => $policyMessage,
+            'rescheduleMailto' => $this->buildRescheduleMailto($appointment),
         ]);
     }
 
@@ -91,5 +110,28 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
             PaymentStatus::PAID => __('app.appointment_public.payment.paid'),
             PaymentStatus::WAIVED => __('app.appointment_public.payment.waived'),
         };
+    }
+
+    private function buildRescheduleMailto(Appointment $appointment): ?string
+    {
+        $therapistEmail = $appointment->therapist?->user?->email;
+
+        if (! filled($therapistEmail)) {
+            return null;
+        }
+
+        $subject = __('appointment_policy.mail.reschedule_subject');
+
+        $body = __('appointment_policy.mail.reschedule_body', [
+            'patient' => $appointment->patient_name,
+            'url' => route('appointments.public.show', $appointment->token),
+        ]);
+
+        return sprintf(
+            'mailto:%s?subject=%s&body=%s',
+            rawurlencode((string) $therapistEmail),
+            rawurlencode($subject),
+            rawurlencode($body),
+        );
     }
 }
