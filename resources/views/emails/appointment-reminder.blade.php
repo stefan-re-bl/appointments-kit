@@ -19,6 +19,8 @@
 {{ __('reminders.appointment.public_button') }}
 </x-mail::button>
 
+<x-mail.reschedule-link :appointment="$appointment" />
+
 @if ($googleMeetLink)
 <x-mail::button :url="$googleMeetLink">
 {{ __('reminders.appointment.meet_button') }}

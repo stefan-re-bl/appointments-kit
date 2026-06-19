@@ -28,6 +28,10 @@
 {{ __('app.emails.booking_confirmed.my_appointment_button') }}
 </x-mail::button>
 
+@if ($recipientType === \App\Mail\BookingConfirmed::RECIPIENT_PATIENT)
+<x-mail.reschedule-link :appointment="$appointment" />
+@endif
+
 @if ($meetLink)
 <x-mail::button :url="$meetLink">
 {{ __('app.emails.booking_confirmed.meet_button') }}

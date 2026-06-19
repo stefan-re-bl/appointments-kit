@@ -23,6 +23,8 @@
 {{ __('appointment_emails.common.view_appointment') }}
 </x-mail::button>
 
+<x-mail.reschedule-link :appointment="$appointment" />
+
 {{ __('appointment_emails.rescheduled.footer') }}
 
 {{ __('appointment_emails.common.thanks') }},  

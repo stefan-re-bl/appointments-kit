@@ -23,6 +23,11 @@ return [
         'footer' => 'Los horarios se muestran en la zona horaria indicada.',
     ],
 
+    'reschedule' => [
+        'action' => 'Cambiar fecha',
+        'signed_url_notice' => 'Este enlace de reprogramación es personal y vence en 24 horas.',
+    ],
+
     'cancelled' => [
         'subject' => 'Tu cita fue cancelada',
         'title' => 'Cita cancelada',

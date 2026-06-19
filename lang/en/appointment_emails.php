@@ -23,6 +23,11 @@ return [
         'footer' => 'Times are shown in the indicated timezone.',
     ],
 
+    'reschedule' => [
+        'action' => 'Change date',
+        'signed_url_notice' => 'This rescheduling link is personal and expires in 24 hours.',
+    ],
+
     'cancelled' => [
         'subject' => 'Your appointment was cancelled',
         'title' => 'Appointment cancelled',
