@@ -4,145 +4,236 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>{{ config('app.name', 'Laravel') }}</title>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-gray-50">
+<body class="h-screen overflow-hidden bg-gray-50 font-sans antialiased">
     <!-- Script de Zona Horaria -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            document.cookie = "user_timezone=" + timezone + ";path=/;samesite=lax";
+            document.cookie = `user_timezone=${timezone}; path=/; samesite=lax`;
         });
     </script>
 
-    <div x-data="{ sidebarOpen: false }" class="h-screen flex overflow-hidden">
-        
-        <!-- Sidebar (Fondo oscuro moderno) -->
-        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
-               class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 ease-in-out transform bg-gray-900 lg:translate-x-0 lg:static lg:inset-0">
-            
+    <div x-data="{ sidebarOpen: false }" class="flex h-full overflow-hidden">
+        <!-- Sidebar -->
+        <aside
+            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+            class="fixed inset-y-0 left-0 z-30 w-64 flex-shrink-0 transform overflow-y-auto bg-gray-900 transition duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0"
+        >
             <!-- Logo Area -->
-            <div class="flex items-center h-16 px-6 bg-gray-950 shadow-md">
-                <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            <div class="flex h-16 items-center bg-gray-950 px-6 shadow-md">
+                <svg class="h-6 w-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    ></path>
                 </svg>
-                <span class="text-white font-bold text-xl ml-3 tracking-wide">{{ __('app.app_name') }}</span>
+
+                <span class="ml-3 text-xl font-bold tracking-wide text-white">
+                    {{ __('app.app_name') }}
+                </span>
             </div>
 
             <!-- Navegación -->
             <nav class="mt-6">
-                <a href="{{ url('/dashboard') }}" 
-                   class="flex items-center px-6 py-3 {{ request()->routeIs('dashboard') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }} transition-colors duration-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                <a
+                    href="{{ url('/dashboard') }}"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('dashboard') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }} transition-colors duration-200"
+                >
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                        ></path>
                     </svg>
+
                     <span class="mx-3">{{ __('app.dashboard') }}</span>
                 </a>
 
-                <!-- Enlace Tipos de Sesión -->
-                <a href="{{ route('session-types.index') }}" 
-                   class="flex items-center px-6 py-3 {{ request()->routeIs('session-types.*') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }} transition-colors duration-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                <a
+                    href="{{ route('session-types.index') }}"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('session-types.*') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }} transition-colors duration-200"
+                >
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        ></path>
                     </svg>
+
                     <span class="mx-3">{{ __('app.session_types') }}</span>
                 </a>
 
-                <!-- Enlace Disponibilidad -->
-                <a href="{{ route('availabilities.index') }}" 
-                   class="flex items-center px-6 py-3 {{ request()->routeIs('availabilities.*') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }} transition-colors duration-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                <a
+                    href="{{ route('availabilities.index') }}"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('availabilities.*') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }} transition-colors duration-200"
+                >
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
                     </svg>
+
                     <span class="mx-3">{{ __('app.availabilities') }}</span>
                 </a>
 
-                <!-- Enlace deshabilitado de ejemplo -->
-                <a href="#" class="flex items-center px-6 py-3 text-gray-500 cursor-not-allowed">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                <a
+                    href="{{ route('therapist.appointments.index') }}"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('therapist.appointments.*') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }} transition-colors duration-200"
+                >
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        ></path>
                     </svg>
-                    <span class="mx-3">{{ __('app.patients_soon') }}</span>
+
+                    <span class="mx-3">{{ __('app.appointments.management.title') }}</span>
                 </a>
             </nav>
         </aside>
 
-        <!-- Contenido Principal -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            
+        <!-- Contenedor Principal -->
+        <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
             <!-- Top Navbar -->
-            <header class="flex justify-between items-center bg-white border-b border-gray-200 h-16 px-6 shadow-sm z-20">
-                <!-- Botón hamburguesa (Móvil) -->
+            <header class="z-20 flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm">
                 <div class="flex items-center">
-                    <button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 focus:outline-none lg:hidden">
+                    <button
+                        @click="sidebarOpen = !sidebarOpen"
+                        class="text-gray-500 focus:outline-none lg:hidden"
+                    >
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"
+                            />
                         </svg>
                     </button>
                 </div>
 
-                <!-- Contenedor de utilidades (Idioma + Perfil) -->
                 <div class="flex items-center space-x-4">
-                    
-                    <!-- Switcher de Idioma (Alpine.js) -->
+                    <!-- Switcher de Idioma -->
                     <div x-data="{ langOpen: false }" class="relative">
-                        <button @click="langOpen = !langOpen" class="flex items-center text-sm text-gray-600 hover:text-gray-800 focus:outline-none">
-                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                        <button
+                            @click="langOpen = !langOpen"
+                            class="flex items-center text-sm text-gray-600 hover:text-gray-800 focus:outline-none"
+                        >
+                            <svg class="mr-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                                ></path>
                             </svg>
+
                             <span class="hidden sm:inline">{{ strtoupper(app()->getLocale()) }}</span>
                         </button>
-                        <div x-show="langOpen" 
-                             @click.away="langOpen = false"
-                             x-transition:enter="transition ease-out duration-100"
-                             x-transition:enter-start="transform opacity-0 scale-95"
-                             x-transition:enter-end="transform opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-75"
-                             x-transition:leave-start="transform opacity-100 scale-100"
-                             x-transition:leave-end="transform opacity-0 scale-95"
-                             class="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg py-1 border border-gray-100 z-50">
-                            <a href="{{ request()->fullUrlWithQuery(['lang' => 'es']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ app()->getLocale() == 'es' ? 'font-bold text-indigo-600' : '' }}">🇪🇸 {{ __('app.spanish') }}</a>
-                            <a href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ app()->getLocale() == 'en' ? 'font-bold text-indigo-600' : '' }}">🇺🇸 {{ __('app.english') }}</a>
+
+                        <div
+                            x-show="langOpen"
+                            @click.away="langOpen = false"
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95"
+                            class="absolute right-0 z-50 mt-2 w-36 rounded-md border border-gray-100 bg-white py-1 shadow-lg"
+                        >
+                            <a
+                                href="{{ request()->fullUrlWithQuery(['lang' => 'es']) }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ app()->getLocale() === 'es' ? 'font-bold text-indigo-600' : '' }}"
+                            >
+                                🇪🇸 {{ __('app.spanish') }}
+                            </a>
+
+                            <a
+                                href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ app()->getLocale() === 'en' ? 'font-bold text-indigo-600' : '' }}"
+                            >
+                                🇺🇸 {{ __('app.english') }}
+                            </a>
                         </div>
                     </div>
 
-                    <!-- Dropdown de Usuario (Restaurado al original) -->
+                    <!-- Dropdown de Usuario -->
                     <div class="flex items-center" x-data="{ userMenuOpen: false }">
-                        <button @click="userMenuOpen = !userMenuOpen" class="relative flex items-center space-x-3 focus:outline-none">
-                            <!-- Avatar con Iniciales -->
-                            <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                        <button
+                            @click="userMenuOpen = !userMenuOpen"
+                            class="relative flex items-center space-x-3 focus:outline-none"
+                        >
+                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-xs font-bold text-white shadow-sm">
                                 {{ strtoupper(Auth::user()->name[0]) }}
                             </div>
-                            <span class="hidden md:inline text-sm font-medium text-gray-700">{{ Auth::user()->name }}</span>
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+
+                            <span class="hidden text-sm font-medium text-gray-700 md:inline">
+                                {{ Auth::user()->name }}
+                            </span>
+
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 9l-7 7-7-7"
+                                ></path>
                             </svg>
                         </button>
 
-                        <!-- Menú Desplegable -->
-                        <div x-show="userMenuOpen" 
-                             @click.away="userMenuOpen = false"
-                             x-transition:enter="transition ease-out duration-100"
-                             x-transition:enter-start="transform opacity-0 scale-95"
-                             x-transition:enter-end="transform opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-75"
-                             x-transition:leave-start="transform opacity-100 scale-100"
-                             x-transition:leave-end="transform opacity-0 scale-95"
-                             class="absolute right-6 top-14 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 z-50">
-                            
-                            <!-- Info del Rol -->
-                            <div class="px-4 py-2 border-b border-gray-100">
-                                <p class="text-xs text-gray-500">{{ __('app.role') }}: <span class="font-semibold text-indigo-600">{{ Auth::user()->role->value }}</span></p>
+                        <div
+                            x-show="userMenuOpen"
+                            @click.away="userMenuOpen = false"
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95"
+                            class="absolute right-6 top-14 z-50 mt-2 w-48 rounded-md border border-gray-100 bg-white py-1 shadow-lg"
+                        >
+                            <div class="border-b border-gray-100 px-4 py-2">
+                                <p class="text-xs text-gray-500">
+                                    {{ __('app.role') }}:
+                                    <span class="font-semibold text-indigo-600">
+                                        {{ Auth::user()->role->value }}
+                                    </span>
+                                </p>
                             </div>
 
-                            <!-- Cerrar Sesión -->
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center">
-                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+
+                                <button
+                                    type="submit"
+                                    class="flex w-full items-center px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                                >
+                                    <svg class="mr-2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                        ></path>
                                     </svg>
+
                                     {{ __('app.log_out') }}
                                 </button>
                             </form>
@@ -152,19 +243,16 @@
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50">
-                
-                <!-- Soporte para el Slot Header (Títulos de página) -->
+            <main class="min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-gray-50">
                 @isset($header)
-                <div class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+                    <div class="bg-white shadow">
+                        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                            {{ $header }}
+                        </div>
                     </div>
-                </div>
                 @endisset
 
-                <!-- Contenido principal inyectado -->
-                <div class="p-6">
+                <div class="min-w-0 max-w-full p-6">
                     {{ $slot }}
                 </div>
             </main>

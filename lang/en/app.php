@@ -143,4 +143,30 @@ return [
         'slot_unavailable' => 'The selected time slot is no longer available. Please choose another appointment time.',
     ],
 ],
+
+'actions' => 'Actions',
+
+'payments' => [
+    'label' => 'Payment status',
+    'paid_at_label' => 'Payment date',
+    'not_registered' => 'Not registered',
+    'update' => 'Update',
+    'updated' => 'Payment status updated successfully.',
+    'status' => [
+        'pending' => 'Pending',
+        'paid' => 'Paid',
+        'waived' => 'Waived',
+    ],
+],
+
+'appointments' => [
+    'management' => [
+        'title' => 'Appointment management',
+        'subtitle' => 'Manage appointments and manual payments. Timezone: :timezone.',
+        'patient' => 'Patient',
+        'session' => 'Session',
+        'schedule' => 'Schedule',
+        'empty' => 'There are no appointments yet.',
+    ],
+],
     ];

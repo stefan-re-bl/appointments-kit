@@ -141,4 +141,30 @@ return [
         'slot_unavailable' => 'El horario seleccionado ya no está disponible. Por favor, elegí otro turno.',
     ],
 ],
+
+'actions' => 'Acciones',
+
+'payments' => [
+    'label' => 'Estado del pago',
+    'paid_at_label' => 'Fecha de pago',
+    'not_registered' => 'Sin registro',
+    'update' => 'Actualizar',
+    'updated' => 'Estado de pago actualizado correctamente.',
+    'status' => [
+        'pending' => 'Pendiente',
+        'paid' => 'Pagado',
+        'waived' => 'Bonificado',
+    ],
+],
+
+'appointments' => [
+    'management' => [
+        'title' => 'Gestión de citas',
+        'subtitle' => 'Administrá las citas y pagos manuales. Zona horaria: :timezone.',
+        'patient' => 'Paciente',
+        'session' => 'Sesión',
+        'schedule' => 'Horario',
+        'empty' => 'Todavía no hay citas registradas.',
+    ],
+],
     ];

@@ -135,16 +135,16 @@
                         </h2>
 
                         <div class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                            <p class="text-sm font-medium text-slate-900">
-                                {{ $paymentStatusLabel }}
-                            </p>
+                            <div>
+                                <x-payment-status-badge :status="$appointment->payment_status" />
+                            </div>
 
                             @if ($paidAt)
-                                <p class="mt-1 text-sm text-slate-600">
+                                <p class="mt-3 text-sm text-slate-600">
                                     {{ __('app.appointment_public.fields.paid_at') }}: {{ $paidAt }}
                                 </p>
                             @else
-                                <p class="mt-1 text-sm text-slate-600">
+                                <p class="mt-3 text-sm text-slate-600">
                                     {{ __('app.appointment_public.payment_manual_note') }}
                                 </p>
                             @endif

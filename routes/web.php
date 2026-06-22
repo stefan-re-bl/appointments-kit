@@ -8,6 +8,8 @@ use App\Http\Controllers\PublicAppointmentController;
 use App\Http\Controllers\PublicAppointmentRescheduleController;
 use App\Http\Controllers\PublicAppointmentRescheduleStoreController;
 use App\Http\Controllers\SessionTypeController;
+use App\Http\Controllers\Therapist\AppointmentIndexController;
+use App\Http\Controllers\Therapist\AppointmentPaymentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -34,7 +36,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function (): void {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -43,8 +45,17 @@ Route::middleware('auth')->group(function () {
     Route::resource('availabilities', AvailabilityController::class)->except(['show', 'edit', 'update']);
 });
 
+// --- Panel de Terapeuta: Gestión de Citas y Pagos Manuales (Ticket #20) ---
+Route::middleware(['auth', 'verified'])->group(function (): void {
+    Route::get('/therapist/appointments', AppointmentIndexController::class)
+        ->name('therapist.appointments.index');
+
+    Route::patch('/therapist/appointments/{appointment}/payment', AppointmentPaymentController::class)
+        ->name('therapist.appointments.payment.update');
+});
+
 // --- Rutas Públicas de Reserva (Ticket #10) ---
-Route::prefix('book')->name('book.')->group(function () {
+Route::prefix('book')->name('book.')->group(function (): void {
     Route::get('/', [BookingController::class, 'index'])->name('index');
     Route::post('/therapist', [BookingController::class, 'storeTherapist'])->name('store.therapist');
 
