@@ -12,12 +12,14 @@ use App\Services\BookingService;
 use App\Services\SlotGenerationService;
 use App\Services\TimezoneService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Throwable;
@@ -38,7 +40,7 @@ class BookingController extends Controller implements HasMiddleware
 
         $therapists = Therapist::with('user')
             ->where('is_active', true)
-            ->whereHas('user', fn ($q) => $q->where('role', 'therapist'))
+            ->whereHas('user', fn (Builder $query) => $query->where('role', 'therapist'))
             ->get();
 
         return view('book.index', compact('therapists'));
@@ -50,10 +52,25 @@ class BookingController extends Controller implements HasMiddleware
     public function storeTherapist(Request $request): RedirectResponse
     {
         $request->validate([
-            'therapist_id' => ['required', 'integer', 'exists:therapists,id'],
+            'therapist_id' => [
+                'required',
+                'integer',
+                Rule::exists('therapists', 'id')->where('is_active', true),
+            ],
         ]);
 
-        session()->put('booking.therapist_id', (int) $request->therapist_id);
+        $therapist = Therapist::query()
+            ->where('is_active', true)
+            ->whereHas('user', fn (Builder $query) => $query->where('role', 'therapist'))
+            ->find((int) $request->therapist_id);
+
+        if (! $therapist) {
+            throw ValidationException::withMessages([
+                'therapist_id' => __('app.error_booking_slot'),
+            ]);
+        }
+
+        session()->put('booking.therapist_id', $therapist->id);
 
         return Redirect::route('book.session');
     }
@@ -63,13 +80,13 @@ class BookingController extends Controller implements HasMiddleware
      */
     public function session(): View|RedirectResponse
     {
-        $therapistId = session('booking.therapist_id');
+        $therapist = $this->activeTherapistFromSession();
 
-        if (! $therapistId) {
+        if (! $therapist) {
             return Redirect::route('book.index');
         }
 
-        $sessions = SessionType::where('therapist_id', $therapistId)
+        $sessions = SessionType::where('therapist_id', $therapist->id)
             ->where('is_active', true)
             ->get();
 
@@ -81,9 +98,9 @@ class BookingController extends Controller implements HasMiddleware
      */
     public function storeSession(Request $request): RedirectResponse
     {
-        $therapistId = session('booking.therapist_id');
+        $therapist = $this->activeTherapistFromSession();
 
-        if (! $therapistId) {
+        if (! $therapist) {
             return Redirect::route('book.index');
         }
 
@@ -91,7 +108,7 @@ class BookingController extends Controller implements HasMiddleware
             'session_type_id' => ['required', 'integer', 'exists:session_types,id'],
         ]);
 
-        $sessionType = SessionType::where('therapist_id', $therapistId)
+        $sessionType = SessionType::where('therapist_id', $therapist->id)
             ->where('is_active', true)
             ->findOrFail((int) $request->session_type_id);
 
@@ -105,8 +122,21 @@ class BookingController extends Controller implements HasMiddleware
      */
     public function date(): View|RedirectResponse
     {
-        if (! session('booking.therapist_id') || ! session('booking.session_type_id')) {
+        $therapist = $this->activeTherapistFromSession();
+
+        if (! $therapist || ! session('booking.session_type_id')) {
             return Redirect::route('book.index');
+        }
+
+        $sessionTypeExists = SessionType::where('therapist_id', $therapist->id)
+            ->where('is_active', true)
+            ->whereKey((int) session('booking.session_type_id'))
+            ->exists();
+
+        if (! $sessionTypeExists) {
+            session()->forget(['booking.session_type_id', 'booking.date', 'booking.starts_at_utc']);
+
+            return Redirect::route('book.session');
         }
 
         $minDate = now(app('user.timezone'))->toDateString();
@@ -119,8 +149,21 @@ class BookingController extends Controller implements HasMiddleware
      */
     public function storeDate(Request $request): RedirectResponse
     {
-        if (! session('booking.therapist_id') || ! session('booking.session_type_id')) {
+        $therapist = $this->activeTherapistFromSession();
+
+        if (! $therapist || ! session('booking.session_type_id')) {
             return Redirect::route('book.index');
+        }
+
+        $sessionTypeExists = SessionType::where('therapist_id', $therapist->id)
+            ->where('is_active', true)
+            ->whereKey((int) session('booking.session_type_id'))
+            ->exists();
+
+        if (! $sessionTypeExists) {
+            session()->forget(['booking.session_type_id', 'booking.date', 'booking.starts_at_utc']);
+
+            return Redirect::route('book.session');
         }
 
         $minDate = now(app('user.timezone'))->toDateString();
@@ -139,17 +182,22 @@ class BookingController extends Controller implements HasMiddleware
      */
     public function time(): View|RedirectResponse
     {
-        if (! session('booking.therapist_id') || ! session('booking.session_type_id') || ! session('booking.date')) {
+        $therapist = $this->activeTherapistFromSession();
+
+        if (! $therapist || ! session('booking.session_type_id') || ! session('booking.date')) {
             return Redirect::route('book.index');
         }
 
-        $sessionType = SessionType::findOrFail((int) session('booking.session_type_id'));
+        $sessionType = SessionType::where('therapist_id', $therapist->id)
+            ->where('is_active', true)
+            ->findOrFail((int) session('booking.session_type_id'));
+
         $date = session('booking.date');
 
         return view('book.time', [
             'sessionType' => $sessionType,
             'date' => $date,
-            'therapistId' => session('booking.therapist_id'),
+            'therapistId' => $therapist->id,
         ]);
     }
 
@@ -158,8 +206,21 @@ class BookingController extends Controller implements HasMiddleware
      */
     public function storeTime(Request $request): RedirectResponse
     {
-        if (! session('booking.therapist_id') || ! session('booking.session_type_id') || ! session('booking.date')) {
+        $therapist = $this->activeTherapistFromSession();
+
+        if (! $therapist || ! session('booking.session_type_id') || ! session('booking.date')) {
             return Redirect::route('book.index');
+        }
+
+        $sessionTypeExists = SessionType::where('therapist_id', $therapist->id)
+            ->where('is_active', true)
+            ->whereKey((int) session('booking.session_type_id'))
+            ->exists();
+
+        if (! $sessionTypeExists) {
+            session()->forget(['booking.session_type_id', 'booking.date', 'booking.starts_at_utc']);
+
+            return Redirect::route('book.session');
         }
 
         $request->validate([
@@ -176,17 +237,20 @@ class BookingController extends Controller implements HasMiddleware
      */
     public function confirm(TimezoneService $timezoneService): View|RedirectResponse
     {
-        $therapistId = session('booking.therapist_id');
+        $therapist = $this->activeTherapistFromSession();
         $sessionTypeId = session('booking.session_type_id');
         $dateLocal = session('booking.date');
         $startsAtUtc = session('booking.starts_at_utc');
 
-        if (! $therapistId || ! $sessionTypeId || ! $dateLocal || ! $startsAtUtc) {
+        if (! $therapist || ! $sessionTypeId || ! $dateLocal || ! $startsAtUtc) {
             return Redirect::route('book.index');
         }
 
-        $therapist = Therapist::with('user')->findOrFail((int) $therapistId);
-        $sessionType = SessionType::findOrFail((int) $sessionTypeId);
+        $therapist->load('user');
+
+        $sessionType = SessionType::where('therapist_id', $therapist->id)
+            ->where('is_active', true)
+            ->findOrFail((int) $sessionTypeId);
 
         $localTime = $timezoneService->formatForDisplay($startsAtUtc, 'H:i');
 
@@ -198,8 +262,10 @@ class BookingController extends Controller implements HasMiddleware
      */
     public function store(Request $request, BookingService $bookingService): RedirectResponse
     {
+        $therapist = $this->activeTherapistFromSession();
+
         if (
-            ! session('booking.therapist_id') ||
+            ! $therapist ||
             ! session('booking.session_type_id') ||
             ! session('booking.date') ||
             ! session('booking.starts_at_utc')
@@ -221,13 +287,15 @@ class BookingController extends Controller implements HasMiddleware
             'patient_timezone' => ['required', 'string', new ValidTimezone()],
         ]);
 
-        $sessionType = SessionType::findOrFail((int) session('booking.session_type_id'));
+        $sessionType = SessionType::where('therapist_id', $therapist->id)
+            ->where('is_active', true)
+            ->findOrFail((int) session('booking.session_type_id'));
 
         $startUtc = Carbon::parse(session('booking.starts_at_utc'), 'UTC');
 
         $data = [
-            'therapist_id' => session('booking.therapist_id'),
-            'session_type_id' => session('booking.session_type_id'),
+            'therapist_id' => $therapist->id,
+            'session_type_id' => $sessionType->id,
             'patient_name' => $validated['patient_name'],
             'patient_email' => $validated['patient_email'],
             'patient_timezone' => $validated['patient_timezone'],
@@ -287,13 +355,20 @@ class BookingController extends Controller implements HasMiddleware
         $this->applyRequestedTimezone($request);
 
         $request->validate([
-            'therapist_id' => ['required', 'integer', 'exists:therapists,id'],
+            'therapist_id' => [
+                'required',
+                'integer',
+                Rule::exists('therapists', 'id')->where('is_active', true),
+            ],
             'date' => ['required', 'date_format:Y-m-d'],
             'duration' => ['required', 'integer'],
             'timezone' => ['nullable', 'string'],
         ]);
 
-        $therapist = Therapist::findOrFail((int) $request->therapist_id);
+        $therapist = Therapist::query()
+            ->where('is_active', true)
+            ->whereHas('user', fn (Builder $query) => $query->where('role', 'therapist'))
+            ->findOrFail((int) $request->therapist_id);
 
         $slots = $slotGenerationService->generate(
             $therapist,
@@ -302,6 +377,21 @@ class BookingController extends Controller implements HasMiddleware
         );
 
         return response()->json($slots);
+    }
+
+    private function activeTherapistFromSession(): ?Therapist
+    {
+        $therapistId = session('booking.therapist_id');
+
+        if (! $therapistId) {
+            return null;
+        }
+
+        return Therapist::query()
+            ->with('user')
+            ->where('is_active', true)
+            ->whereHas('user', fn (Builder $query) => $query->where('role', 'therapist'))
+            ->find((int) $therapistId);
     }
 
     private function applyRequestedTimezone(Request $request): void

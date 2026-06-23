@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
+use App\Http\Controllers\Admin\TherapistController as AdminTherapistController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
@@ -10,6 +12,7 @@ use App\Http\Controllers\PublicAppointmentRescheduleStoreController;
 use App\Http\Controllers\SessionTypeController;
 use App\Http\Controllers\Therapist\AppointmentIndexController;
 use App\Http\Controllers\Therapist\AppointmentPaymentController;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,6 +48,21 @@ Route::middleware('auth')->group(function (): void {
     Route::resource('availabilities', AvailabilityController::class)->except(['show', 'edit', 'update']);
 });
 
+// --- Panel Administrativo: Visibilidad Global (Ticket #21) ---
+Route::middleware(['auth', 'verified', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function (): void {
+        Route::get('/', fn (): RedirectResponse => redirect()->route('admin.appointments.index'))
+            ->name('index');
+
+        Route::resource('therapists', AdminTherapistController::class)
+            ->only(['index', 'edit', 'update']);
+
+        Route::get('/appointments', [AdminAppointmentController::class, 'index'])
+            ->name('appointments.index');
+    });
+
 // --- Panel de Terapeuta: Gestión de Citas y Pagos Manuales (Ticket #20) ---
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/therapist/appointments', AppointmentIndexController::class)
@@ -79,4 +97,4 @@ Route::prefix('book')->name('book.')->group(function (): void {
 // Se mantiene en 'web' para acceder a cookies (user_timezone) y sesión.
 Route::get('/api/slots', [BookingController::class, 'getSlotsApi'])->name('api.slots.index');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
