@@ -1,18 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Validator;
 
-class StoreAvailabilityRequest extends FormRequest
+final class StoreAvailabilityRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        /** @var User|null $user */
+        $user = $this->user();
+
+        return $user instanceof User && $user->therapist !== null;
     }
 
+    /**
+     * @return array<string, array<int, string>>
+     */
     public function rules(): array
     {
         return [
@@ -24,6 +31,9 @@ class StoreAvailabilityRequest extends FormRequest
         ];
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [

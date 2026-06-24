@@ -1,21 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Enums\Role;
-use App\Models\User;
 use App\Models\Therapist;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class TherapistSeeder extends Seeder
+final class TherapistSeeder extends Seeder
 {
     public function run(): void
     {
-        // Crear 3 usuarios terapeutas y, por callback, su perfil de terapeuta
+        // Crear 3 usuarios terapeutas y su perfil de terapeuta.
         User::factory(3)
-            ->create(['role' => Role::THERAPIST])
-            ->each(function (User $user) {
-                Therapist::factory()->create(['user_id' => $user->id]);
+            ->therapist()
+            ->create()
+            ->each(function (User $user): void {
+                Therapist::factory()
+                    ->for($user)
+                    ->create();
             });
     }
 }

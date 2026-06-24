@@ -13,7 +13,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use RuntimeException;
 use Tests\TestCase;
 
-class ActivityLogTest extends TestCase
+final class ActivityLogTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -26,9 +26,9 @@ class ActivityLogTest extends TestCase
 
         $this->actingAs($appointment->therapist->user);
 
-        $appointment->update([
+        $appointment->forceFill([
             'status' => AppointmentStatus::CANCELLED,
-        ]);
+        ])->save();
 
         $log = ActivityLog::query()
             ->where('appointment_id', $appointment->id)
@@ -59,10 +59,10 @@ class ActivityLogTest extends TestCase
 
         $paidAt = CarbonImmutable::now('UTC');
 
-        $appointment->update([
+        $appointment->forceFill([
             'payment_status' => PaymentStatus::PAID,
             'paid_at' => $paidAt,
-        ]);
+        ])->save();
 
         $log = ActivityLog::query()
             ->where('appointment_id', $appointment->id)
@@ -81,9 +81,9 @@ class ActivityLogTest extends TestCase
             'status' => AppointmentStatus::CONFIRMED,
         ]);
 
-        $appointment->update([
+        $appointment->forceFill([
             'status' => AppointmentStatus::CANCELLED,
-        ]);
+        ])->save();
 
         $log = ActivityLog::query()->firstOrFail();
 

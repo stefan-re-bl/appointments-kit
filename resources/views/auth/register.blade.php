@@ -2,6 +2,15 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
+        <input
+            id="timezone"
+            type="hidden"
+            name="timezone"
+            value="{{ old('timezone', 'UTC') }}"
+        >
+
+        <x-input-error :messages="$errors->get('timezone')" class="mt-2" />
+
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')" />
@@ -49,4 +58,20 @@
             </x-primary-button>
         </div>
     </form>
+
+    <script>
+        const timezoneInput = document.getElementById('timezone');
+
+        if (timezoneInput !== null) {
+            try {
+                const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+                if (typeof detectedTimezone === 'string' && detectedTimezone.length > 0) {
+                    timezoneInput.value = detectedTimezone;
+                }
+            } catch (error) {
+                timezoneInput.value = timezoneInput.value || 'UTC';
+            }
+        }
+    </script>
 </x-guest-layout>

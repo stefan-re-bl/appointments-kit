@@ -10,6 +10,8 @@ use App\Notifications\QueueJobFailedNotification;
 use App\Observers\AppointmentObserver;
 use App\Services\BookingService;
 use App\Services\TimezoneService;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\QueueBusy;
 use Illuminate\Support\Facades\Cache;
@@ -17,9 +19,11 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
-class AppServiceProvider extends ServiceProvider
+final class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
@@ -35,6 +39,22 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Appointment::observe(AppointmentObserver::class);
+
+        RateLimiter::for('booking', function (Request $request): array {
+            $limits = [
+                Limit::perMinute(30)->by('booking:ip:' . $request->ip()),
+            ];
+
+            $patientEmail = $request->input('patient_email');
+
+            if (is_string($patientEmail) && $patientEmail !== '') {
+                $limits[] = Limit::perHour(10)->by(
+                    'booking:email:' . Str::lower($patientEmail) . '|ip:' . $request->ip()
+                );
+            }
+
+            return $limits;
+        });
 
         Event::listen(function (QueueBusy $event): void {
             Log::warning('Queue busy threshold exceeded.', [

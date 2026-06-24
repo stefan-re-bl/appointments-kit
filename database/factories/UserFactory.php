@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Enums\Role;
@@ -11,12 +13,25 @@ use Illuminate\Support\Str;
 /**
  * @extends Factory<User>
  */
-class UserFactory extends Factory
+final class UserFactory extends Factory
 {
     /**
      * The current password being used by the factory.
      */
     protected static ?string $password;
+
+    public function configure(): static
+    {
+        return $this->afterMaking(function (User $user): void {
+            if ($user->getAttribute('role') !== null) {
+                return;
+            }
+
+            $user->forceFill([
+                'role' => Role::THERAPIST,
+            ]);
+        });
+    }
 
     /**
      * Define the model's default state.
@@ -28,11 +43,24 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
+            'email_verified_at' => now('UTC'),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'role' => Role::THERAPIST,
         ];
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'role' => Role::ADMIN,
+        ]);
+    }
+
+    public function therapist(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'role' => Role::THERAPIST,
+        ]);
     }
 
     /**
@@ -40,7 +68,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'email_verified_at' => null,
         ]);
     }

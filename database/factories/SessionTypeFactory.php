@@ -1,19 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
+use App\Models\SessionType;
 use App\Models\Therapist;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\SessionType>
+ * @extends Factory<SessionType>
  */
-class SessionTypeFactory extends Factory
+final class SessionTypeFactory extends Factory
 {
+    protected $model = SessionType::class;
+
+    public function configure(): static
+    {
+        return $this->for(Therapist::factory());
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
         return [
-            'therapist_id' => Therapist::factory(),
             'name' => fake()->randomElement(['Terapia Individual', 'Terapia de Pareja', 'Consulta Inicial']),
             'duration_minutes' => fake()->randomElement([30, 60, 90]),
             'price' => fake()->randomFloat(2, 20, 150),

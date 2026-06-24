@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class RegistrationTest extends TestCase
+final class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -23,9 +25,17 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'timezone' => 'America/Buenos_Aires',
         ]);
+
+        $response->assertSessionHasNoErrors();
 
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
+
+        $this->assertDatabaseHas('therapists', [
+            'timezone' => 'America/Argentina/Buenos_Aires',
+            'is_active' => true,
+        ]);
     }
 }

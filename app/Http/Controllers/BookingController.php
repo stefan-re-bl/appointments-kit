@@ -24,7 +24,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Throwable;
 
-class BookingController extends Controller implements HasMiddleware
+final class BookingController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
@@ -276,9 +276,7 @@ class BookingController extends Controller implements HasMiddleware
         $inputTimezone = $request->input('patient_timezone', 'UTC');
 
         $request->merge([
-            'patient_timezone' => $this->normalizeTimezone(
-                is_string($inputTimezone) ? $inputTimezone : 'UTC',
-            ),
+            'patient_timezone' => ValidTimezone::normalize($inputTimezone) ?? 'UTC',
         ]);
 
         $validated = $request->validate([
@@ -396,27 +394,12 @@ class BookingController extends Controller implements HasMiddleware
 
     private function applyRequestedTimezone(Request $request): void
     {
-        $requestedTimezone = $request->query('timezone');
+        $timezone = ValidTimezone::normalize($request->query('timezone'));
 
-        if (! is_string($requestedTimezone)) {
-            return;
-        }
-
-        $timezone = $this->normalizeTimezone($requestedTimezone);
-
-        if (! in_array($timezone, timezone_identifiers_list(), true)) {
+        if ($timezone === null) {
             return;
         }
 
         app()->instance('user.timezone', $timezone);
-    }
-
-    private function normalizeTimezone(string $timezone): string
-    {
-        return match ($timezone) {
-            'America/Buenos_Aires' => 'America/Argentina/Buenos_Aires',
-            'America/Cordoba' => 'America/Argentina/Cordoba',
-            default => $timezone,
-        };
     }
 }

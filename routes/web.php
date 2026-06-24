@@ -26,14 +26,17 @@ Route::get('/appointment/{token}', PublicAppointmentController::class)
 
 // --- Link firmado de reprogramación pública (Ticket #18) ---
 Route::get('/appointment/{token}/reschedule', PublicAppointmentRescheduleController::class)
+    ->middleware(['signed', 'throttle:booking'])
     ->name('appointments.public.reschedule');
 
 // --- Confirmación de reprogramación pública (Ticket #19) ---
 Route::post('/appointment/{token}/reschedule', PublicAppointmentRescheduleStoreController::class)
+    ->middleware(['signed', 'throttle:booking'])
     ->name('appointments.public.reschedule.store');
 
 // --- Cancelación pública por token (Ticket #17) ---
 Route::post('/appointment/{token}/cancel', PublicAppointmentCancellationController::class)
+    ->middleware('throttle:booking')
     ->name('appointments.public.cancel');
 
 Route::get('/dashboard', function () {
@@ -82,19 +85,34 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
 // --- Rutas Públicas de Reserva (Ticket #10) ---
 Route::prefix('book')->name('book.')->group(function (): void {
     Route::get('/', [BookingController::class, 'index'])->name('index');
-    Route::post('/therapist', [BookingController::class, 'storeTherapist'])->name('store.therapist');
+
+    Route::post('/therapist', [BookingController::class, 'storeTherapist'])
+        ->middleware('throttle:booking')
+        ->name('store.therapist');
 
     Route::get('/session', [BookingController::class, 'session'])->name('session');
-    Route::post('/session', [BookingController::class, 'storeSession'])->name('store.session');
+
+    Route::post('/session', [BookingController::class, 'storeSession'])
+        ->middleware('throttle:booking')
+        ->name('store.session');
 
     Route::get('/date', [BookingController::class, 'date'])->name('date');
-    Route::post('/date', [BookingController::class, 'storeDate'])->name('store.date');
+
+    Route::post('/date', [BookingController::class, 'storeDate'])
+        ->middleware('throttle:booking')
+        ->name('store.date');
 
     Route::get('/time', [BookingController::class, 'time'])->name('time');
-    Route::post('/time', [BookingController::class, 'storeTime'])->name('store.time');
+
+    Route::post('/time', [BookingController::class, 'storeTime'])
+        ->middleware('throttle:booking')
+        ->name('store.time');
 
     Route::get('/confirm', [BookingController::class, 'confirm'])->name('confirm');
-    Route::post('/', [BookingController::class, 'store'])->name('store');
+
+    Route::post('/', [BookingController::class, 'store'])
+        ->middleware('throttle:booking')
+        ->name('store');
 
     Route::get('/success', [BookingController::class, 'success'])->name('success');
 });
@@ -102,6 +120,8 @@ Route::prefix('book')->name('book.')->group(function (): void {
 // Ruta API interna para Alpine.js
 // Mapeada a BookingController para centralizar la lógica del flujo público.
 // Se mantiene en 'web' para acceder a cookies (user_timezone) y sesión.
-Route::get('/api/slots', [BookingController::class, 'getSlotsApi'])->name('api.slots.index');
+Route::get('/api/slots', [BookingController::class, 'getSlotsApi'])
+    ->middleware('throttle:booking')
+    ->name('api.slots.index');
 
 require __DIR__ . '/auth.php';

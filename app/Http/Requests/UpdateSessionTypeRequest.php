@@ -1,32 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
+use App\Models\SessionType;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateSessionTypeRequest extends FormRequest
+final class UpdateSessionTypeRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        /** @var User|null $user */
+        $user = $this->user();
+
+        $sessionType = $this->route('session_type');
+
+        return $user instanceof User
+            && $user->therapist !== null
+            && $sessionType instanceof SessionType
+            && (int) $sessionType->therapist_id === (int) $user->therapist->id;
     }
 
+    /**
+     * @return array<string, array<int, mixed>>
+     */
     public function rules(): array
     {
         /** @var User $user */
         $user = $this->user();
+
+        $sessionType = $this->route('session_type');
 
         return [
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                // Ignorar el modelo actual al validar unicidad
-                Rule::unique('session_types')->ignore($this->route('session_type'))->where(function ($query) use ($user) {
-                    return $query->where('therapist_id', $user->therapist->id);
-                }),
+                Rule::unique('session_types')
+                    ->ignore($sessionType)
+                    ->where(fn ($query) => $query->where('therapist_id', $user->therapist->id)),
             ],
             'duration_minutes' => ['required', 'integer', 'in:30,60,90'],
             'price' => ['required', 'numeric', 'min:0'],

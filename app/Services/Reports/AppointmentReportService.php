@@ -7,6 +7,7 @@ namespace App\Services\Reports;
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Appointment;
+use App\Rules\ValidTimezone;
 use App\Services\TimezoneService;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
@@ -316,11 +317,7 @@ final readonly class AppointmentReportService
             ? app('user.timezone')
             : config('app.timezone', 'UTC');
 
-        if (is_string($timezone) && in_array($timezone, timezone_identifiers_list(), true)) {
-            return $timezone;
-        }
-
-        return 'UTC';
+        return ValidTimezone::normalize($timezone) ?? 'UTC';
     }
 
     private function formatUtc(mixed $date): string

@@ -8,6 +8,7 @@ use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
+use Database\Factories\AppointmentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,19 +25,15 @@ use Illuminate\Support\Str;
     'patient_timezone',
     'starts_at',
     'ends_at',
-    'status',
     'price',
     'currency',
-    'payment_status',
-    'paid_at',
-    'reminder_sent_at',
-    'reschedule_count',
 ])]
 #[Hidden([
     'token',
 ])]
 class Appointment extends Model
 {
+    /** @use HasFactory<AppointmentFactory> */
     use HasFactory;
 
     /**

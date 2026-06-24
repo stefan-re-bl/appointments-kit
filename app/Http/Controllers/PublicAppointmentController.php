@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Appointment;
+use App\Rules\ValidTimezone;
 use App\Services\AppointmentSignedUrlService;
 use App\Services\CancellationPolicyService;
 use App\Services\TimezoneService;
@@ -90,11 +91,7 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
 
     private function resolvePatientTimezone(?string $timezone): string
     {
-        if (is_string($timezone) && in_array($timezone, timezone_identifiers_list(), true)) {
-            return $timezone;
-        }
-
-        return 'UTC';
+        return ValidTimezone::normalize($timezone) ?? 'UTC';
     }
 
     private function appointmentStatusLabel(AppointmentStatus $status): string

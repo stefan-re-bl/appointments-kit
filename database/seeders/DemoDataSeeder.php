@@ -1,31 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\Role;
-use App\Models\Availability;
 use App\Models\Appointment;
+use App\Models\Availability;
 use App\Models\SessionType;
 use App\Models\Therapist;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
-class DemoDataSeeder extends Seeder
+final class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
         // 1. Crear/Actualizar Admin
-        User::updateOrCreate(
-            ['email' => 'admin@umbralia.com'],
-            [
-                'name' => 'Admin Umbralia',
-                'password' => bcrypt('password'),
-                'role' => Role::ADMIN,
-                'email_verified_at' => now(),
-            ]
+        $this->upsertUser(
+            email: 'admin@umbralia.com',
+            name: 'Admin Umbralia',
+            role: Role::ADMIN,
         );
 
         // 2. Crear/Actualizar 3 Terapeutas
@@ -37,32 +36,28 @@ class DemoDataSeeder extends Seeder
 
         foreach ($therapistsData as $data) {
             // Crear o actualizar usuario (resetea password a 'password')
-            $user = User::updateOrCreate(
-                ['email' => $data['email']],
-                [
-                    'name' => $data['name'],
-                    'password' => bcrypt('password'),
-                    'role' => Role::THERAPIST,
-                    'email_verified_at' => now(),
-                ]
+            $user = $this->upsertUser(
+                email: $data['email'],
+                name: $data['name'],
+                role: Role::THERAPIST,
             );
 
-            // Crear o actualizar perfil de terapeuta
-            $therapist = Therapist::updateOrCreate(
-                ['user_id' => $user->id],
-                [
-                    'timezone' => $data['timezone'],
-                    'bio' => "Terapeuta profesional ubicado en {$data['timezone']}.",
-                    'google_meet_link' => 'https://meet.google.com/fake-link-' . $user->id,
-                    'is_active' => true,
-                ]
-            );
+            // Crear o actualizar perfil de terapeuta sin mass assignment de user_id.
+            $therapist = $user->therapist()->firstOrNew();
 
-            // 3. Crear Tipos de Sesión (Si no existen)
-            $session30 = SessionType::firstOrCreate(
+            $therapist->fill([
+                'timezone' => $data['timezone'],
+                'bio' => "Terapeuta profesional ubicado en {$data['timezone']}.",
+                'google_meet_link' => 'https://meet.google.com/fake-link-' . $user->id,
+                'is_active' => true,
+            ]);
+
+            $therapist->save();
+
+            // 3. Crear Tipos de Sesión sin mass assignment de therapist_id.
+            $session30 = $therapist->sessionTypes()->firstOrCreate(
                 [
-                    'therapist_id' => $therapist->id,
-                    'name' => 'Sesión Introductoria 30m'
+                    'name' => 'Sesión Introductoria 30m',
                 ],
                 [
                     'duration_minutes' => 30,
@@ -72,10 +67,9 @@ class DemoDataSeeder extends Seeder
                 ]
             );
 
-            $session60 = SessionType::firstOrCreate(
+            $session60 = $therapist->sessionTypes()->firstOrCreate(
                 [
-                    'therapist_id' => $therapist->id,
-                    'name' => 'Terapia Regular 60m'
+                    'name' => 'Terapia Regular 60m',
                 ],
                 [
                     'duration_minutes' => 60,
@@ -90,16 +84,15 @@ class DemoDataSeeder extends Seeder
             // así el código del seeder refleja la "verdad" actual.
             Availability::where('therapist_id', $therapist->id)->delete();
 
-            foreach ([1, 3, 5] as $dayOfWeek) { // 1=Lunes, 3=Miercoles, 5=Viernes
-                Availability::create([
-                    'therapist_id' => $therapist->id,
+            foreach ([1, 3, 5] as $dayOfWeek) {
+                $therapist->availabilities()->create([
                     'day_of_week' => $dayOfWeek,
                     'start_time' => '09:00:00',
                     'end_time' => '13:00:00',
                     'is_active' => true,
                 ]);
-                Availability::create([
-                    'therapist_id' => $therapist->id,
+
+                $therapist->availabilities()->create([
                     'day_of_week' => $dayOfWeek,
                     'start_time' => '16:00:00',
                     'end_time' => '20:00:00',
@@ -115,12 +108,29 @@ class DemoDataSeeder extends Seeder
         }
     }
 
+    private function upsertUser(string $email, string $name, Role $role): User
+    {
+        $user = User::query()->firstOrNew([
+            'email' => $email,
+        ]);
+
+        $user->forceFill([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make('password'),
+            'role' => $role,
+            'email_verified_at' => now('UTC'),
+        ])->save();
+
+        return $user;
+    }
+
     private function createAppointments(Therapist $therapist, SessionType $session30, SessionType $session60): void
     {
         $now = Carbon::now('UTC');
 
         // Cita 1: Confirmada pendiente de pago
-        Appointment::create([
+        $this->createDemoAppointment([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session30->id,
             'patient_name' => 'Juan Pérez',
@@ -128,15 +138,15 @@ class DemoDataSeeder extends Seeder
             'patient_timezone' => 'America/Argentina/Buenos_Aires',
             'starts_at' => $now->copy()->addDays(2)->setHour(10)->setMinute(0),
             'ends_at' => $now->copy()->addDays(2)->setHour(10)->setMinute(30),
-            'status' => AppointmentStatus::CONFIRMED,
             'price' => $session30->price,
             'currency' => $session30->currency,
+            'status' => AppointmentStatus::CONFIRMED,
             'payment_status' => PaymentStatus::PENDING,
             'paid_at' => null,
         ]);
 
         // Cita 2: Confirmada y pagada
-        Appointment::create([
+        $this->createDemoAppointment([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session60->id,
             'patient_name' => 'María García',
@@ -144,15 +154,15 @@ class DemoDataSeeder extends Seeder
             'patient_timezone' => 'Europe/Madrid',
             'starts_at' => $now->copy()->addDay()->setHour(16)->setMinute(0),
             'ends_at' => $now->copy()->addDay()->setHour(17)->setMinute(0),
-            'status' => AppointmentStatus::CONFIRMED,
             'price' => $session60->price,
             'currency' => $session60->currency,
+            'status' => AppointmentStatus::CONFIRMED,
             'payment_status' => PaymentStatus::PAID,
             'paid_at' => $now->copy()->subHour(),
         ]);
 
         // Cita 3: Completada
-        Appointment::create([
+        $this->createDemoAppointment([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session60->id,
             'patient_name' => 'Pedro Sánchez',
@@ -160,15 +170,15 @@ class DemoDataSeeder extends Seeder
             'patient_timezone' => 'America/Mexico_City',
             'starts_at' => $now->copy()->subDays(3)->setHour(9)->setMinute(0),
             'ends_at' => $now->copy()->subDays(3)->setHour(10)->setMinute(0),
-            'status' => AppointmentStatus::COMPLETED,
             'price' => $session60->price,
             'currency' => $session60->currency,
+            'status' => AppointmentStatus::COMPLETED,
             'payment_status' => PaymentStatus::PAID,
             'paid_at' => $now->copy()->subDays(4),
         ]);
 
         // Cita 4: Cancelada
-        Appointment::create([
+        $this->createDemoAppointment([
             'therapist_id' => $therapist->id,
             'session_type_id' => $session30->id,
             'patient_name' => 'Ana Torres',
@@ -176,11 +186,51 @@ class DemoDataSeeder extends Seeder
             'patient_timezone' => 'America/Argentina/Buenos_Aires',
             'starts_at' => $now->copy()->subDay()->setHour(11)->setMinute(0),
             'ends_at' => $now->copy()->subDay()->setHour(11)->setMinute(30),
-            'status' => AppointmentStatus::CANCELLED,
             'price' => $session30->price,
             'currency' => $session30->currency,
+            'status' => AppointmentStatus::CANCELLED,
             'payment_status' => PaymentStatus::PENDING,
             'paid_at' => null,
         ]);
+    }
+
+    /**
+     * @param array{
+     *     therapist_id: int,
+     *     session_type_id: int,
+     *     patient_name: string,
+     *     patient_email: string,
+     *     patient_timezone: string,
+     *     starts_at: mixed,
+     *     ends_at: mixed,
+     *     price: mixed,
+     *     currency: string,
+     *     status: AppointmentStatus,
+     *     payment_status: PaymentStatus,
+     *     paid_at: mixed
+     * } $data
+     */
+    private function createDemoAppointment(array $data): Appointment
+    {
+        $appointment = Appointment::query()->create([
+            'therapist_id' => $data['therapist_id'],
+            'session_type_id' => $data['session_type_id'],
+            'patient_name' => $data['patient_name'],
+            'patient_email' => $data['patient_email'],
+            'patient_timezone' => $data['patient_timezone'],
+            'starts_at' => $data['starts_at'],
+            'ends_at' => $data['ends_at'],
+            'price' => $data['price'],
+            'currency' => $data['currency'],
+        ]);
+
+        $appointment->forceFill([
+            'status' => $data['status'],
+            'payment_status' => $data['payment_status'],
+            'paid_at' => $data['paid_at'],
+            'reschedule_count' => 0,
+        ])->save();
+
+        return $appointment;
     }
 }
