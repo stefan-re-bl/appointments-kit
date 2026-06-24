@@ -6,8 +6,8 @@ namespace App\Console\Commands;
 
 use App\Enums\AppointmentStatus;
 use App\Models\Appointment;
-use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 
 class CleanupExpiredAppointments extends Command
 {
@@ -18,7 +18,8 @@ class CleanupExpiredAppointments extends Command
     public function handle(): int
     {
         $expiredPendingAppointments = Appointment::query()
-            ->expiredPending();
+            ->expiredPending()
+            ->orderBy('id');
 
         $count = (clone $expiredPendingAppointments)->count();
 
@@ -28,12 +29,19 @@ class CleanupExpiredAppointments extends Command
             return self::SUCCESS;
         }
 
-        $updated = $expiredPendingAppointments->update([
-            'status' => AppointmentStatus::CANCELLED->value,
-            'updated_at' => CarbonImmutable::now('UTC'),
-        ]);
+        $cancelled = 0;
 
-        $this->info("Expired pending appointments cancelled: {$updated}");
+        $expiredPendingAppointments->chunkById(100, function (Collection $appointments) use (&$cancelled): void {
+            foreach ($appointments as $appointment) {
+                $appointment->forceFill([
+                    'status' => AppointmentStatus::CANCELLED,
+                ])->save();
+
+                $cancelled++;
+            }
+        });
+
+        $this->info("Expired pending appointments cancelled: {$cancelled}");
 
         return self::SUCCESS;
     }
