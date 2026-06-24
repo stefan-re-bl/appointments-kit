@@ -63,12 +63,17 @@
                 </a>
 
                 <a
-                    href="{{ route('dashboard') }}"
-                    class="flex items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white"
+                    href="{{ route('admin.reports.appointments.index') }}"
+                    @class([
+                        'flex items-center rounded-xl px-4 py-3 text-sm font-medium transition',
+                        'bg-indigo-500/15 text-indigo-200 ring-1 ring-indigo-400/20' => request()->routeIs('admin.reports.*'),
+                        'text-slate-300 hover:bg-white/10 hover:text-white' => ! request()->routeIs('admin.reports.*'),
+                    ])
                 >
-                    <span class="mr-3">↩</span>
-                    {{ __('app.admin.nav.main_dashboard') }}
+                    <span class="mr-3">📊</span>
+                    {{ __('reports.nav.appointment_reports') }}
                 </a>
+
             </nav>
         </aside>
 

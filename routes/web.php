@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
+use App\Http\Controllers\Admin\AppointmentReportController;
 use App\Http\Controllers\Admin\TherapistController as AdminTherapistController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\BookingController;
@@ -48,7 +49,7 @@ Route::middleware('auth')->group(function (): void {
     Route::resource('availabilities', AvailabilityController::class)->except(['show', 'edit', 'update']);
 });
 
-// --- Panel Administrativo: Visibilidad Global (Ticket #21) ---
+// --- Panel Administrativo: Visibilidad Global y Reportes (Tickets #21 y #22) ---
 Route::middleware(['auth', 'verified', 'admin'])
     ->prefix('admin')
     ->name('admin.')
@@ -61,6 +62,12 @@ Route::middleware(['auth', 'verified', 'admin'])
 
         Route::get('/appointments', [AdminAppointmentController::class, 'index'])
             ->name('appointments.index');
+
+        Route::get('/reports/appointments', [AppointmentReportController::class, 'index'])
+            ->name('reports.appointments.index');
+
+        Route::get('/reports/appointments/export', [AppointmentReportController::class, 'export'])
+            ->name('reports.appointments.export');
     });
 
 // --- Panel de Terapeuta: Gestión de Citas y Pagos Manuales (Ticket #20) ---
