@@ -126,8 +126,39 @@ final class SendAppointmentRemindersCommandTest extends TestCase
         $this->assertNull($appointment->refresh()->reminder_sent_at);
     }
 
+    public function test_reminder_window_is_evaluated_in_utc_when_php_timezone_differs(): void
+    {
+        Mail::fake();
+
+        $originalTimezone = date_default_timezone_get();
+        date_default_timezone_set('Asia/Tokyo');
+
+        try {
+            $appointment = $this->makeAppointment([
+                'starts_at' => $this->now->addMinutes(59)->toDateTimeString(),
+                'ends_at' => $this->now->addMinutes(119)->toDateTimeString(),
+            ]);
+
+            $this->artisan('appointments:send-reminders')
+                ->assertExitCode(Command::SUCCESS);
+
+            Mail::assertSent(
+                AppointmentReminder::class,
+                fn (AppointmentReminder $mail): bool => $mail->hasTo('patient@example.test')
+            );
+
+            $this->assertNotNull($appointment->refresh()->reminder_sent_at);
+            $this->assertSame(
+                $this->now->format('Y-m-d H:i'),
+                $appointment->reminder_sent_at->utc()->format('Y-m-d H:i'),
+            );
+        } finally {
+            date_default_timezone_set($originalTimezone);
+        }
+    }
+
     /**
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      */
     private function makeAppointment(array $overrides = []): Appointment
     {
