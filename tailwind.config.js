@@ -11,6 +11,13 @@ export default {
 
     theme: {
         extend: {
+            colors: {
+                coral: {
+                    400: '#fb7185',
+                    700: '#be123c',
+                    800: '#9f1239',
+                },
+            },
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },

@@ -16,9 +16,7 @@ use App\Http\Controllers\Therapist\AppointmentPaymentController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::view('/', 'welcome')->name('home');
 
 // --- Página pública "Mi Cita" (Ticket #11) ---
 Route::get('/appointment/{token}', PublicAppointmentController::class)
@@ -124,4 +122,4 @@ Route::get('/api/slots', [BookingController::class, 'getSlotsApi'])
     ->middleware('throttle:booking')
     ->name('api.slots.index');
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

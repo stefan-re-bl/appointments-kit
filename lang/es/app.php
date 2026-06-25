@@ -11,8 +11,8 @@ return [
     'switch_lang' => 'Cambiar Idioma',
     'spanish' => 'Español',
     'english' => 'Inglés',
-    'logged_in' => "¡Has iniciado sesión!",
-    
+    'logged_in' => '¡Has iniciado sesión!',
+
     // Disponibilidades
     'my_weekly_availability' => 'Mi Disponibilidad Semanal',
     'add_availability' => 'Añadir Disponibilidad',
@@ -20,7 +20,7 @@ return [
     'inactive' => 'Inactivo',
     'delete' => 'Eliminar',
     'edit' => 'Editar',
-    
+
     // Días de la semana (ISO-8601: 1=Lunes, 7=Domingo)
     'day_1' => 'Lunes',
     'day_2' => 'Martes',
@@ -62,7 +62,7 @@ return [
     'payment_coordination_title' => 'Nota sobre el pago',
     'payment_coordination_text' => 'El pago se coordina directamente con el terapeuta. Al confirmar, reservarás el cupo, pero el estado del pago permanecerá pendiente hasta que se realice la transacción acordada.',
     'error_booking_slot' => 'El horario seleccionado ya no está disponible. Por favor, elige otro.',
-    
+
     // Mails
     'mail_patient_subject' => 'Confirmación de tu Cita - Umbralia',
     'mail_therapist_subject' => 'Nueva Reserva de Cita - Umbralia',
@@ -70,187 +70,294 @@ return [
     'change_date' => 'Cambiar fecha',
 
     'appointment_public' => [
-    'title' => 'Mi cita',
-    'subtitle' => 'Consultá los detalles de tu reserva y las opciones disponibles.',
-    'appointment_code' => 'Código de cita',
-    'unavailable' => 'No disponible',
-    'not_found_icon' => '!',
-    'not_found_title' => 'No encontramos esta cita',
-    'not_found_message' => 'El enlace puede ser incorrecto, haber expirado o corresponder a una cita inexistente. Revisá el enlace recibido por correo o contactá a tu terapeuta.',
-    'payment_manual_note' => 'El pago se registra manualmente por la terapeuta. Si ya pagaste y aún figura pendiente, puede que todavía no haya sido actualizado.',
-    'sections' => [
-        'patient' => 'Datos del paciente',
-        'appointment' => 'Detalle de la cita',
-        'payment' => 'Estado del pago',
-        'actions' => 'Opciones de gestión',
+        'title' => 'Mi cita',
+        'subtitle' => 'Consultá los detalles de tu reserva y las opciones disponibles.',
+        'appointment_code' => 'Código de cita',
+        'unavailable' => 'No disponible',
+        'not_found_icon' => '!',
+        'not_found_title' => 'No encontramos esta cita',
+        'not_found_message' => 'El enlace puede ser incorrecto, haber expirado o corresponder a una cita inexistente. Revisá el enlace recibido por correo o contactá a tu terapeuta.',
+        'payment_manual_note' => 'El pago se registra manualmente por la terapeuta. Si ya pagaste y aún figura pendiente, puede que todavía no haya sido actualizado.',
+        'sections' => [
+            'patient' => 'Datos del paciente',
+            'appointment' => 'Detalle de la cita',
+            'payment' => 'Estado del pago',
+            'actions' => 'Opciones de gestión',
+        ],
+        'fields' => [
+            'patient_name' => 'Nombre',
+            'patient_email' => 'Email',
+            'therapist' => 'Terapeuta',
+            'session_type' => 'Tipo de sesión',
+            'starts_at' => 'Inicio',
+            'ends_at' => 'Finalización',
+            'timezone' => 'Zona horaria',
+            'status' => 'Estado de la cita',
+            'paid_at' => 'Pago registrado el',
+        ],
+        'status' => [
+            'pending' => 'Pendiente',
+            'confirmed' => 'Confirmada',
+            'cancelled' => 'Cancelada',
+            'completed' => 'Completada',
+        ],
+        'payment' => [
+            'pending' => 'Pago pendiente',
+            'paid' => 'Pago registrado',
+            'waived' => 'Pago eximido',
+        ],
+        'actions' => [
+            'join_meet' => 'Entrar a Google Meet',
+            'contact_therapist' => 'Contactar terapeuta',
+            'contact_subject' => 'Consulta sobre mi cita',
+            'no_actions_available' => 'No hay acciones disponibles para esta cita.',
+            'back_home' => 'Volver al inicio',
+        ],
     ],
-    'fields' => [
-        'patient_name' => 'Nombre',
-        'patient_email' => 'Email',
-        'therapist' => 'Terapeuta',
-        'session_type' => 'Tipo de sesión',
-        'starts_at' => 'Inicio',
-        'ends_at' => 'Finalización',
-        'timezone' => 'Zona horaria',
-        'status' => 'Estado de la cita',
-        'paid_at' => 'Pago registrado el',
+
+    'emails' => [
+        'booking_confirmed' => [
+            'subject' => 'Reserva confirmada',
+            'title' => 'Reserva confirmada',
+            'greeting_patient' => 'Hola :name,',
+            'greeting_therapist' => 'Hola :name,',
+            'intro' => 'La cita fue reservada correctamente. Estos son los detalles:',
+            'patient' => 'Paciente',
+            'therapist' => 'Terapeuta',
+            'session_type' => 'Tipo de sesión',
+            'starts_at' => 'Inicio',
+            'ends_at' => 'Fin',
+            'timezone' => 'Zona horaria',
+            'payment_patient_notice' => 'El pago se coordina directamente con la terapeuta. Por favor, contactala para acordar el método y los detalles del pago.',
+            'payment_therapist_notice' => 'El pago de esta cita quedó pendiente y debe coordinarse manualmente con el paciente.',
+            'my_appointment_button' => 'Ver Mi Cita',
+            'meet_button' => 'Ingresar a Google Meet',
+            'footer' => 'Gracias por usar Umbralia.',
+        ],
     ],
-    'status' => [
+
+    'booking' => [
+        'errors' => [
+            'slot_unavailable' => 'El horario seleccionado ya no está disponible. Por favor, elegí otro turno.',
+        ],
+    ],
+
+    'actions' => 'Acciones',
+
+    'payments' => [
+        'label' => 'Estado del pago',
+        'paid_at_label' => 'Fecha de pago',
+        'not_registered' => 'Sin registro',
+        'update' => 'Actualizar',
+        'updated' => 'Estado de pago actualizado correctamente.',
+        'status' => [
+            'pending' => 'Pendiente',
+            'paid' => 'Pagado',
+            'waived' => 'Bonificado',
+        ],
+    ],
+
+    'appointments' => [
+        'management' => [
+            'title' => 'Gestión de citas',
+            'subtitle' => 'Administrá las citas y pagos manuales. Zona horaria: :timezone.',
+            'patient' => 'Paciente',
+            'session' => 'Sesión',
+            'schedule' => 'Horario',
+            'empty' => 'Todavía no hay citas registradas.',
+        ],
+    ],
+    'admin' => [
+        'layout' => [
+            'title' => 'Panel administrativo',
+            'brand' => 'Umbralia Admin',
+            'subtitle' => 'Operación global',
+            'operation_visibility' => 'Visibilidad total de terapeutas, citas y pagos manuales.',
+            'admin_role' => 'Admin',
+            'logout' => 'Salir',
+            'open_menu' => 'Abrir menú',
+            'close_menu' => 'Cerrar menú',
+        ],
+        'nav' => [
+            'appointments' => 'Citas',
+            'therapists' => 'Terapeutas',
+            'main_dashboard' => 'Panel principal',
+        ],
+        'common' => [
+            'save' => 'Guardar cambios',
+            'cancel' => 'Cancelar',
+        ],
+        'appointments' => [
+            'title' => 'Citas del sistema',
+            'auto_refresh' => 'La vista se actualiza automáticamente cada 60 segundos.',
+            'list_title' => 'Reservas registradas',
+            'empty' => 'No hay citas que coincidan con los filtros seleccionados.',
+            'ends_at' => 'Finaliza',
+            'patient_timezone' => 'Zona horaria del paciente',
+            'summary' => [
+                'total' => 'Citas totales',
+                'confirmed' => 'Confirmadas',
+                'pending_payment' => 'Pagos pendientes',
+                'today' => 'Citas de hoy',
+            ],
+            'filters' => [
+                'therapist' => 'Terapeuta',
+                'all_therapists' => 'Todas las terapeutas',
+                'status' => 'Estado',
+                'all_statuses' => 'Todos los estados',
+                'payment_status' => 'Pago',
+                'all_payment_statuses' => 'Todos los pagos',
+                'date_from' => 'Desde',
+                'date_to' => 'Hasta',
+                'apply' => 'Aplicar filtros',
+                'reset' => 'Limpiar filtros',
+            ],
+        ],
+        'therapists' => [
+            'title' => 'Gestión de terapeutas',
+            'edit_title' => 'Editar terapeuta',
+            'search' => 'Buscar',
+            'search_placeholder' => 'Buscar por nombre, email, zona horaria o bio...',
+            'list_title' => 'Terapeutas registradas',
+            'empty' => 'No se encontraron terapeutas.',
+            'timezone' => 'Zona horaria',
+            'active' => 'Activa',
+            'inactive' => 'Inactiva',
+            'edit' => 'Editar',
+            'updated' => 'La terapeuta fue actualizada correctamente.',
+            'appointments_count' => '{0} Sin citas|{1} :count cita|[2,*] :count citas',
+            'session_types_count' => '{0} Sin tipos de sesión|{1} :count tipo de sesión|[2,*] :count tipos de sesión',
+            'account_section' => 'Cuenta de usuario',
+            'account_section_help' => 'Datos base usados para iniciar sesión e identificar a la terapeuta.',
+            'profile_section' => 'Perfil profesional',
+            'profile_section_help' => 'Datos usados por el sistema de reservas y la operación interna.',
+            'name' => 'Nombre',
+            'email' => 'Email',
+            'google_meet_link' => 'Link de Google Meet',
+            'avatar_url' => 'URL de avatar',
+            'bio' => 'Bio',
+            'is_active' => 'Terapeuta activa',
+            'is_active_help' => 'Si se desactiva, queda oculta del flujo público de reservas.',
+        ],
+    ],
+
+    'appointment_status' => [
         'pending' => 'Pendiente',
         'confirmed' => 'Confirmada',
         'cancelled' => 'Cancelada',
         'completed' => 'Completada',
     ],
-    'payment' => [
-        'pending' => 'Pago pendiente',
-        'paid' => 'Pago registrado',
-        'waived' => 'Pago eximido',
-    ],
-    'actions' => [
-        'join_meet' => 'Entrar a Google Meet',
-        'contact_therapist' => 'Contactar terapeuta',
-        'contact_subject' => 'Consulta sobre mi cita',
-        'no_actions_available' => 'No hay acciones disponibles para esta cita.',
-        'back_home' => 'Volver al inicio',
-    ],
-    ],
 
-    'emails' => [
-    'booking_confirmed' => [
-        'subject' => 'Reserva confirmada',
-        'title' => 'Reserva confirmada',
-        'greeting_patient' => 'Hola :name,',
-        'greeting_therapist' => 'Hola :name,',
-        'intro' => 'La cita fue reservada correctamente. Estos son los detalles:',
-        'patient' => 'Paciente',
-        'therapist' => 'Terapeuta',
-        'session_type' => 'Tipo de sesión',
-        'starts_at' => 'Inicio',
-        'ends_at' => 'Fin',
-        'timezone' => 'Zona horaria',
-        'payment_patient_notice' => 'El pago se coordina directamente con la terapeuta. Por favor, contactala para acordar el método y los detalles del pago.',
-        'payment_therapist_notice' => 'El pago de esta cita quedó pendiente y debe coordinarse manualmente con el paciente.',
-        'my_appointment_button' => 'Ver Mi Cita',
-        'meet_button' => 'Ingresar a Google Meet',
-        'footer' => 'Gracias por usar Umbralia.',
-    ],
-],
-
-'booking' => [
-    'errors' => [
-        'slot_unavailable' => 'El horario seleccionado ya no está disponible. Por favor, elegí otro turno.',
-    ],
-],
-
-'actions' => 'Acciones',
-
-'payments' => [
-    'label' => 'Estado del pago',
-    'paid_at_label' => 'Fecha de pago',
-    'not_registered' => 'Sin registro',
-    'update' => 'Actualizar',
-    'updated' => 'Estado de pago actualizado correctamente.',
-    'status' => [
+    'payment_status' => [
         'pending' => 'Pendiente',
         'paid' => 'Pagado',
         'waived' => 'Bonificado',
     ],
-],
 
-'appointments' => [
-    'management' => [
-        'title' => 'Gestión de citas',
-        'subtitle' => 'Administrá las citas y pagos manuales. Zona horaria: :timezone.',
-        'patient' => 'Paciente',
-        'session' => 'Sesión',
-        'schedule' => 'Horario',
-        'empty' => 'Todavía no hay citas registradas.',
-    ],
-],
-'admin' => [
-    'layout' => [
-        'title' => 'Panel administrativo',
-        'brand' => 'Umbralia Admin',
-        'subtitle' => 'Operación global',
-        'operation_visibility' => 'Visibilidad total de terapeutas, citas y pagos manuales.',
-        'admin_role' => 'Admin',
-        'logout' => 'Salir',
-        'open_menu' => 'Abrir menú',
-        'close_menu' => 'Cerrar menú',
-    ],
-    'nav' => [
-        'appointments' => 'Citas',
-        'therapists' => 'Terapeutas',
-        'main_dashboard' => 'Panel principal',
-    ],
-    'common' => [
-        'save' => 'Guardar cambios',
-        'cancel' => 'Cancelar',
-    ],
-    'appointments' => [
-        'title' => 'Citas del sistema',
-        'auto_refresh' => 'La vista se actualiza automáticamente cada 60 segundos.',
-        'list_title' => 'Reservas registradas',
-        'empty' => 'No hay citas que coincidan con los filtros seleccionados.',
-        'ends_at' => 'Finaliza',
-        'patient_timezone' => 'Zona horaria del paciente',
-        'summary' => [
-            'total' => 'Citas totales',
-            'confirmed' => 'Confirmadas',
-            'pending_payment' => 'Pagos pendientes',
-            'today' => 'Citas de hoy',
+    'home' => [
+        'meta_title' => 'Umbralia | Terapia online con profesionales',
+        'meta_description' => 'Encontrá una terapeuta, elegí un horario disponible y reservá tu sesión online de forma simple.',
+        'nav' => [
+            'aria' => 'Navegación principal',
+            'mobile_aria' => 'Navegación móvil',
+            'how_it_works' => 'Cómo funciona',
+            'benefits' => 'Atención online',
+            'therapists' => 'Terapeutas',
+            'faq' => 'Preguntas frecuentes',
+            'contact' => 'Contacto',
+            'login' => 'Iniciar sesión',
+            'book' => 'Reservar sesión',
+            'open_menu' => 'Abrir menú',
         ],
-        'filters' => [
-            'therapist' => 'Terapeuta',
-            'all_therapists' => 'Todas las terapeutas',
-            'status' => 'Estado',
-            'all_statuses' => 'Todos los estados',
-            'payment_status' => 'Pago',
-            'all_payment_statuses' => 'Todos los pagos',
-            'date_from' => 'Desde',
-            'date_to' => 'Hasta',
-            'apply' => 'Aplicar filtros',
-            'reset' => 'Limpiar filtros',
+        'hero' => [
+            'eyebrow' => 'Atención psicológica online',
+            'title' => 'Un espacio profesional para hablar, comprender y avanzar.',
+            'description' => 'Conectate con terapeutas que atienden online y elegí una sesión compatible con tus horarios, desde donde estés.',
+            'primary_cta' => 'Encontrar terapeuta',
+            'secondary_cta' => 'Conocer el proceso',
+            'payment_note' => 'La reserva se confirma online. El pago se coordina directamente con la terapeuta elegida.',
+        ],
+        'emergency' => [
+            'title' => 'Umbralia no es un servicio de emergencias.',
+            'description' => 'Si vos o alguien cercano está en riesgo inmediato, contactá a los servicios de emergencia de tu localidad.',
+        ],
+        'how' => [
+            'eyebrow' => 'Simple y claro',
+            'title' => 'Tu próxima sesión, en tres pasos',
+            'description' => 'El proceso está diseñado para que puedas elegir con información y reservar sin llamadas ni esperas.',
+            'steps' => [
+                [
+                    'title' => 'Elegí una terapeuta',
+                    'description' => 'Revisá las profesionales disponibles y seleccioná con quién querés comenzar.',
+                ],
+                [
+                    'title' => 'Seleccioná sesión y horario',
+                    'description' => 'Elegí el tipo de consulta, la fecha y un horario disponible en tu zona horaria.',
+                ],
+                [
+                    'title' => 'Recibí la confirmación',
+                    'description' => 'Te enviamos los datos de la cita, el acceso online y las indicaciones para coordinar el pago.',
+                ],
+            ],
+        ],
+        'benefits' => [
+            'eyebrow' => 'Atención online',
+            'title' => 'Acompañamiento profesional, con menos barreras',
+            'description' => 'La modalidad online facilita la continuidad del proceso terapéutico sin perder claridad ni organización.',
+            'items' => [
+                [
+                    'title' => 'Desde un espacio propio',
+                    'description' => 'Accedé a la sesión desde un lugar privado y cómodo, sin tiempos de traslado.',
+                ],
+                [
+                    'title' => 'Horarios transparentes',
+                    'description' => 'Consultá disponibilidad real y elegí un turno mostrado directamente en tu zona horaria.',
+                ],
+                [
+                    'title' => 'Gestión autónoma',
+                    'description' => 'Revisá los datos de tu cita y, cuando la política lo permita, cancelá o reprogramá online.',
+                ],
+                [
+                    'title' => 'Comunicación centralizada',
+                    'description' => 'Recibí confirmaciones, recordatorios y enlaces importantes en tu correo.',
+                ],
+            ],
+        ],
+        'therapists' => [
+            'eyebrow' => 'Profesionales disponibles',
+            'title' => 'Encontrá una terapeuta compatible con lo que necesitás',
+            'description' => 'Consultá tipos de sesión, duración, precio y disponibilidad antes de confirmar tu reserva.',
+            'cta' => 'Ver terapeutas',
+        ],
+        'faq' => [
+            'eyebrow' => 'Antes de reservar',
+            'title' => 'Preguntas frecuentes',
+            'items' => [
+                [
+                    'question' => '¿Las sesiones son completamente online?',
+                    'answer' => 'Sí. Las sesiones se realizan mediante el enlace de videollamada informado por la terapeuta.',
+                ],
+                [
+                    'question' => '¿Cómo se realiza el pago?',
+                    'answer' => 'Umbralia no procesa pagos. Luego de reservar, la terapeuta se comunica con vos para coordinar el método y las condiciones de pago.',
+                ],
+                [
+                    'question' => '¿Los horarios se muestran en mi zona horaria?',
+                    'answer' => 'Sí. Detectamos la zona horaria de tu dispositivo y mostramos los turnos convertidos automáticamente.',
+                ],
+                [
+                    'question' => '¿Puedo cancelar o reprogramar?',
+                    'answer' => 'Las opciones dependen de la anticipación y del número de reprogramaciones previas. En la página de tu cita vas a ver las acciones disponibles.',
+                ],
+            ],
+            'cta' => 'Comenzar reserva',
+        ],
+        'footer' => [
+            'description' => 'Plataforma de gestión de turnos para atención psicológica online.',
+            'explore' => 'Explorar',
+            'access' => 'Accesos',
+            'contact' => 'Escribir a Umbralia',
+            'payment_notice' => 'Los pagos se coordinan fuera de la plataforma.',
         ],
     ],
-    'therapists' => [
-        'title' => 'Gestión de terapeutas',
-        'edit_title' => 'Editar terapeuta',
-        'search' => 'Buscar',
-        'search_placeholder' => 'Buscar por nombre, email, zona horaria o bio...',
-        'list_title' => 'Terapeutas registradas',
-        'empty' => 'No se encontraron terapeutas.',
-        'timezone' => 'Zona horaria',
-        'active' => 'Activa',
-        'inactive' => 'Inactiva',
-        'edit' => 'Editar',
-        'updated' => 'La terapeuta fue actualizada correctamente.',
-        'appointments_count' => '{0} Sin citas|{1} :count cita|[2,*] :count citas',
-        'session_types_count' => '{0} Sin tipos de sesión|{1} :count tipo de sesión|[2,*] :count tipos de sesión',
-        'account_section' => 'Cuenta de usuario',
-        'account_section_help' => 'Datos base usados para iniciar sesión e identificar a la terapeuta.',
-        'profile_section' => 'Perfil profesional',
-        'profile_section_help' => 'Datos usados por el sistema de reservas y la operación interna.',
-        'name' => 'Nombre',
-        'email' => 'Email',
-        'google_meet_link' => 'Link de Google Meet',
-        'avatar_url' => 'URL de avatar',
-        'bio' => 'Bio',
-        'is_active' => 'Terapeuta activa',
-        'is_active_help' => 'Si se desactiva, queda oculta del flujo público de reservas.',
-    ],
-],
-
-'appointment_status' => [
-    'pending' => 'Pendiente',
-    'confirmed' => 'Confirmada',
-    'cancelled' => 'Cancelada',
-    'completed' => 'Completada',
-],
-
-'payment_status' => [
-    'pending' => 'Pendiente',
-    'paid' => 'Pagado',
-    'waived' => 'Bonificado',
-],
-    ];
+];

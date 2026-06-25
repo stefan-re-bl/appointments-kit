@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+[x-cloak] {
+    display: none !important;
+}
+
+.home-hero {
+    min-height: clamp(36rem, calc(100svh - 7rem), 44rem);
+}

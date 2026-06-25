@@ -12,7 +12,7 @@ return [
     'spanish' => 'Spanish',
     'english' => 'English',
     'logged_in' => "You're logged in!",
-    
+
     // Availabilities
     'my_weekly_availability' => 'My Weekly Availability',
     'add_availability' => 'Add Availability',
@@ -20,7 +20,7 @@ return [
     'inactive' => 'Inactive',
     'delete' => 'Delete',
     'edit' => 'Edit',
-    
+
     // Days of the week (ISO-8601: 1=Monday, 7=Sunday)
     'day_1' => 'Monday',
     'day_2' => 'Tuesday',
@@ -63,7 +63,7 @@ return [
     'payment_coordination_title' => 'Payment Note',
     'payment_coordination_text' => 'Payment is coordinated directly with the therapist. By confirming, you are holding the spot, but the payment status will remain pending until the agreed transaction is completed.',
     'error_booking_slot' => 'The selected time is no longer available. Please choose another.',
-    
+
     // Mails
     'mail_patient_subject' => 'Your Appointment Confirmation - Umbralia',
     'mail_therapist_subject' => 'New Appointment Booking - Umbralia',
@@ -72,187 +72,294 @@ return [
     'change_date' => 'Change date',
 
     'appointment_public' => [
-    'title' => 'My appointment',
-    'subtitle' => 'Check your booking details and available options.',
-    'appointment_code' => 'Appointment code',
-    'unavailable' => 'Unavailable',
-    'not_found_icon' => '!',
-    'not_found_title' => 'We could not find this appointment',
-    'not_found_message' => 'The link may be incorrect, expired, or linked to an appointment that does not exist. Please check the email link or contact your therapist.',
-    'payment_manual_note' => 'Payment is recorded manually by the therapist. If you already paid and it still appears as pending, it may not have been updated yet.',
-    'sections' => [
-        'patient' => 'Patient details',
-        'appointment' => 'Appointment details',
-        'payment' => 'Payment status',
-        'actions' => 'Management options',
+        'title' => 'My appointment',
+        'subtitle' => 'Check your booking details and available options.',
+        'appointment_code' => 'Appointment code',
+        'unavailable' => 'Unavailable',
+        'not_found_icon' => '!',
+        'not_found_title' => 'We could not find this appointment',
+        'not_found_message' => 'The link may be incorrect, expired, or linked to an appointment that does not exist. Please check the email link or contact your therapist.',
+        'payment_manual_note' => 'Payment is recorded manually by the therapist. If you already paid and it still appears as pending, it may not have been updated yet.',
+        'sections' => [
+            'patient' => 'Patient details',
+            'appointment' => 'Appointment details',
+            'payment' => 'Payment status',
+            'actions' => 'Management options',
+        ],
+        'fields' => [
+            'patient_name' => 'Name',
+            'patient_email' => 'Email',
+            'therapist' => 'Therapist',
+            'session_type' => 'Session type',
+            'starts_at' => 'Starts at',
+            'ends_at' => 'Ends at',
+            'timezone' => 'Timezone',
+            'status' => 'Appointment status',
+            'paid_at' => 'Payment recorded at',
+        ],
+        'status' => [
+            'pending' => 'Pending',
+            'confirmed' => 'Confirmed',
+            'cancelled' => 'Cancelled',
+            'completed' => 'Completed',
+        ],
+        'payment' => [
+            'pending' => 'Payment pending',
+            'paid' => 'Payment recorded',
+            'waived' => 'Payment waived',
+        ],
+        'actions' => [
+            'join_meet' => 'Join Google Meet',
+            'contact_therapist' => 'Contact therapist',
+            'contact_subject' => 'Question about my appointment',
+            'no_actions_available' => 'There are no actions available for this appointment.',
+            'back_home' => 'Back home',
+        ],
     ],
-    'fields' => [
-        'patient_name' => 'Name',
-        'patient_email' => 'Email',
-        'therapist' => 'Therapist',
-        'session_type' => 'Session type',
-        'starts_at' => 'Starts at',
-        'ends_at' => 'Ends at',
-        'timezone' => 'Timezone',
-        'status' => 'Appointment status',
-        'paid_at' => 'Payment recorded at',
+
+    'emails' => [
+        'booking_confirmed' => [
+            'subject' => 'Booking confirmed',
+            'title' => 'Booking confirmed',
+            'greeting_patient' => 'Hi :name,',
+            'greeting_therapist' => 'Hi :name,',
+            'intro' => 'The appointment was booked successfully. Here are the details:',
+            'patient' => 'Patient',
+            'therapist' => 'Therapist',
+            'session_type' => 'Session type',
+            'starts_at' => 'Starts at',
+            'ends_at' => 'Ends at',
+            'timezone' => 'Timezone',
+            'payment_patient_notice' => 'Payment is coordinated directly with the therapist. Please contact her to agree on the payment method and details.',
+            'payment_therapist_notice' => 'The payment for this appointment is still pending and must be coordinated manually with the patient.',
+            'my_appointment_button' => 'View My Appointment',
+            'meet_button' => 'Join Google Meet',
+            'footer' => 'Thank you for using Umbralia.',
+        ],
     ],
-    'status' => [
+
+    'booking' => [
+        'errors' => [
+            'slot_unavailable' => 'The selected time slot is no longer available. Please choose another appointment time.',
+        ],
+    ],
+
+    'actions' => 'Actions',
+
+    'payments' => [
+        'label' => 'Payment status',
+        'paid_at_label' => 'Payment date',
+        'not_registered' => 'Not registered',
+        'update' => 'Update',
+        'updated' => 'Payment status updated successfully.',
+        'status' => [
+            'pending' => 'Pending',
+            'paid' => 'Paid',
+            'waived' => 'Waived',
+        ],
+    ],
+
+    'appointments' => [
+        'management' => [
+            'title' => 'Appointment management',
+            'subtitle' => 'Manage appointments and manual payments. Timezone: :timezone.',
+            'patient' => 'Patient',
+            'session' => 'Session',
+            'schedule' => 'Schedule',
+            'empty' => 'There are no appointments yet.',
+        ],
+    ],
+    'admin' => [
+        'layout' => [
+            'title' => 'Admin panel',
+            'brand' => 'Umbralia Admin',
+            'subtitle' => 'Global operations',
+            'operation_visibility' => 'Full visibility over therapists, appointments and manual payments.',
+            'admin_role' => 'Admin',
+            'logout' => 'Log out',
+            'open_menu' => 'Open menu',
+            'close_menu' => 'Close menu',
+        ],
+        'nav' => [
+            'appointments' => 'Appointments',
+            'therapists' => 'Therapists',
+            'main_dashboard' => 'Main dashboard',
+        ],
+        'common' => [
+            'save' => 'Save changes',
+            'cancel' => 'Cancel',
+        ],
+        'appointments' => [
+            'title' => 'System appointments',
+            'auto_refresh' => 'This view refreshes automatically every 60 seconds.',
+            'list_title' => 'Registered bookings',
+            'empty' => 'No appointments match the selected filters.',
+            'ends_at' => 'Ends at',
+            'patient_timezone' => 'Patient timezone',
+            'summary' => [
+                'total' => 'Total appointments',
+                'confirmed' => 'Confirmed',
+                'pending_payment' => 'Pending payments',
+                'today' => 'Today appointments',
+            ],
+            'filters' => [
+                'therapist' => 'Therapist',
+                'all_therapists' => 'All therapists',
+                'status' => 'Status',
+                'all_statuses' => 'All statuses',
+                'payment_status' => 'Payment',
+                'all_payment_statuses' => 'All payments',
+                'date_from' => 'From',
+                'date_to' => 'To',
+                'apply' => 'Apply filters',
+                'reset' => 'Reset filters',
+            ],
+        ],
+        'therapists' => [
+            'title' => 'Therapist management',
+            'edit_title' => 'Edit therapist',
+            'search' => 'Search',
+            'search_placeholder' => 'Search by name, email, timezone or bio...',
+            'list_title' => 'Registered therapists',
+            'empty' => 'No therapists found.',
+            'timezone' => 'Timezone',
+            'active' => 'Active',
+            'inactive' => 'Inactive',
+            'edit' => 'Edit',
+            'updated' => 'The therapist was updated successfully.',
+            'appointments_count' => '{0} No appointments|{1} :count appointment|[2,*] :count appointments',
+            'session_types_count' => '{0} No session types|{1} :count session type|[2,*] :count session types',
+            'account_section' => 'User account',
+            'account_section_help' => 'Base data used for login and therapist identification.',
+            'profile_section' => 'Professional profile',
+            'profile_section_help' => 'Data used by the booking system and internal operations.',
+            'name' => 'Name',
+            'email' => 'Email',
+            'google_meet_link' => 'Google Meet link',
+            'avatar_url' => 'Avatar URL',
+            'bio' => 'Bio',
+            'is_active' => 'Active therapist',
+            'is_active_help' => 'If disabled, this therapist is hidden from the public booking flow.',
+        ],
+    ],
+
+    'appointment_status' => [
         'pending' => 'Pending',
         'confirmed' => 'Confirmed',
         'cancelled' => 'Cancelled',
         'completed' => 'Completed',
     ],
-    'payment' => [
-        'pending' => 'Payment pending',
-        'paid' => 'Payment recorded',
-        'waived' => 'Payment waived',
-    ],
-    'actions' => [
-        'join_meet' => 'Join Google Meet',
-        'contact_therapist' => 'Contact therapist',
-        'contact_subject' => 'Question about my appointment',
-        'no_actions_available' => 'There are no actions available for this appointment.',
-        'back_home' => 'Back home',
-    ],
-    ],
 
-    'emails' => [
-    'booking_confirmed' => [
-        'subject' => 'Booking confirmed',
-        'title' => 'Booking confirmed',
-        'greeting_patient' => 'Hi :name,',
-        'greeting_therapist' => 'Hi :name,',
-        'intro' => 'The appointment was booked successfully. Here are the details:',
-        'patient' => 'Patient',
-        'therapist' => 'Therapist',
-        'session_type' => 'Session type',
-        'starts_at' => 'Starts at',
-        'ends_at' => 'Ends at',
-        'timezone' => 'Timezone',
-        'payment_patient_notice' => 'Payment is coordinated directly with the therapist. Please contact her to agree on the payment method and details.',
-        'payment_therapist_notice' => 'The payment for this appointment is still pending and must be coordinated manually with the patient.',
-        'my_appointment_button' => 'View My Appointment',
-        'meet_button' => 'Join Google Meet',
-        'footer' => 'Thank you for using Umbralia.',
-    ],
-],
-
-'booking' => [
-    'errors' => [
-        'slot_unavailable' => 'The selected time slot is no longer available. Please choose another appointment time.',
-    ],
-],
-
-'actions' => 'Actions',
-
-'payments' => [
-    'label' => 'Payment status',
-    'paid_at_label' => 'Payment date',
-    'not_registered' => 'Not registered',
-    'update' => 'Update',
-    'updated' => 'Payment status updated successfully.',
-    'status' => [
+    'payment_status' => [
         'pending' => 'Pending',
         'paid' => 'Paid',
         'waived' => 'Waived',
     ],
-],
 
-'appointments' => [
-    'management' => [
-        'title' => 'Appointment management',
-        'subtitle' => 'Manage appointments and manual payments. Timezone: :timezone.',
-        'patient' => 'Patient',
-        'session' => 'Session',
-        'schedule' => 'Schedule',
-        'empty' => 'There are no appointments yet.',
-    ],
-],
-'admin' => [
-    'layout' => [
-        'title' => 'Admin panel',
-        'brand' => 'Umbralia Admin',
-        'subtitle' => 'Global operations',
-        'operation_visibility' => 'Full visibility over therapists, appointments and manual payments.',
-        'admin_role' => 'Admin',
-        'logout' => 'Log out',
-        'open_menu' => 'Open menu',
-        'close_menu' => 'Close menu',
-    ],
-    'nav' => [
-        'appointments' => 'Appointments',
-        'therapists' => 'Therapists',
-        'main_dashboard' => 'Main dashboard',
-    ],
-    'common' => [
-        'save' => 'Save changes',
-        'cancel' => 'Cancel',
-    ],
-    'appointments' => [
-        'title' => 'System appointments',
-        'auto_refresh' => 'This view refreshes automatically every 60 seconds.',
-        'list_title' => 'Registered bookings',
-        'empty' => 'No appointments match the selected filters.',
-        'ends_at' => 'Ends at',
-        'patient_timezone' => 'Patient timezone',
-        'summary' => [
-            'total' => 'Total appointments',
-            'confirmed' => 'Confirmed',
-            'pending_payment' => 'Pending payments',
-            'today' => 'Today appointments',
+    'home' => [
+        'meta_title' => 'Umbralia | Online therapy with professionals',
+        'meta_description' => 'Find a therapist, choose an available time and book your online session in a few simple steps.',
+        'nav' => [
+            'aria' => 'Main navigation',
+            'mobile_aria' => 'Mobile navigation',
+            'how_it_works' => 'How it works',
+            'benefits' => 'Online care',
+            'therapists' => 'Therapists',
+            'faq' => 'Frequently asked questions',
+            'contact' => 'Contact',
+            'login' => 'Log in',
+            'book' => 'Book a session',
+            'open_menu' => 'Open menu',
         ],
-        'filters' => [
-            'therapist' => 'Therapist',
-            'all_therapists' => 'All therapists',
-            'status' => 'Status',
-            'all_statuses' => 'All statuses',
-            'payment_status' => 'Payment',
-            'all_payment_statuses' => 'All payments',
-            'date_from' => 'From',
-            'date_to' => 'To',
-            'apply' => 'Apply filters',
-            'reset' => 'Reset filters',
+        'hero' => [
+            'eyebrow' => 'Online psychological care',
+            'title' => 'A professional space to talk, understand and move forward.',
+            'description' => 'Connect with therapists who work online and choose a session that fits your schedule, wherever you are.',
+            'primary_cta' => 'Find a therapist',
+            'secondary_cta' => 'See how it works',
+            'payment_note' => 'Your appointment is confirmed online. Payment is arranged directly with the selected therapist.',
+        ],
+        'emergency' => [
+            'title' => 'Umbralia is not an emergency service.',
+            'description' => 'If you or someone close to you is in immediate danger, contact your local emergency services.',
+        ],
+        'how' => [
+            'eyebrow' => 'Simple and clear',
+            'title' => 'Your next session in three steps',
+            'description' => 'The process helps you make an informed choice and book without calls or waiting.',
+            'steps' => [
+                [
+                    'title' => 'Choose a therapist',
+                    'description' => 'Review the available professionals and select who you would like to start with.',
+                ],
+                [
+                    'title' => 'Select a session and time',
+                    'description' => 'Choose the consultation type, date and an available time shown in your timezone.',
+                ],
+                [
+                    'title' => 'Receive confirmation',
+                    'description' => 'We email your appointment details, online access and instructions for arranging payment.',
+                ],
+            ],
+        ],
+        'benefits' => [
+            'eyebrow' => 'Online care',
+            'title' => 'Professional support with fewer barriers',
+            'description' => 'Online sessions make it easier to maintain continuity without sacrificing clarity or organization.',
+            'items' => [
+                [
+                    'title' => 'From your own space',
+                    'description' => 'Join from a private and comfortable place, without travel time.',
+                ],
+                [
+                    'title' => 'Transparent availability',
+                    'description' => 'See actual availability and choose a time displayed directly in your timezone.',
+                ],
+                [
+                    'title' => 'Independent management',
+                    'description' => 'Review your appointment and, when policy allows, cancel or reschedule online.',
+                ],
+                [
+                    'title' => 'Centralized communication',
+                    'description' => 'Receive confirmations, reminders and important links by email.',
+                ],
+            ],
+        ],
+        'therapists' => [
+            'eyebrow' => 'Available professionals',
+            'title' => 'Find a therapist who fits what you need',
+            'description' => 'Review session types, duration, price and availability before confirming your booking.',
+            'cta' => 'View therapists',
+        ],
+        'faq' => [
+            'eyebrow' => 'Before booking',
+            'title' => 'Frequently asked questions',
+            'items' => [
+                [
+                    'question' => 'Are sessions fully online?',
+                    'answer' => 'Yes. Sessions take place through the video call link provided by the therapist.',
+                ],
+                [
+                    'question' => 'How does payment work?',
+                    'answer' => 'Umbralia does not process payments. After booking, the therapist contacts you to arrange the payment method and terms.',
+                ],
+                [
+                    'question' => 'Are appointment times shown in my timezone?',
+                    'answer' => 'Yes. We detect your device timezone and automatically convert all available times.',
+                ],
+                [
+                    'question' => 'Can I cancel or reschedule?',
+                    'answer' => 'Available options depend on notice time and previous reschedules. Your appointment page shows the actions currently available.',
+                ],
+            ],
+            'cta' => 'Start booking',
+        ],
+        'footer' => [
+            'description' => 'Appointment management platform for online psychological care.',
+            'explore' => 'Explore',
+            'access' => 'Access',
+            'contact' => 'Contact Umbralia',
+            'payment_notice' => 'Payments are arranged outside the platform.',
         ],
     ],
-    'therapists' => [
-        'title' => 'Therapist management',
-        'edit_title' => 'Edit therapist',
-        'search' => 'Search',
-        'search_placeholder' => 'Search by name, email, timezone or bio...',
-        'list_title' => 'Registered therapists',
-        'empty' => 'No therapists found.',
-        'timezone' => 'Timezone',
-        'active' => 'Active',
-        'inactive' => 'Inactive',
-        'edit' => 'Edit',
-        'updated' => 'The therapist was updated successfully.',
-        'appointments_count' => '{0} No appointments|{1} :count appointment|[2,*] :count appointments',
-        'session_types_count' => '{0} No session types|{1} :count session type|[2,*] :count session types',
-        'account_section' => 'User account',
-        'account_section_help' => 'Base data used for login and therapist identification.',
-        'profile_section' => 'Professional profile',
-        'profile_section_help' => 'Data used by the booking system and internal operations.',
-        'name' => 'Name',
-        'email' => 'Email',
-        'google_meet_link' => 'Google Meet link',
-        'avatar_url' => 'Avatar URL',
-        'bio' => 'Bio',
-        'is_active' => 'Active therapist',
-        'is_active_help' => 'If disabled, this therapist is hidden from the public booking flow.',
-    ],
-],
-
-'appointment_status' => [
-    'pending' => 'Pending',
-    'confirmed' => 'Confirmed',
-    'cancelled' => 'Cancelled',
-    'completed' => 'Completed',
-],
-
-'payment_status' => [
-    'pending' => 'Pending',
-    'paid' => 'Paid',
-    'waived' => 'Waived',
-],
-    ];
+];
