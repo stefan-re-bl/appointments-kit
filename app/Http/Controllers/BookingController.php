@@ -169,7 +169,7 @@ final class BookingController extends Controller implements HasMiddleware
         $minDate = now(app('user.timezone'))->toDateString();
 
         $request->validate([
-            'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:' . $minDate],
+            'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:'.$minDate],
         ]);
 
         session()->put('booking.date', $request->date);
@@ -260,8 +260,11 @@ final class BookingController extends Controller implements HasMiddleware
     /**
      * Paso Final: Crear Cita
      */
-    public function store(Request $request, BookingService $bookingService): RedirectResponse
-    {
+    public function store(
+        Request $request,
+        BookingService $bookingService,
+        SlotGenerationService $slotGenerationService,
+    ): RedirectResponse {
         $therapist = $this->activeTherapistFromSession();
 
         if (
@@ -282,14 +285,29 @@ final class BookingController extends Controller implements HasMiddleware
         $validated = $request->validate([
             'patient_name' => ['required', 'string', 'max:255'],
             'patient_email' => ['required', 'email', 'max:255'],
-            'patient_timezone' => ['required', 'string', new ValidTimezone()],
+            'patient_timezone' => ['required', 'string', new ValidTimezone],
         ]);
 
         $sessionType = SessionType::where('therapist_id', $therapist->id)
             ->where('is_active', true)
             ->findOrFail((int) session('booking.session_type_id'));
 
-        $startUtc = Carbon::parse(session('booking.starts_at_utc'), 'UTC');
+        $selectedSlot = $this->findSelectedSlot(
+            $slotGenerationService,
+            $therapist,
+            (string) session('booking.date'),
+            (int) $sessionType->duration_minutes,
+            (string) session('booking.starts_at_utc'),
+        );
+
+        if ($selectedSlot === null) {
+            throw ValidationException::withMessages([
+                'general' => __('app.error_booking_slot'),
+            ]);
+        }
+
+        $startUtc = Carbon::parse((string) $selectedSlot['start_utc'], 'UTC')->utc();
+        $endUtc = Carbon::parse((string) $selectedSlot['end_utc'], 'UTC')->utc();
 
         $data = [
             'therapist_id' => $therapist->id,
@@ -300,7 +318,7 @@ final class BookingController extends Controller implements HasMiddleware
             'price' => $sessionType->price,
             'currency' => $sessionType->currency,
             'starts_at' => $startUtc->toDateTimeString(),
-            'ends_at' => $startUtc->copy()->addMinutes((int) $sessionType->duration_minutes)->toDateTimeString(),
+            'ends_at' => $endUtc->toDateTimeString(),
         ];
 
         try {
@@ -401,5 +419,45 @@ final class BookingController extends Controller implements HasMiddleware
         }
 
         app()->instance('user.timezone', $timezone);
+    }
+
+    /**
+     * @return array{start_utc: mixed, end_utc: mixed, label?: mixed}|null
+     */
+    private function findSelectedSlot(
+        SlotGenerationService $slotGenerationService,
+        Therapist $therapist,
+        string $date,
+        int $durationMinutes,
+        string $selectedStartUtc,
+    ): ?array {
+        $slots = $slotGenerationService->generate(
+            $therapist,
+            $date,
+            $durationMinutes,
+        );
+
+        foreach ($slots as $slot) {
+            if (
+                ! is_array($slot)
+                || ! array_key_exists('start_utc', $slot)
+                || ! array_key_exists('end_utc', $slot)
+            ) {
+                continue;
+            }
+
+            try {
+                $slotStartUtc = Carbon::parse((string) $slot['start_utc'], 'UTC')->utc();
+                $requestedStartUtc = Carbon::parse($selectedStartUtc, 'UTC')->utc();
+            } catch (Throwable) {
+                return null;
+            }
+
+            if ($slotStartUtc->equalTo($requestedStartUtc)) {
+                return $slot;
+            }
+        }
+
+        return null;
     }
 }
