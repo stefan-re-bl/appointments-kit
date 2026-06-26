@@ -13,9 +13,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
-#[Fillable(['timezone', 'google_meet_link', 'bio', 'is_active', 'is_approved', 'avatar_url'])]
+#[Fillable(['slug', 'timezone', 'google_meet_link', 'bio', 'is_active', 'is_approved', 'avatar_url'])]
 #[Hidden([])]
 class Therapist extends Model
 {
@@ -31,6 +32,17 @@ class Therapist extends Model
             'is_active' => 'boolean',
             'is_approved' => 'boolean',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Therapist $therapist): void {
+            if (filled($therapist->slug)) {
+                return;
+            }
+
+            $therapist->slug = static::uniqueSlugForName($therapist->userNameForSlug());
+        });
     }
 
     public function scopePubliclyBookable(Builder $query): Builder
@@ -72,5 +84,34 @@ class Therapist extends Model
         }
 
         $this->attributes['timezone'] = $timezone;
+    }
+
+    private function userNameForSlug(): string
+    {
+        $loadedUser = $this->relationLoaded('user') ? $this->user : null;
+
+        if ($loadedUser instanceof User) {
+            return $loadedUser->name;
+        }
+
+        if ($this->user_id === null) {
+            return 'therapist';
+        }
+
+        return User::query()->whereKey($this->user_id)->value('name') ?? 'therapist';
+    }
+
+    private static function uniqueSlugForName(string $name): string
+    {
+        $baseSlug = Str::slug($name) ?: 'therapist';
+        $slug = $baseSlug;
+        $counter = 2;
+
+        while (static::query()->where('slug', $slug)->exists()) {
+            $slug = "{$baseSlug}-{$counter}";
+            $counter++;
+        }
+
+        return $slug;
     }
 }

@@ -220,6 +220,29 @@ return [
         ],
     ],
 
+    'therapist_public' => [
+        'meta_title' => 'Perfil de :name',
+        'eyebrow' => 'Terapeuta online',
+        'back_to_booking' => 'Volver a terapeutas',
+        'view_profile' => 'Ver perfil',
+        'online_modality' => 'Modalidad online',
+        'timezone' => 'Zona horaria: :timezone',
+        'about_title' => 'Sobre la terapeuta',
+        'sessions_title' => 'Tipos de sesión',
+        'session_duration' => ':minutes minutos',
+        'no_sessions' => 'No hay tipos de sesión activos disponibles en este momento.',
+        'booking_card_title' => 'Reservar con esta terapeuta',
+        'booking_card_text' => 'Podés continuar al flujo de reserva con esta terapeuta preseleccionada.',
+        'book_cta' => 'Elegir terapeuta y continuar',
+        'payment_note' => 'El pago se coordina fuera de Umbralia directamente con la terapeuta.',
+        'not_found' => [
+            'eyebrow' => 'Perfil no disponible',
+            'title' => 'No encontramos esta terapeuta',
+            'message' => 'El perfil puede no existir, estar inactivo o estar pendiente de aprobación.',
+            'cta' => 'Ver terapeutas disponibles',
+        ],
+    ],
+
     'actions' => 'Acciones',
 
     'payments' => [

@@ -25,6 +25,13 @@
                         <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ $therapist->bio }}</p>
                     @endif
 
+                    <a
+                        href="{{ route('therapists.show', $therapist->slug) }}"
+                        class="mb-3 inline-flex text-sm font-semibold text-indigo-700 hover:text-indigo-900"
+                    >
+                        {{ __('app.therapist_public.view_profile') }}
+                    </a>
+
                     <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition">
                         {{ __('app.continue') }}
                     </button>

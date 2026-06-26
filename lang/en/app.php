@@ -222,6 +222,29 @@ return [
         ],
     ],
 
+    'therapist_public' => [
+        'meta_title' => ':name profile',
+        'eyebrow' => 'Online therapist',
+        'back_to_booking' => 'Back to therapists',
+        'view_profile' => 'View profile',
+        'online_modality' => 'Online modality',
+        'timezone' => 'Timezone: :timezone',
+        'about_title' => 'About the therapist',
+        'sessions_title' => 'Session types',
+        'session_duration' => ':minutes minutes',
+        'no_sessions' => 'There are no active session types available right now.',
+        'booking_card_title' => 'Book with this therapist',
+        'booking_card_text' => 'You can continue to the booking flow with this therapist preselected.',
+        'book_cta' => 'Choose therapist and continue',
+        'payment_note' => 'Payment is coordinated outside Umbralia directly with the therapist.',
+        'not_found' => [
+            'eyebrow' => 'Profile unavailable',
+            'title' => 'We could not find this therapist',
+            'message' => 'The profile may not exist, be inactive, or still be pending approval.',
+            'cta' => 'View available therapists',
+        ],
+    ],
+
     'actions' => 'Actions',
 
     'payments' => [

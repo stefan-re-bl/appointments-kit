@@ -11,6 +11,7 @@ use App\Http\Controllers\PublicAppointmentCancellationController;
 use App\Http\Controllers\PublicAppointmentController;
 use App\Http\Controllers\PublicAppointmentRescheduleController;
 use App\Http\Controllers\PublicAppointmentRescheduleStoreController;
+use App\Http\Controllers\PublicTherapistProfileController;
 use App\Http\Controllers\SessionTypeController;
 use App\Http\Controllers\Therapist\AppointmentIndexController;
 use App\Http\Controllers\Therapist\AppointmentPaymentController;
@@ -30,6 +31,9 @@ Route::view('/patients', 'information.show', ['page' => 'patients'])
 
 Route::view('/payment-and-cancellation', 'information.show', ['page' => 'payment_and_cancellation'])
     ->name('information.payment-and-cancellation');
+
+Route::get('/therapists/{slug}', PublicTherapistProfileController::class)
+    ->name('therapists.show');
 
 // --- Página pública "Mi Cita" (Ticket #11) ---
 Route::get('/appointment/{token}', PublicAppointmentController::class)
