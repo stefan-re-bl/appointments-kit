@@ -26,13 +26,26 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $validated = $request->validated();
+
+        $request->user()->fill([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
 
         $request->user()->save();
+
+        if ($request->user()->therapist) {
+            $request->user()->therapist->update([
+                'bio' => $validated['bio'] ?? null,
+                'google_meet_link' => $validated['google_meet_link'] ?? null,
+                'avatar_url' => $validated['avatar_url'] ?? null,
+            ]);
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

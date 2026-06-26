@@ -47,6 +47,33 @@
             @endif
         </div>
 
+        @if ($user->therapist)
+            <div>
+                <x-input-label for="bio" :value="__('app.profile.therapist_bio')" />
+                <textarea
+                    id="bio"
+                    name="bio"
+                    rows="5"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                >{{ old('bio', $user->therapist->bio) }}</textarea>
+                <p class="mt-1 text-sm text-gray-600">{{ __('app.profile.therapist_bio_help') }}</p>
+                <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+            </div>
+
+            <div>
+                <x-input-label for="google_meet_link" :value="__('app.profile.google_meet_link')" />
+                <x-text-input id="google_meet_link" name="google_meet_link" type="url" class="mt-1 block w-full" :value="old('google_meet_link', $user->therapist->google_meet_link)" />
+                <p class="mt-1 text-sm text-gray-600">{{ __('app.profile.google_meet_link_help') }}</p>
+                <x-input-error class="mt-2" :messages="$errors->get('google_meet_link')" />
+            </div>
+
+            <div>
+                <x-input-label for="avatar_url" :value="__('app.profile.avatar_url')" />
+                <x-text-input id="avatar_url" name="avatar_url" type="url" class="mt-1 block w-full" :value="old('avatar_url', $user->therapist->avatar_url)" />
+                <x-input-error class="mt-2" :messages="$errors->get('avatar_url')" />
+            </div>
+        @endif
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

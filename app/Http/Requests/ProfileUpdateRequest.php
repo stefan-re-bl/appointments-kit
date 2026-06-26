@@ -26,6 +26,9 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'bio' => ['nullable', 'string', 'max:5000'],
+            'google_meet_link' => ['nullable', 'url', 'max:2048'],
+            'avatar_url' => ['nullable', 'url', 'max:2048'],
         ];
     }
 }

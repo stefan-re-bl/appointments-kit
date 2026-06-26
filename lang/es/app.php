@@ -16,6 +16,80 @@ return [
         'pending_title' => 'Tu perfil está pendiente de aprobación',
         'pending_message' => 'La administración debe aprobar tu cuenta antes de que tu perfil aparezca públicamente y pueda recibir reservas.',
     ],
+    'dashboard_onboarding' => [
+        'eyebrow' => 'Inicio para terapeutas',
+        'title' => 'Prepará tu perfil para recibir reservas',
+        'subtitle' => 'Revisá cómo funciona una cita y completá los datos necesarios para operar dentro de Umbralia.',
+        'no_therapist' => 'No encontramos un perfil de terapeuta asociado a esta cuenta.',
+        'status' => [
+            'pending' => 'Pendiente de aprobación',
+            'approved' => 'Aprobada',
+            'inactive' => 'Inactiva',
+        ],
+        'flow_title' => 'Flujo de una cita',
+        'flow_steps' => [
+            [
+                'title' => 'El paciente elige terapeuta',
+                'description' => 'Tu perfil aparece en la reserva cuando está activo, aprobado y completo.',
+            ],
+            [
+                'title' => 'Elige tipo de sesión',
+                'description' => 'La persona selecciona una sesión activa con duración, precio y moneda definidos.',
+            ],
+            [
+                'title' => 'Elige fecha y horario',
+                'description' => 'El sistema muestra horarios disponibles según tu disponibilidad semanal.',
+            ],
+            [
+                'title' => 'Confirma la reserva',
+                'description' => 'El paciente completa sus datos y Umbralia reserva el cupo.',
+            ],
+            [
+                'title' => 'Ambos reciben email',
+                'description' => 'Paciente y terapeuta reciben los datos de la cita por correo.',
+            ],
+            [
+                'title' => 'Coordinan el pago',
+                'description' => 'El pago se acuerda fuera de la plataforma directamente con el paciente.',
+            ],
+            [
+                'title' => 'Marcás el pago',
+                'description' => 'Desde tus citas podés registrar si el pago está pendiente o pagado.',
+            ],
+            [
+                'title' => 'Se envía recordatorio',
+                'description' => 'El sistema envía un recordatorio antes del horario de la sesión.',
+            ],
+            [
+                'title' => 'El paciente accede online',
+                'description' => 'La cita usa el link de reunión online cargado en tu perfil.',
+            ],
+        ],
+        'checklist_title' => 'Configuración necesaria',
+        'complete_icon' => '✓',
+        'pending_icon' => '!',
+        'checklist' => [
+            'profile' => 'Completar bio o perfil profesional.',
+            'meet_link' => 'Cargar link de reunión online.',
+            'session_type' => 'Crear al menos un tipo de sesión activo.',
+            'availability' => 'Crear disponibilidad semanal activa.',
+            'approval' => 'Esperar aprobación administrativa.',
+        ],
+        'quick_links_title' => 'Accesos rápidos',
+        'quick_links' => [
+            'profile' => 'Editar perfil',
+            'session_types' => 'Editar tipos de sesión',
+            'availability' => 'Editar disponibilidad',
+            'appointments' => 'Ver citas',
+        ],
+    ],
+    'profile' => [
+        'therapist_bio' => 'Bio profesional',
+        'therapist_bio_help' => 'Contá brevemente cómo trabajás y qué puede esperar una persona antes de reservar.',
+        'google_meet_link' => 'Link de reunión online',
+        'google_meet_link_help' => 'Este link es necesario para aparecer públicamente y recibir reservas.',
+        'avatar_url' => 'URL de avatar',
+    ],
 
     // Disponibilidades
     'my_weekly_availability' => 'Mi Disponibilidad Semanal',

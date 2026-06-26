@@ -5,20 +5,124 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (auth()->user()?->therapist && ! auth()->user()->therapist->is_approved)
-                <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                    <p class="font-semibold">{{ __('app.dashboard_approval.pending_title') }}</p>
-                    <p class="mt-1">{{ __('app.dashboard_approval.pending_message') }}</p>
-                </div>
-            @endif
+    @php
+        $approvalKey = 'pending';
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __('app.logged_in') }}
-                </div>
-            </div>
+        if ($therapist && ! $therapist->is_active) {
+            $approvalKey = 'inactive';
+        } elseif ($therapist && $therapist->is_approved) {
+            $approvalKey = 'approved';
+        }
+
+        $checklist = $therapist ? [
+            'profile' => filled($therapist->bio),
+            'meet_link' => filled($therapist->google_meet_link),
+            'session_type' => (int) $therapist->active_session_types_count > 0,
+            'availability' => (int) $therapist->active_availabilities_count > 0,
+            'approval' => $therapist->is_approved,
+        ] : [];
+    @endphp
+
+    <div class="py-10">
+        <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
+            @if (! $therapist)
+                <section class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
+                    <p class="text-sm text-gray-700">{{ __('app.dashboard_onboarding.no_therapist') }}</p>
+                </section>
+            @else
+                <section class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                            <p class="text-sm font-semibold uppercase tracking-wide text-indigo-700">
+                                {{ __('app.dashboard_onboarding.eyebrow') }}
+                            </p>
+                            <h3 class="mt-2 text-2xl font-semibold text-gray-950">
+                                {{ __('app.dashboard_onboarding.title') }}
+                            </h3>
+                            <p class="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+                                {{ __('app.dashboard_onboarding.subtitle') }}
+                            </p>
+                        </div>
+
+                        <span @class([
+                            'inline-flex rounded-full px-3 py-1 text-sm font-semibold',
+                            'bg-amber-50 text-amber-800 ring-1 ring-amber-200' => $approvalKey === 'pending',
+                            'bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200' => $approvalKey === 'approved',
+                            'bg-rose-50 text-rose-800 ring-1 ring-rose-200' => $approvalKey === 'inactive',
+                        ])>
+                            {{ __('app.dashboard_onboarding.status.' . $approvalKey) }}
+                        </span>
+                    </div>
+
+                    @if (! $therapist->is_approved)
+                        <div class="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                            <p class="font-semibold">{{ __('app.dashboard_approval.pending_title') }}</p>
+                            <p class="mt-1">{{ __('app.dashboard_approval.pending_message') }}</p>
+                        </div>
+                    @endif
+                </section>
+
+                <section class="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
+                    <div class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-950">
+                            {{ __('app.dashboard_onboarding.flow_title') }}
+                        </h3>
+
+                        <ol class="mt-5 grid gap-3 sm:grid-cols-2">
+                            @foreach (__('app.dashboard_onboarding.flow_steps') as $step)
+                                <li class="rounded-lg border border-gray-200 p-4">
+                                    <p class="text-sm font-semibold text-gray-950">{{ $step['title'] }}</p>
+                                    <p class="mt-1 text-sm leading-6 text-gray-600">{{ $step['description'] }}</p>
+                                </li>
+                            @endforeach
+                        </ol>
+                    </div>
+
+                    <div class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-950">
+                            {{ __('app.dashboard_onboarding.checklist_title') }}
+                        </h3>
+
+                        <ul class="mt-5 space-y-3">
+                            @foreach ($checklist as $key => $complete)
+                                <li class="flex items-start gap-3">
+                                    <span @class([
+                                        'mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold',
+                                        'bg-emerald-100 text-emerald-800' => $complete,
+                                        'bg-gray-100 text-gray-500' => ! $complete,
+                                    ])>
+                                        {{ $complete ? __('app.dashboard_onboarding.complete_icon') : __('app.dashboard_onboarding.pending_icon') }}
+                                    </span>
+                                    <span class="text-sm text-gray-700">
+                                        {{ __('app.dashboard_onboarding.checklist.' . $key) }}
+                                    </span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-950">
+                        {{ __('app.dashboard_onboarding.quick_links_title') }}
+                    </h3>
+
+                    <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        <a href="{{ route('profile.edit') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-indigo-300 hover:bg-indigo-50">
+                            {{ __('app.dashboard_onboarding.quick_links.profile') }}
+                        </a>
+                        <a href="{{ route('session-types.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-indigo-300 hover:bg-indigo-50">
+                            {{ __('app.dashboard_onboarding.quick_links.session_types') }}
+                        </a>
+                        <a href="{{ route('availabilities.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-indigo-300 hover:bg-indigo-50">
+                            {{ __('app.dashboard_onboarding.quick_links.availability') }}
+                        </a>
+                        <a href="{{ route('therapist.appointments.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-indigo-300 hover:bg-indigo-50">
+                            {{ __('app.dashboard_onboarding.quick_links.appointments') }}
+                        </a>
+                    </div>
+                </section>
+            @endif
         </div>
     </div>
 </x-app-layout>

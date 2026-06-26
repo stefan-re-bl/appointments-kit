@@ -38,6 +38,8 @@ class Therapist extends Model
         return $query
             ->where('is_active', true)
             ->where('is_approved', true)
+            ->whereNotNull('google_meet_link')
+            ->where('google_meet_link', '<>', '')
             ->whereHas('user', fn (Builder $query) => $query->where('role', 'therapist'));
     }
 

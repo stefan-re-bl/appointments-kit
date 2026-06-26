@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AppointmentReportController;
 use App\Http\Controllers\Admin\TherapistController as AdminTherapistController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicAppointmentCancellationController;
 use App\Http\Controllers\PublicAppointmentController;
@@ -49,9 +50,7 @@ Route::post('/appointment/{token}/cancel', PublicAppointmentCancellationControll
     ->middleware('throttle:booking')
     ->name('appointments.public.cancel');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
 Route::middleware('auth')->group(function (): void {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

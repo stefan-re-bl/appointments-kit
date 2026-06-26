@@ -16,6 +16,80 @@ return [
         'pending_title' => 'Your profile is pending approval',
         'pending_message' => 'Administration must approve your account before your profile appears publicly and can receive bookings.',
     ],
+    'dashboard_onboarding' => [
+        'eyebrow' => 'Therapist start',
+        'title' => 'Prepare your profile to receive bookings',
+        'subtitle' => 'Review how appointments work and complete the information needed to operate in Umbralia.',
+        'no_therapist' => 'We could not find a therapist profile linked to this account.',
+        'status' => [
+            'pending' => 'Pending approval',
+            'approved' => 'Approved',
+            'inactive' => 'Inactive',
+        ],
+        'flow_title' => 'Appointment flow',
+        'flow_steps' => [
+            [
+                'title' => 'The patient chooses a therapist',
+                'description' => 'Your profile appears in booking when it is active, approved and complete.',
+            ],
+            [
+                'title' => 'They choose a session type',
+                'description' => 'The person selects an active session with duration, price and currency.',
+            ],
+            [
+                'title' => 'They choose date and time',
+                'description' => 'The system shows available times from your weekly availability.',
+            ],
+            [
+                'title' => 'They confirm the booking',
+                'description' => 'The patient enters their details and Umbralia reserves the slot.',
+            ],
+            [
+                'title' => 'Both receive email',
+                'description' => 'Patient and therapist receive appointment details by email.',
+            ],
+            [
+                'title' => 'Payment is coordinated',
+                'description' => 'Payment is arranged outside the platform directly with the patient.',
+            ],
+            [
+                'title' => 'You mark the payment',
+                'description' => 'From your appointments you can record whether payment is pending or paid.',
+            ],
+            [
+                'title' => 'A reminder is sent',
+                'description' => 'The system sends a reminder before the session time.',
+            ],
+            [
+                'title' => 'The patient joins online',
+                'description' => 'The appointment uses the online meeting link saved in your profile.',
+            ],
+        ],
+        'checklist_title' => 'Required setup',
+        'complete_icon' => '✓',
+        'pending_icon' => '!',
+        'checklist' => [
+            'profile' => 'Complete bio or professional profile.',
+            'meet_link' => 'Add an online meeting link.',
+            'session_type' => 'Create at least one active session type.',
+            'availability' => 'Create active weekly availability.',
+            'approval' => 'Wait for administrative approval.',
+        ],
+        'quick_links_title' => 'Quick links',
+        'quick_links' => [
+            'profile' => 'Edit profile',
+            'session_types' => 'Edit session types',
+            'availability' => 'Edit availability',
+            'appointments' => 'View appointments',
+        ],
+    ],
+    'profile' => [
+        'therapist_bio' => 'Professional bio',
+        'therapist_bio_help' => 'Briefly explain how you work and what a person can expect before booking.',
+        'google_meet_link' => 'Online meeting link',
+        'google_meet_link_help' => 'This link is required to appear publicly and receive bookings.',
+        'avatar_url' => 'Avatar URL',
+    ],
 
     // Availabilities
     'my_weekly_availability' => 'My Weekly Availability',
