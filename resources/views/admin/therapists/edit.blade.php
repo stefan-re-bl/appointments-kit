@@ -159,6 +159,32 @@
                         <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
                     @enderror
                 </div>
+
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <input type="hidden" name="is_approved" value="0">
+
+                    <label class="flex items-start gap-3">
+                        <input
+                            type="checkbox"
+                            name="is_approved"
+                            value="1"
+                            @checked(old('is_approved', $therapist->is_approved))
+                            class="mt-1 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                        >
+                        <span>
+                            <span class="block text-sm font-medium text-slate-950">
+                                {{ __('app.admin.therapists.is_approved') }}
+                            </span>
+                            <span class="mt-1 block text-sm text-slate-500">
+                                {{ __('app.admin.therapists.is_approved_help') }}
+                            </span>
+                        </span>
+                    </label>
+
+                    @error('is_approved')
+                        <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
         </section>
 

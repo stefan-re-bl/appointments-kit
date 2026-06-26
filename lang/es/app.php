@@ -12,6 +12,10 @@ return [
     'spanish' => 'Español',
     'english' => 'Inglés',
     'logged_in' => '¡Has iniciado sesión!',
+    'dashboard_approval' => [
+        'pending_title' => 'Tu perfil está pendiente de aprobación',
+        'pending_message' => 'La administración debe aprobar tu cuenta antes de que tu perfil aparezca públicamente y pueda recibir reservas.',
+    ],
 
     // Disponibilidades
     'my_weekly_availability' => 'Mi Disponibilidad Semanal',
@@ -223,8 +227,19 @@ return [
             'timezone' => 'Zona horaria',
             'active' => 'Activa',
             'inactive' => 'Inactiva',
+            'status_approved' => 'Aprobada',
+            'pending_approval' => 'Pendiente',
             'edit' => 'Editar',
             'updated' => 'La terapeuta fue actualizada correctamente.',
+            'approval_filter' => 'Filtrar por aprobación',
+            'approval_filters' => [
+                'all' => 'Todos los estados',
+                'pending' => 'Pendientes de aprobación',
+                'approved' => 'Aprobadas',
+                'inactive' => 'Inactivas',
+            ],
+            'approve' => 'Aprobar',
+            'revoke_approval' => 'Revocar aprobación',
             'appointments_count' => '{0} Sin citas|{1} :count cita|[2,*] :count citas',
             'session_types_count' => '{0} Sin tipos de sesión|{1} :count tipo de sesión|[2,*] :count tipos de sesión',
             'account_section' => 'Cuenta de usuario',
@@ -238,6 +253,10 @@ return [
             'bio' => 'Bio',
             'is_active' => 'Terapeuta activa',
             'is_active_help' => 'Si se desactiva, queda oculta del flujo público de reservas.',
+            'is_approved' => 'Terapeuta aprobada',
+            'is_approved_help' => 'Solo las terapeutas aprobadas y activas aparecen públicamente y reciben reservas.',
+            'approved' => 'La terapeuta fue aprobada correctamente.',
+            'approval_revoked' => 'La aprobación de la terapeuta fue revocada correctamente.',
         ],
     ],
 

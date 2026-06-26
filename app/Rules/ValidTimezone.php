@@ -38,6 +38,14 @@ final class ValidTimezone implements ValidationRule
         return self::normalize($value) !== null;
     }
 
+    /**
+     * @return list<string>
+     */
+    public static function identifiers(): array
+    {
+        return DateTimeZone::listIdentifiers();
+    }
+
     public static function normalize(mixed $value): ?string
     {
         if (! is_string($value)) {
@@ -71,7 +79,7 @@ final class ValidTimezone implements ValidationRule
 
     private static function isSupportedByPhp(string $timezone): bool
     {
-        return in_array($timezone, DateTimeZone::listIdentifiers(), true);
+        return in_array($timezone, self::identifiers(), true);
     }
 
     private static function canonicalizeWithIntl(string $timezone): ?string

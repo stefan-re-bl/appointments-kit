@@ -31,7 +31,7 @@
                     {{ __('app.home.hero.primary_cta') }}
                 </a>
                 <a
-                    href="#how-it-works"
+                    href="{{ route('information.how-it-works') }}"
                     class="rounded-md border border-white/50 bg-gray-950/30 px-6 py-3.5 text-center font-semibold text-white hover:bg-white hover:text-gray-950"
                 >
                     {{ __('app.home.hero.secondary_cta') }}

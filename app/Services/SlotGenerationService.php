@@ -16,15 +16,17 @@ class SlotGenerationService
     /**
      * Genera los slots disponibles para un terapeuta en una fecha específica.
      *
-     * @param Therapist $therapist
-     * @param string $date Fecha en formato Y-m-d
-     * @param int $durationMinutes Duración de la sesión
-     * @return array
+     * @param  string  $date  Fecha en formato Y-m-d
+     * @param  int  $durationMinutes  Duración de la sesión
      */
     public function generate(Therapist $therapist, string $date, int $durationMinutes): array
     {
+        if (! $therapist->is_active || ! $therapist->is_approved) {
+            return [];
+        }
+
         $therapistTz = $therapist->timezone;
-        
+
         // 1. Crear la fecha solicitada en la zona horaria del terapeuta
         $dateCarbon = Carbon::parse($date, $therapistTz);
         $dayOfWeek = $dateCarbon->isoWeekday(); // 1=Lunes, 7=Domingo (ISO-8601)
@@ -72,12 +74,14 @@ class SlotGenerationService
                 // Regla 1: Excluir el pasado (comparado con UTC actual)
                 if ($slotStartUtc->lt(Carbon::now('UTC'))) {
                     $currentStartUtc->addMinutes($durationMinutes);
+
                     continue;
                 }
 
                 // Regla 2: Excluir si hay solapamiento con citas existentes
                 if ($this->isOverlapping($slotStartUtc, $slotEndUtc, $existingAppointments)) {
                     $currentStartUtc->addMinutes($durationMinutes);
+
                     continue;
                 }
 
@@ -94,7 +98,7 @@ class SlotGenerationService
         }
 
         // Ordenar slots cronológicamente
-        usort($slots, fn($a, $b) => $a['start_utc'] <=> $b['start_utc']);
+        usort($slots, fn ($a, $b) => $a['start_utc'] <=> $b['start_utc']);
 
         return $slots;
     }
@@ -110,6 +114,7 @@ class SlotGenerationService
                 return true;
             }
         }
+
         return false;
     }
 }

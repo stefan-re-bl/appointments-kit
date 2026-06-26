@@ -52,6 +52,7 @@ final class SendAppointmentRemindersCommandTest extends TestCase
         Mail::assertSent(
             AppointmentReminder::class,
             fn (AppointmentReminder $mail): bool => $mail->hasTo('patient@example.test')
+                && $mail->appointment->patient_timezone === 'America/Argentina/Buenos_Aires'
         );
 
         $this->assertNotNull($appointment->refresh()->reminder_sent_at);

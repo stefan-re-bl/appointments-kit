@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Appointment;
+use App\Models\Therapist;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -27,7 +28,6 @@ final class BookingService
      *     price: mixed,
      *     currency: string
      * } $data
-     *
      * @return Appointment|false Retorna la cita creada o false si hubo solapamiento.
      */
     public function bookSlot(array $data): Appointment|false
@@ -36,6 +36,17 @@ final class BookingService
             $therapistId = (int) $data['therapist_id'];
             $startsAt = $data['starts_at'];
             $endsAt = $data['ends_at'];
+
+            $therapistIsBookable = Therapist::query()
+                ->publiclyBookable()
+                ->whereKey($therapistId)
+                ->exists();
+
+            if (! $therapistIsBookable) {
+                Log::warning("Booking failed: Therapist {$therapistId} is not approved for public booking.");
+
+                return false;
+            }
 
             // 1. Buscamos citas solapadas y bloqueamos las filas (Pessimistic Locking).
             $overlappingAppointments = Appointment::overlappingSlot($therapistId, $startsAt, $endsAt)

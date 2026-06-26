@@ -9,3 +9,11 @@
 .home-hero {
     min-height: clamp(36rem, calc(100svh - 7rem), 44rem);
 }
+
+.public-section-nav {
+    scrollbar-width: none;
+}
+
+.public-section-nav::-webkit-scrollbar {
+    display: none;
+}

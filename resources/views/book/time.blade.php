@@ -8,10 +8,10 @@
     therapistId: '{{ $therapistId }}',
     bookingDate: '{{ $date }}',
     duration: '{{ $sessionType->duration_minutes }}',
+    patientTimezone: @js($patientTimezone),
     
     fetchSlots() {
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-        const url = `/api/slots?therapist_id=${this.therapistId}&date=${this.bookingDate}&duration=${this.duration}&timezone=${encodeURIComponent(timezone)}`;
+        const url = `/api/slots?therapist_id=${this.therapistId}&date=${this.bookingDate}&duration=${this.duration}&timezone=${encodeURIComponent(this.patientTimezone)}`;
         
         fetch(url)
             .then(response => response.json())
@@ -30,6 +30,9 @@
     <h1 class="text-3xl font-bold text-gray-900 mb-2 text-center">{{ __('app.select_time') }}</h1>
     <p class="text-center text-gray-500 mb-8">
         {{ \Carbon\Carbon::parse($date)->locale(app()->getLocale())->isoFormat('LL') }}
+    </p>
+    <p class="text-center text-sm text-gray-600 -mt-5 mb-8">
+        {{ __('booking_timezone.showing', ['timezone' => $patientTimezone]) }}
     </p>
 
     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 min-h-[200px]">

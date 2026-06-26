@@ -32,10 +32,25 @@ final class TherapistController extends Controller implements HasMiddleware
     public function index(Request $request): View
     {
         $search = trim((string) $request->query('search', ''));
+        $approvalStatus = (string) $request->query('approval_status', 'all');
+        $allowedApprovalStatuses = ['all', 'pending', 'approved', 'inactive'];
+
+        if (! in_array($approvalStatus, $allowedApprovalStatuses, true)) {
+            $approvalStatus = 'all';
+        }
 
         $therapists = Therapist::query()
             ->with('user')
             ->withCount(['appointments', 'sessionTypes'])
+            ->when($approvalStatus === 'pending', function (Builder $query): void {
+                $query->where('is_approved', false)->where('is_active', true);
+            })
+            ->when($approvalStatus === 'approved', function (Builder $query): void {
+                $query->where('is_approved', true)->where('is_active', true);
+            })
+            ->when($approvalStatus === 'inactive', function (Builder $query): void {
+                $query->where('is_active', false);
+            })
             ->when($search !== '', function (Builder $query) use ($search): void {
                 $query->where(function (Builder $query) use ($search): void {
                     $query
@@ -55,6 +70,7 @@ final class TherapistController extends Controller implements HasMiddleware
         return view('admin.therapists.index', [
             'therapists' => $therapists,
             'search' => $search,
+            'approvalStatus' => $approvalStatus,
         ]);
     }
 
@@ -85,11 +101,30 @@ final class TherapistController extends Controller implements HasMiddleware
                 'bio' => $data['bio'] ?? null,
                 'avatar_url' => $data['avatar_url'] ?? null,
                 'is_active' => $request->boolean('is_active'),
+                'is_approved' => $request->boolean('is_approved'),
             ]);
         });
 
         return redirect()
             ->route('admin.therapists.index')
             ->with('success', __('app.admin.therapists.updated'));
+    }
+
+    public function approve(Therapist $therapist): RedirectResponse
+    {
+        $therapist->forceFill([
+            'is_approved' => true,
+        ])->save();
+
+        return back()->with('success', __('app.admin.therapists.approved'));
+    }
+
+    public function revokeApproval(Therapist $therapist): RedirectResponse
+    {
+        $therapist->forceFill([
+            'is_approved' => false,
+        ])->save();
+
+        return back()->with('success', __('app.admin.therapists.approval_revoked'));
     }
 }

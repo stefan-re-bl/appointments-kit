@@ -12,6 +12,10 @@ return [
     'spanish' => 'Spanish',
     'english' => 'English',
     'logged_in' => "You're logged in!",
+    'dashboard_approval' => [
+        'pending_title' => 'Your profile is pending approval',
+        'pending_message' => 'Administration must approve your account before your profile appears publicly and can receive bookings.',
+    ],
 
     // Availabilities
     'my_weekly_availability' => 'My Weekly Availability',
@@ -225,8 +229,19 @@ return [
             'timezone' => 'Timezone',
             'active' => 'Active',
             'inactive' => 'Inactive',
+            'status_approved' => 'Approved',
+            'pending_approval' => 'Pending',
             'edit' => 'Edit',
             'updated' => 'The therapist was updated successfully.',
+            'approval_filter' => 'Filter by approval',
+            'approval_filters' => [
+                'all' => 'All statuses',
+                'pending' => 'Pending approval',
+                'approved' => 'Approved',
+                'inactive' => 'Inactive',
+            ],
+            'approve' => 'Approve',
+            'revoke_approval' => 'Revoke approval',
             'appointments_count' => '{0} No appointments|{1} :count appointment|[2,*] :count appointments',
             'session_types_count' => '{0} No session types|{1} :count session type|[2,*] :count session types',
             'account_section' => 'User account',
@@ -240,6 +255,10 @@ return [
             'bio' => 'Bio',
             'is_active' => 'Active therapist',
             'is_active_help' => 'If disabled, this therapist is hidden from the public booking flow.',
+            'is_approved' => 'Approved therapist',
+            'is_approved_help' => 'Only approved and active therapists appear publicly and receive bookings.',
+            'approved' => 'The therapist was approved successfully.',
+            'approval_revoked' => 'The therapist approval was revoked successfully.',
         ],
     ],
 

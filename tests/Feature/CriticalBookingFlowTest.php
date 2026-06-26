@@ -81,7 +81,6 @@ final class CriticalBookingFlowTest extends TestCase
             ->post(route('book.store'), [
                 'patient_name' => 'Paciente Crítico',
                 'patient_email' => 'patient@example.test',
-                'patient_timezone' => 'America/Argentina/Buenos_Aires',
             ]);
 
         $response->assertRedirect(route('book.success'));
@@ -94,17 +93,91 @@ final class CriticalBookingFlowTest extends TestCase
         $this->assertSame('2026-07-06 13:00:00', $appointment->ends_at->utc()->format('Y-m-d H:i:s'));
         $this->assertSame('100.00', $appointment->price);
         $this->assertSame('USD', $appointment->currency);
+        $this->assertSame('America/Argentina/Buenos_Aires', $appointment->patient_timezone);
 
         $response->assertSessionHas('booking.appointment_token', $appointment->token);
         $response->assertSessionMissing('booking.therapist_id');
         $response->assertSessionMissing('booking.session_type_id');
         $response->assertSessionMissing('booking.date');
         $response->assertSessionMissing('booking.starts_at_utc');
+        $response->assertSessionMissing('booking.patient_timezone');
 
         Bus::assertDispatched(
             SendBookingConfirmedEmails::class,
             fn (SendBookingConfirmedEmails $job): bool => true,
         );
+    }
+
+    public function test_public_booking_without_timezone_cookie_uses_explicit_form_timezone(): void
+    {
+        Bus::fake();
+
+        [$therapist, $sessionType] = $this->makeBookableTherapist();
+
+        $this
+            ->withSession([
+                'booking.therapist_id' => $therapist->id,
+                'booking.session_type_id' => $sessionType->id,
+            ])
+            ->post(route('book.store.date'), [
+                'date' => '2026-07-06',
+                'patient_timezone' => 'America/Argentina/Buenos_Aires',
+            ])
+            ->assertRedirect(route('book.time'))
+            ->assertSessionHas('booking.patient_timezone', 'America/Argentina/Buenos_Aires');
+
+        $response = $this
+            ->withSession([
+                'booking.starts_at_utc' => '2026-07-06T12:00:00+00:00',
+            ])
+            ->post(route('book.store'), [
+                'patient_name' => 'Paciente sin cookie',
+                'patient_email' => 'no-cookie@example.test',
+                'patient_timezone' => 'Asia/Tokyo',
+            ]);
+
+        $response->assertRedirect(route('book.success'));
+
+        $this->assertDatabaseHas('appointments', [
+            'patient_email' => 'no-cookie@example.test',
+            'patient_timezone' => 'America/Argentina/Buenos_Aires',
+        ]);
+    }
+
+    public function test_date_step_exposes_editable_timezone_selector_and_detection_fallback(): void
+    {
+        [$therapist, $sessionType] = $this->makeBookableTherapist();
+
+        $this
+            ->withSession([
+                'booking.therapist_id' => $therapist->id,
+                'booking.session_type_id' => $sessionType->id,
+            ])
+            ->get(route('book.date'))
+            ->assertOk()
+            ->assertSee('name="patient_timezone"', false)
+            ->assertSee('America/Argentina/Buenos_Aires')
+            ->assertSeeText(__('booking_timezone.help'))
+            ->assertSeeText(__('booking_timezone.detection_failed'));
+    }
+
+    public function test_booking_date_rejects_invalid_explicit_timezone(): void
+    {
+        [$therapist, $sessionType] = $this->makeBookableTherapist();
+
+        $this
+            ->from(route('book.date'))
+            ->withSession([
+                'booking.therapist_id' => $therapist->id,
+                'booking.session_type_id' => $sessionType->id,
+            ])
+            ->post(route('book.store.date'), [
+                'date' => '2026-07-06',
+                'patient_timezone' => 'Invalid/Timezone',
+            ])
+            ->assertRedirect(route('book.date'))
+            ->assertSessionHasErrors('patient_timezone')
+            ->assertSessionMissing('booking.patient_timezone');
     }
 
     public function test_public_booking_rejects_a_forged_time_outside_generated_slots(): void
@@ -119,11 +192,60 @@ final class CriticalBookingFlowTest extends TestCase
             ->post(route('book.store'), [
                 'patient_name' => 'Paciente Crítico',
                 'patient_email' => 'patient@example.test',
-                'patient_timezone' => 'America/Argentina/Buenos_Aires',
             ]);
 
         $response->assertRedirect(route('book.confirm'));
         $response->assertSessionHasErrors('general');
+
+        $this->assertDatabaseCount('appointments', 0);
+        Bus::assertNotDispatched(SendBookingConfirmedEmails::class);
+    }
+
+    public function test_public_booking_excludes_unapproved_therapists(): void
+    {
+        $approvedUser = User::factory()->create([
+            'name' => 'Terapeuta Aprobada',
+            'role' => Role::THERAPIST,
+        ]);
+        $pendingUser = User::factory()->create([
+            'name' => 'Terapeuta Pendiente',
+            'role' => Role::THERAPIST,
+        ]);
+
+        Therapist::factory()->for($approvedUser)->create([
+            'is_active' => true,
+            'is_approved' => true,
+        ]);
+        Therapist::factory()->for($pendingUser)->create([
+            'is_active' => true,
+            'is_approved' => false,
+        ]);
+
+        $this
+            ->get(route('book.index'))
+            ->assertOk()
+            ->assertSeeText('Terapeuta Aprobada')
+            ->assertDontSeeText('Terapeuta Pendiente');
+    }
+
+    public function test_public_booking_cannot_create_appointment_after_approval_is_revoked(): void
+    {
+        Bus::fake();
+
+        [$therapist, $sessionType] = $this->makeBookableTherapist();
+
+        $therapist->forceFill([
+            'is_approved' => false,
+        ])->save();
+
+        $response = $this
+            ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00'))
+            ->post(route('book.store'), [
+                'patient_name' => 'Paciente Pendiente',
+                'patient_email' => 'pending@example.test',
+            ]);
+
+        $response->assertRedirect(route('book.index'));
 
         $this->assertDatabaseCount('appointments', 0);
         Bus::assertNotDispatched(SendBookingConfirmedEmails::class);
@@ -180,6 +302,7 @@ final class CriticalBookingFlowTest extends TestCase
             ->create([
                 'timezone' => 'America/Argentina/Buenos_Aires',
                 'is_active' => true,
+                'is_approved' => true,
             ]);
 
         $sessionType = SessionType::factory()
@@ -224,6 +347,7 @@ final class CriticalBookingFlowTest extends TestCase
             'booking.session_type_id' => $sessionType->id,
             'booking.date' => '2026-07-06',
             'booking.starts_at_utc' => $startsAtUtc,
+            'booking.patient_timezone' => 'America/Argentina/Buenos_Aires',
         ];
     }
 }

@@ -21,9 +21,10 @@ final class TherapistFactory extends Factory
 
         return [
             'timezone' => $timezones[array_rand($timezones)],
-            'google_meet_link' => 'https://meet.google.com/' . fake()->regexify('[a-z]{3}-[a-z]{4}-[a-z]{3}'),
+            'google_meet_link' => 'https://meet.google.com/'.fake()->regexify('[a-z]{3}-[a-z]{4}-[a-z]{3}'),
             'bio' => fake()->paragraphs(3, true),
             'is_active' => fake()->boolean(80),
+            'is_approved' => true,
             'avatar_url' => fake()->imageUrl(200, 200, 'people'),
         ];
     }

@@ -32,9 +32,9 @@ final class RegisteredUserController extends Controller
         /** @var array{name: string, email: string, password: string, timezone: string} $validated */
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'timezone' => ['required', 'string', new ValidTimezone()],
+            'timezone' => ['required', 'string', new ValidTimezone],
         ]);
 
         $timezone = ValidTimezone::normalize($validated['timezone']) ?? 'UTC';
@@ -53,6 +53,7 @@ final class RegisteredUserController extends Controller
             $user->therapist()->create([
                 'timezone' => $timezone,
                 'is_active' => true,
+                'is_approved' => false,
             ]);
         }
 

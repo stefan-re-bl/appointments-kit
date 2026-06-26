@@ -36,6 +36,7 @@ final class RegistrationTest extends TestCase
         $this->assertDatabaseHas('therapists', [
             'timezone' => 'America/Argentina/Buenos_Aires',
             'is_active' => true,
+            'is_approved' => false,
         ]);
     }
 }

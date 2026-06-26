@@ -8,13 +8,14 @@ use App\Rules\ValidTimezone;
 use Database\Factories\TherapistFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use InvalidArgumentException;
 
-#[Fillable(['timezone', 'google_meet_link', 'bio', 'is_active', 'avatar_url'])]
+#[Fillable(['timezone', 'google_meet_link', 'bio', 'is_active', 'is_approved', 'avatar_url'])]
 #[Hidden([])]
 class Therapist extends Model
 {
@@ -28,7 +29,16 @@ class Therapist extends Model
     {
         return [
             'is_active' => 'boolean',
+            'is_approved' => 'boolean',
         ];
+    }
+
+    public function scopePubliclyBookable(Builder $query): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->where('is_approved', true)
+            ->whereHas('user', fn (Builder $query) => $query->where('role', 'therapist'));
     }
 
     public function user(): BelongsTo

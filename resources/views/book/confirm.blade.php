@@ -31,6 +31,11 @@
                 <span class="font-medium text-gray-900">{{ $localTime }}</span>
             </div>
 
+            <div class="flex justify-between gap-6">
+                <span class="text-gray-500">{{ __('booking_timezone.label') }}:</span>
+                <span class="font-medium text-gray-900 text-right">{{ $patientTimezone }}</span>
+            </div>
+
             <div class="flex justify-between">
                 <span class="text-gray-500">{{ __('app.duration') }}:</span>
                 <span class="font-medium text-gray-900">{{ $sessionType->duration_minutes }} min</span>
@@ -45,8 +50,6 @@
 
     <form action="{{ route('book.store') }}" method="POST" class="mt-8">
         @csrf
-
-        <input type="hidden" name="patient_timezone" id="patient_timezone" value="{{ old('patient_timezone', 'UTC') }}">
 
         <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-4">
             <h3 class="font-medium text-gray-900 mb-2">{{ __('app.your_details') }}</h3>
@@ -83,9 +86,6 @@
                 @enderror
             </div>
 
-            @error('patient_timezone')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
         </div>
 
         <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-md p-4">
@@ -101,6 +101,9 @@
 
                     <div class="mt-2 text-sm text-yellow-700">
                         <p>{{ __('app.payment_coordination_text') }}</p>
+                        <a href="{{ route('information.payment-and-cancellation') }}" class="mt-2 inline-flex font-semibold underline hover:text-yellow-900" target="_blank" rel="noopener">
+                            {{ __('information.booking_policy_link') }}
+                        </a>
                     </div>
                 </div>
             </div>
@@ -112,15 +115,4 @@
     </form>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const timezoneInput = document.getElementById('patient_timezone');
-
-        if (! timezoneInput) {
-            return;
-        }
-
-        timezoneInput.value = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-    });
-</script>
 @endsection

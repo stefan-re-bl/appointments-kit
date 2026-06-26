@@ -18,6 +18,18 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 
+Route::view('/how-it-works', 'information.show', ['page' => 'how_it_works'])
+    ->name('information.how-it-works');
+
+Route::view('/faq', 'information.show', ['page' => 'faq'])
+    ->name('information.faq');
+
+Route::view('/patients', 'information.show', ['page' => 'patients'])
+    ->name('information.patients');
+
+Route::view('/payment-and-cancellation', 'information.show', ['page' => 'payment_and_cancellation'])
+    ->name('information.payment-and-cancellation');
+
 // --- Página pública "Mi Cita" (Ticket #11) ---
 Route::get('/appointment/{token}', PublicAppointmentController::class)
     ->name('appointments.public.show');
@@ -60,6 +72,12 @@ Route::middleware(['auth', 'verified', 'admin'])
 
         Route::resource('therapists', AdminTherapistController::class)
             ->only(['index', 'edit', 'update']);
+
+        Route::patch('/therapists/{therapist}/approve', [AdminTherapistController::class, 'approve'])
+            ->name('therapists.approve');
+
+        Route::patch('/therapists/{therapist}/revoke-approval', [AdminTherapistController::class, 'revokeApproval'])
+            ->name('therapists.revoke-approval');
 
         Route::get('/appointments', [AdminAppointmentController::class, 'index'])
             ->name('appointments.index');
@@ -117,7 +135,7 @@ Route::prefix('book')->name('book.')->group(function (): void {
 
 // Ruta API interna para Alpine.js
 // Mapeada a BookingController para centralizar la lógica del flujo público.
-// Se mantiene en 'web' para acceder a cookies (user_timezone) y sesión.
+// Se mantiene en 'web' para compartir sesión y protecciones del flujo público.
 Route::get('/api/slots', [BookingController::class, 'getSlotsApi'])
     ->middleware('throttle:booking')
     ->name('api.slots.index');

@@ -25,16 +25,16 @@
             </a>
 
             <nav class="hidden items-center gap-7 lg:flex" aria-label="{{ __('app.home.nav.aria') }}">
-                <a href="#how-it-works" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
+                <a href="{{ route('information.how-it-works') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
                     {{ __('app.home.nav.how_it_works') }}
                 </a>
-                <a href="#benefits" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
-                    {{ __('app.home.nav.benefits') }}
+                <a href="{{ route('information.patients') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
+                    {{ __('information.nav.patients') }}
                 </a>
-                <a href="#therapists" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
-                    {{ __('app.home.nav.therapists') }}
+                <a href="{{ route('information.payment-and-cancellation') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
+                    {{ __('information.nav.payment_and_cancellation') }}
                 </a>
-                <a href="#faq" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
+                <a href="{{ route('information.faq') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
                     {{ __('app.home.nav.faq') }}
                 </a>
                 <a href="#contact" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
@@ -93,10 +93,10 @@
             class="border-t border-gray-200 bg-white px-4 py-5 lg:hidden"
         >
             <nav class="flex flex-col gap-4" aria-label="{{ __('app.home.nav.mobile_aria') }}">
-                <a href="#how-it-works" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.how_it_works') }}</a>
-                <a href="#benefits" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.benefits') }}</a>
-                <a href="#therapists" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.therapists') }}</a>
-                <a href="#faq" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.faq') }}</a>
+                <a href="{{ route('information.how-it-works') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.how_it_works') }}</a>
+                <a href="{{ route('information.patients') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('information.nav.patients') }}</a>
+                <a href="{{ route('information.payment-and-cancellation') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('information.nav.payment_and_cancellation') }}</a>
+                <a href="{{ route('information.faq') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.faq') }}</a>
                 <a href="#contact" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.contact') }}</a>
                 <div class="mt-2 flex items-center justify-between border-t border-gray-200 pt-4">
                     <a href="{{ request()->fullUrlWithQuery(['lang' => app()->getLocale() === 'es' ? 'en' : 'es']) }}" class="font-semibold text-gray-700">
@@ -126,9 +126,10 @@
             <div>
                 <p class="text-sm font-semibold text-white">{{ __('app.home.footer.explore') }}</p>
                 <div class="mt-4 flex flex-col gap-3 text-sm">
-                    <a href="#how-it-works" class="hover:text-white">{{ __('app.home.nav.how_it_works') }}</a>
-                    <a href="#therapists" class="hover:text-white">{{ __('app.home.nav.therapists') }}</a>
-                    <a href="#faq" class="hover:text-white">{{ __('app.home.nav.faq') }}</a>
+                    <a href="{{ route('information.how-it-works') }}" class="hover:text-white">{{ __('app.home.nav.how_it_works') }}</a>
+                    <a href="{{ route('information.patients') }}" class="hover:text-white">{{ __('information.nav.patients') }}</a>
+                    <a href="{{ route('information.payment-and-cancellation') }}" class="hover:text-white">{{ __('information.nav.payment_and_cancellation') }}</a>
+                    <a href="{{ route('information.faq') }}" class="hover:text-white">{{ __('app.home.nav.faq') }}</a>
                 </div>
             </div>
 
