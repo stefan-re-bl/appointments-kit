@@ -37,7 +37,7 @@
                 <a href="{{ route('information.faq') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
                     {{ __('app.home.nav.faq') }}
                 </a>
-                <a href="#contact" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
+                <a href="{{ route('contact.create') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
                     {{ __('app.home.nav.contact') }}
                 </a>
             </nav>
@@ -97,7 +97,7 @@
                 <a href="{{ route('information.patients') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('information.nav.patients') }}</a>
                 <a href="{{ route('information.payment-and-cancellation') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('information.nav.payment_and_cancellation') }}</a>
                 <a href="{{ route('information.faq') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.faq') }}</a>
-                <a href="#contact" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.contact') }}</a>
+                <a href="{{ route('contact.create') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.contact') }}</a>
                 <div class="mt-2 flex items-center justify-between border-t border-gray-200 pt-4">
                     <a href="{{ request()->fullUrlWithQuery(['lang' => app()->getLocale() === 'es' ? 'en' : 'es']) }}" class="font-semibold text-gray-700">
                         {{ app()->getLocale() === 'es' ? 'English' : 'Español' }}
@@ -138,7 +138,7 @@
                 <div class="mt-4 flex flex-col gap-3 text-sm">
                     <a href="{{ route('book.index') }}" class="hover:text-white">{{ __('app.home.nav.book') }}</a>
                     <a href="{{ route('login') }}" class="hover:text-white">{{ __('app.home.nav.login') }}</a>
-                    <a href="mailto:{{ config('mail.from.address') }}" class="hover:text-white">{{ __('app.home.footer.contact') }}</a>
+                    <a href="{{ route('contact.create') }}" class="hover:text-white">{{ __('app.home.footer.contact') }}</a>
                 </div>
             </div>
 

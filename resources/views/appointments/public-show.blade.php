@@ -214,11 +214,13 @@
                                 </a>
                             @endif
 
-                            @if (! $canJoinMeet && ! $canCancel && ! $canReschedule && ! $canContactTherapist)
-                                <p class="text-sm text-slate-600">
-                                    {{ __('app.appointment_public.actions.no_actions_available') }}
-                                </p>
-                            @endif
+                            <a
+                                href="{{ route('contact.create', ['type' => 'booking_problem']) }}"
+                                class="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-slate-50"
+                            >
+                                {{ __('app.appointment_public.actions.contact_support') }}
+                            </a>
+
                         </div>
                     </section>
                 </div>

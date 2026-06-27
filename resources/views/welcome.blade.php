@@ -130,9 +130,14 @@
         </div>
 
         <div class="mt-12 text-center">
-            <a href="{{ route('book.index') }}" class="inline-flex rounded-md bg-coral-700 px-6 py-3.5 font-semibold text-white hover:bg-coral-800">
-                {{ __('app.home.faq.cta') }}
-            </a>
+            <div class="flex flex-col justify-center gap-3 sm:flex-row">
+                <a href="{{ route('book.index') }}" class="inline-flex rounded-md bg-coral-700 px-6 py-3.5 font-semibold text-white hover:bg-coral-800">
+                    {{ __('app.home.faq.cta') }}
+                </a>
+                <a href="{{ route('contact.create') }}" class="inline-flex rounded-md border border-gray-300 bg-white px-6 py-3.5 font-semibold text-gray-800 hover:bg-gray-50">
+                    {{ __('app.home.faq.contact_cta') }}
+                </a>
+            </div>
         </div>
     </div>
 </section>

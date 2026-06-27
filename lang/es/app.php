@@ -187,9 +187,46 @@ return [
         'actions' => [
             'join_meet' => 'Entrar a Google Meet',
             'contact_therapist' => 'Contactar terapeuta',
+            'contact_support' => 'Contactar soporte',
             'contact_subject' => 'Consulta sobre mi cita',
             'no_actions_available' => 'No hay acciones disponibles para esta cita.',
             'back_home' => 'Volver al inicio',
+        ],
+    ],
+
+    'contact' => [
+        'meta_title' => 'Contacto - Umbralia',
+        'meta_description' => 'Contactá a la administración de Umbralia por dudas, problemas de reserva o consultas generales.',
+        'eyebrow' => 'Soporte',
+        'title' => 'Contactá a Umbralia',
+        'description' => 'Completá el formulario y la administración revisará tu consulta. Para dudas sobre una cita, incluí los datos que ayuden a identificarla.',
+        'validation_title' => 'Revisá los datos del formulario.',
+        'submit' => 'Enviar consulta',
+        'success' => 'Recibimos tu consulta. La administración la revisará a la brevedad.',
+        'fields' => [
+            'name' => 'Nombre',
+            'email' => 'Email',
+            'inquiry_type' => 'Tipo de consulta',
+            'message' => 'Mensaje',
+            'company' => 'Empresa',
+        ],
+        'inquiry_types' => [
+            'booking_problem' => 'Problema con una reserva',
+            'payment_problem' => 'Problema con un pago',
+            'general' => 'Consulta general',
+            'therapist_application' => 'Soy terapeuta y quiero participar',
+            'other' => 'Otro',
+        ],
+        'statuses' => [
+            'open' => 'Abierta',
+            'in_review' => 'En revisión',
+            'resolved' => 'Resuelta',
+        ],
+        'email' => [
+            'subject' => 'Nueva consulta de soporte',
+            'title' => 'Nueva consulta de soporte',
+            'intro' => 'Se recibió una nueva consulta desde el formulario público.',
+            'admin_button' => 'Ver consultas',
         ],
     ],
 
@@ -282,6 +319,7 @@ return [
         'nav' => [
             'appointments' => 'Citas',
             'therapists' => 'Terapeutas',
+            'contact_messages' => 'Soporte',
             'main_dashboard' => 'Panel principal',
         ],
         'common' => [
@@ -310,6 +348,20 @@ return [
                 'all_payment_statuses' => 'Todos los pagos',
                 'date_from' => 'Desde',
                 'date_to' => 'Hasta',
+                'apply' => 'Aplicar filtros',
+                'reset' => 'Limpiar filtros',
+            ],
+        ],
+        'contact_messages' => [
+            'title' => 'Consultas de soporte',
+            'list_title' => 'Consultas recibidas',
+            'empty' => 'No hay consultas que coincidan con los filtros seleccionados.',
+            'status_label' => 'Estado de la consulta',
+            'update_status' => 'Actualizar estado',
+            'updated' => 'El estado de la consulta fue actualizado correctamente.',
+            'filters' => [
+                'status' => 'Estado',
+                'all_statuses' => 'Todos los estados',
                 'apply' => 'Aplicar filtros',
                 'reset' => 'Limpiar filtros',
             ],
@@ -467,6 +519,7 @@ return [
                 ],
             ],
             'cta' => 'Comenzar reserva',
+            'contact_cta' => 'Contactar soporte',
         ],
         'footer' => [
             'description' => 'Plataforma de gestión de turnos para atención psicológica online.',

@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\AppointmentReportController;
+use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
 use App\Http\Controllers\Admin\TherapistController as AdminTherapistController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicAppointmentCancellationController;
@@ -43,6 +45,13 @@ Route::view('/privacy', 'legal.show', ['page' => 'privacy'])
 
 Route::view('/emergency-notice', 'legal.show', ['page' => 'emergency'])
     ->name('legal.emergency-notice');
+
+Route::get('/contact', [ContactMessageController::class, 'create'])
+    ->name('contact.create');
+
+Route::post('/contact', [ContactMessageController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('contact.store');
 
 Route::get('/therapists/{slug}', PublicTherapistProfileController::class)
     ->name('therapists.show');
@@ -96,6 +105,12 @@ Route::middleware(['auth', 'verified', 'admin'])
 
         Route::get('/appointments', [AdminAppointmentController::class, 'index'])
             ->name('appointments.index');
+
+        Route::get('/contact-messages', [AdminContactMessageController::class, 'index'])
+            ->name('contact-messages.index');
+
+        Route::patch('/contact-messages/{contactMessage}', [AdminContactMessageController::class, 'update'])
+            ->name('contact-messages.update');
 
         Route::get('/reports/appointments', [AppointmentReportController::class, 'index'])
             ->name('reports.appointments.index');

@@ -63,6 +63,18 @@
                 </a>
 
                 <a
+                    href="{{ route('admin.contact-messages.index') }}"
+                    @class([
+                        'flex items-center rounded-xl px-4 py-3 text-sm font-medium transition',
+                        'bg-indigo-500/15 text-indigo-200 ring-1 ring-indigo-400/20' => request()->routeIs('admin.contact-messages.*'),
+                        'text-slate-300 hover:bg-white/10 hover:text-white' => ! request()->routeIs('admin.contact-messages.*'),
+                    ])
+                >
+                    <span class="mr-3">✉</span>
+                    {{ __('app.admin.nav.contact_messages') }}
+                </a>
+
+                <a
                     href="{{ route('admin.reports.appointments.index') }}"
                     @class([
                         'flex items-center rounded-xl px-4 py-3 text-sm font-medium transition',

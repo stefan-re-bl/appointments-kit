@@ -189,9 +189,46 @@ return [
         'actions' => [
             'join_meet' => 'Join Google Meet',
             'contact_therapist' => 'Contact therapist',
+            'contact_support' => 'Contact support',
             'contact_subject' => 'Question about my appointment',
             'no_actions_available' => 'There are no actions available for this appointment.',
             'back_home' => 'Back home',
+        ],
+    ],
+
+    'contact' => [
+        'meta_title' => 'Contact - Umbralia',
+        'meta_description' => 'Contact Umbralia administration for questions, booking issues or general inquiries.',
+        'eyebrow' => 'Support',
+        'title' => 'Contact Umbralia',
+        'description' => 'Complete the form and administration will review your message. For appointment questions, include the details that help identify it.',
+        'validation_title' => 'Review the form details.',
+        'submit' => 'Send message',
+        'success' => 'We received your message. Administration will review it shortly.',
+        'fields' => [
+            'name' => 'Name',
+            'email' => 'Email',
+            'inquiry_type' => 'Inquiry type',
+            'message' => 'Message',
+            'company' => 'Company',
+        ],
+        'inquiry_types' => [
+            'booking_problem' => 'Problem with a booking',
+            'payment_problem' => 'Problem with a payment',
+            'general' => 'General inquiry',
+            'therapist_application' => 'I am a therapist and want to participate',
+            'other' => 'Other',
+        ],
+        'statuses' => [
+            'open' => 'Open',
+            'in_review' => 'In review',
+            'resolved' => 'Resolved',
+        ],
+        'email' => [
+            'subject' => 'New support inquiry',
+            'title' => 'New support inquiry',
+            'intro' => 'A new inquiry was submitted through the public contact form.',
+            'admin_button' => 'View inquiries',
         ],
     ],
 
@@ -284,6 +321,7 @@ return [
         'nav' => [
             'appointments' => 'Appointments',
             'therapists' => 'Therapists',
+            'contact_messages' => 'Support',
             'main_dashboard' => 'Main dashboard',
         ],
         'common' => [
@@ -312,6 +350,20 @@ return [
                 'all_payment_statuses' => 'All payments',
                 'date_from' => 'From',
                 'date_to' => 'To',
+                'apply' => 'Apply filters',
+                'reset' => 'Reset filters',
+            ],
+        ],
+        'contact_messages' => [
+            'title' => 'Support inquiries',
+            'list_title' => 'Received inquiries',
+            'empty' => 'No inquiries match the selected filters.',
+            'status_label' => 'Inquiry status',
+            'update_status' => 'Update status',
+            'updated' => 'The inquiry status was updated successfully.',
+            'filters' => [
+                'status' => 'Status',
+                'all_statuses' => 'All statuses',
                 'apply' => 'Apply filters',
                 'reset' => 'Reset filters',
             ],
@@ -469,6 +521,7 @@ return [
                 ],
             ],
             'cta' => 'Start booking',
+            'contact_cta' => 'Contact support',
         ],
         'footer' => [
             'description' => 'Appointment management platform for online psychological care.',
