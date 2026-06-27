@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Middleware\SetLocale;   // <-- Import añadido Ticket #7
-use App\Http\Middleware\SetTimezone; // <-- Import añadido Ticket #2
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\SetTimezone;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,15 +14,17 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withCommands([
+        __DIR__.'/../app/Console/Commands',
+    ])
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'admin' => EnsureUserIsAdmin::class,
         ]);
 
-        // Añadimos los middleware al grupo 'web' para que se ejecuten en cada petición
         $middleware->web(append: [
             SetTimezone::class,
-            SetLocale::class, // <-- Añadido en Ticket #7
+            SetLocale::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
