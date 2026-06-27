@@ -115,7 +115,7 @@
     </main>
 
     <footer id="contact" class="border-t border-gray-200 bg-gray-950 text-gray-300">
-        <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-3 lg:px-8">
+        <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
             <div>
                 <p class="text-xl font-bold text-white">Umbralia</p>
                 <p class="mt-3 max-w-sm text-sm leading-6 text-gray-400">
@@ -141,12 +141,21 @@
                     <a href="mailto:{{ config('mail.from.address') }}" class="hover:text-white">{{ __('app.home.footer.contact') }}</a>
                 </div>
             </div>
+
+            <div>
+                <p class="text-sm font-semibold text-white">{{ __('legal.footer.title') }}</p>
+                <div class="mt-4 flex flex-col gap-3 text-sm">
+                    <a href="{{ route('legal.terms') }}" class="hover:text-white">{{ __('legal.nav.terms') }}</a>
+                    <a href="{{ route('legal.privacy') }}" class="hover:text-white">{{ __('legal.nav.privacy') }}</a>
+                    <a href="{{ route('legal.emergency-notice') }}" class="hover:text-white">{{ __('legal.nav.emergency') }}</a>
+                </div>
+            </div>
         </div>
 
         <div class="border-t border-gray-800">
             <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-xs text-gray-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
                 <p>&copy; {{ date('Y') }} Umbralia. {{ __('app.all_rights_reserved') }}</p>
-                <p>{{ __('app.home.footer.payment_notice') }}</p>
+                <p>{{ __('legal.footer.disclaimer') }}</p>
             </div>
         </div>
     </footer>

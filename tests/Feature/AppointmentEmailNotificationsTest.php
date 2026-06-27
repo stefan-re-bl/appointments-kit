@@ -11,6 +11,7 @@ use App\Enums\PaymentStatus;
 use App\Enums\Role;
 use App\Mail\AppointmentCancelled;
 use App\Mail\AppointmentRescheduled;
+use App\Mail\BookingConfirmed;
 use App\Models\Appointment;
 use App\Models\SessionType;
 use App\Models\Therapist;
@@ -124,8 +125,23 @@ class AppointmentEmailNotificationsTest extends TestCase
         $this->assertSame('America/Argentina/Buenos_Aires', $data['recipientTimezone']);
     }
 
+    public function test_booking_confirmation_email_includes_legal_disclaimer_and_links(): void
+    {
+        $appointment = $this->createAppointment();
+
+        $html = (new BookingConfirmed(
+            appointment: $appointment,
+            recipientType: BookingConfirmed::RECIPIENT_PATIENT,
+        ))->render();
+
+        $this->assertStringContainsString(__('legal.email.patient_disclaimer'), $html);
+        $this->assertStringContainsString(route('legal.terms'), $html);
+        $this->assertStringContainsString(route('legal.privacy'), $html);
+        $this->assertStringContainsString(route('legal.emergency-notice'), $html);
+    }
+
     /**
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      */
     private function createAppointment(array $overrides = []): Appointment
     {

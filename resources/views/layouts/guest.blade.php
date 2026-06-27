@@ -53,12 +53,16 @@
             </p>
 
             <div class="mt-4 flex space-x-6 md:mt-0">
-                <a href="#" class="text-sm text-gray-400 hover:text-gray-500">
-                    Privacy
+                <a href="{{ route('legal.privacy') }}" class="text-sm text-gray-400 hover:text-gray-500">
+                    {{ __('legal.nav.privacy') }}
                 </a>
 
-                <a href="#" class="text-sm text-gray-400 hover:text-gray-500">
-                    Terms
+                <a href="{{ route('legal.terms') }}" class="text-sm text-gray-400 hover:text-gray-500">
+                    {{ __('legal.nav.terms') }}
+                </a>
+
+                <a href="{{ route('legal.emergency-notice') }}" class="text-sm text-gray-400 hover:text-gray-500">
+                    {{ __('legal.nav.emergency') }}
                 </a>
             </div>
         </div>

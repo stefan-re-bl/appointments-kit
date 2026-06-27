@@ -109,6 +109,51 @@
             </div>
         </div>
 
+        <div class="mt-6 rounded-md border border-red-200 bg-red-50 p-4">
+            <h3 class="text-sm font-semibold text-red-900">{{ __('legal.booking.emergency_title') }}</h3>
+            <p class="mt-2 text-sm leading-6 text-red-800">{{ __('legal.booking.emergency_text') }}</p>
+            <a href="{{ route('legal.emergency-notice') }}" class="mt-2 inline-flex text-sm font-semibold underline text-red-900 hover:text-red-700" target="_blank" rel="noopener">
+                {{ __('legal.booking.emergency_link') }}
+            </a>
+        </div>
+
+        <div class="mt-6 rounded-md border border-gray-200 bg-white p-4 space-y-4">
+            <label class="flex gap-3 text-sm text-gray-700">
+                <input
+                    type="checkbox"
+                    name="accepted_terms"
+                    value="1"
+                    @checked(old('accepted_terms'))
+                    class="mt-1 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    required
+                >
+                <span>
+                    {{ __('legal.booking.accept_terms_prefix') }}
+                    <a href="{{ route('legal.terms') }}" class="font-semibold text-indigo-700 underline" target="_blank" rel="noopener">{{ __('legal.nav.terms') }}</a>
+                    {{ __('legal.booking.accept_terms_and') }}
+                    <a href="{{ route('legal.privacy') }}" class="font-semibold text-indigo-700 underline" target="_blank" rel="noopener">{{ __('legal.nav.privacy') }}</a>.
+                </span>
+            </label>
+            @error('accepted_terms')
+                <p class="text-sm text-red-600">{{ $message }}</p>
+            @enderror
+
+            <label class="flex gap-3 text-sm text-gray-700">
+                <input
+                    type="checkbox"
+                    name="accepted_email_communications"
+                    value="1"
+                    @checked(old('accepted_email_communications'))
+                    class="mt-1 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    required
+                >
+                <span>{{ __('legal.booking.accept_email_communications') }}</span>
+            </label>
+            @error('accepted_email_communications')
+                <p class="text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
         <button type="submit" class="w-full mt-6 bg-green-600 text-white py-3 px-4 rounded-md font-bold text-lg hover:bg-green-700 transition shadow-lg flex justify-center items-center">
             {{ __('app.confirm_and_book') }}
         </button>

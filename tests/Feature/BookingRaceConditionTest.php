@@ -34,6 +34,8 @@ class BookingRaceConditionTest extends TestCase
 
         $this->therapist = Therapist::factory()->create([
             'user_id' => $user->id,
+            'is_active' => true,
+            'is_approved' => true,
         ]);
 
         $this->sessionType = SessionType::factory()->create([
@@ -48,6 +50,7 @@ class BookingRaceConditionTest extends TestCase
             'patient_name' => 'Paciente Test',
             'patient_email' => 'test@example.com',
             'patient_timezone' => 'America/Argentina/Buenos_Aires',
+            'terms_accepted_at' => Carbon::now('UTC'),
             'starts_at' => $startsAt,
             'ends_at' => $startsAt->copy()->addMinutes(60),
             'price' => 50.00,

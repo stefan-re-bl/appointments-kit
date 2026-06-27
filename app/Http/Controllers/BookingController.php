@@ -320,6 +320,8 @@ final class BookingController extends Controller implements HasMiddleware
         $validated = $request->validate([
             'patient_name' => ['required', 'string', 'max:255'],
             'patient_email' => ['required', 'email', 'max:255'],
+            'accepted_terms' => ['accepted'],
+            'accepted_email_communications' => ['accepted'],
         ]);
 
         $patientTimezone = ValidTimezone::normalize(session('booking.patient_timezone'));
@@ -357,6 +359,7 @@ final class BookingController extends Controller implements HasMiddleware
             'patient_name' => $validated['patient_name'],
             'patient_email' => $validated['patient_email'],
             'patient_timezone' => $patientTimezone,
+            'terms_accepted_at' => now('UTC'),
             'price' => $sessionType->price,
             'currency' => $sessionType->currency,
             'starts_at' => $startUtc->toDateTimeString(),

@@ -82,6 +82,8 @@ final class PublicTherapistApprovalBookingTest extends TestCase
             ->post(route('book.store'), [
                 'patient_name' => 'Paciente Pendiente',
                 'patient_email' => 'pending@example.test',
+                'accepted_terms' => '1',
+                'accepted_email_communications' => '1',
             ]);
 
         $response->assertRedirect(route('book.index'));

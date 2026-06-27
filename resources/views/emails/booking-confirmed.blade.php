@@ -20,6 +20,8 @@
 
 @if ($recipientType === \App\Mail\BookingConfirmed::RECIPIENT_PATIENT)
 {{ __('app.emails.booking_confirmed.payment_patient_notice') }}
+
+{{ __('legal.email.patient_disclaimer') }}
 @else
 {{ __('app.emails.booking_confirmed.payment_therapist_notice') }}
 @endif
@@ -39,6 +41,8 @@
 @endif
 
 {{ __('app.emails.booking_confirmed.footer') }}
+
+[{{ __('legal.nav.terms') }}]({{ route('legal.terms') }}) · [{{ __('legal.nav.privacy') }}]({{ route('legal.privacy') }}) · [{{ __('legal.nav.emergency') }}]({{ route('legal.emergency-notice') }})
 
 {{ config('app.name') }}
 </x-mail::message>

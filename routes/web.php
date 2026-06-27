@@ -32,6 +32,18 @@ Route::view('/patients', 'information.show', ['page' => 'patients'])
 Route::view('/payment-and-cancellation', 'information.show', ['page' => 'payment_and_cancellation'])
     ->name('information.payment-and-cancellation');
 
+Route::view('/legal', 'legal.show', ['page' => 'index'])
+    ->name('legal.index');
+
+Route::view('/terms', 'legal.show', ['page' => 'terms'])
+    ->name('legal.terms');
+
+Route::view('/privacy', 'legal.show', ['page' => 'privacy'])
+    ->name('legal.privacy');
+
+Route::view('/emergency-notice', 'legal.show', ['page' => 'emergency'])
+    ->name('legal.emergency-notice');
+
 Route::get('/therapists/{slug}', PublicTherapistProfileController::class)
     ->name('therapists.show');
 

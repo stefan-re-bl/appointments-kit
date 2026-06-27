@@ -23,6 +23,7 @@ use Illuminate\Support\Str;
     'patient_name',
     'patient_email',
     'patient_timezone',
+    'terms_accepted_at',
     'starts_at',
     'ends_at',
     'price',
@@ -44,6 +45,7 @@ class Appointment extends Model
         return [
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
+            'terms_accepted_at' => 'datetime',
             'paid_at' => 'datetime',
             'reminder_sent_at' => 'datetime',
             'status' => AppointmentStatus::class,
