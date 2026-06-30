@@ -12,7 +12,28 @@
         x-data="{
             detected: false,
             detectionFailed: false,
+            countryRegions: @js($countryRegions),
+            regionLabels: @js($regionLabels),
+            selectedCountry: @js(old('patient_country', $patientCountry)),
+            selectedRegion: @js(old('patient_region', $patientRegion)),
+            timezoneLocations: @js($timezoneLocations),
             timezoneConfirmed: @js($timezoneWasConfirmed),
+            regionOptions() {
+                return this.countryRegions[this.selectedCountry] ?? {};
+            },
+            hasRegions() {
+                return Object.keys(this.regionOptions()).length > 0;
+            },
+            syncRegion() {
+                if (! this.hasRegions()) {
+                    this.selectedRegion = '';
+                    return;
+                }
+
+                if (! this.regionOptions()[this.selectedRegion]) {
+                    this.selectedRegion = '';
+                }
+            },
             detectTimezone() {
                 if (this.timezoneConfirmed) {
                     return;
@@ -22,17 +43,18 @@
                     const detectedTimezone = window.Intl
                         ? Intl.DateTimeFormat().resolvedOptions().timeZone
                         : null;
-                    const timezoneOptionExists = detectedTimezone
-                        ? Array.from(this.$refs.timezone.options)
-                            .some(option => option.value === detectedTimezone)
-                        : false;
+                    const detectedLocation = detectedTimezone
+                        ? this.timezoneLocations[detectedTimezone]
+                        : null;
 
-                    if (! timezoneOptionExists) {
+                    if (! detectedLocation) {
                         this.detectionFailed = true;
                         return;
                     }
 
-                    this.$refs.timezone.value = detectedTimezone;
+                    this.selectedCountry = detectedLocation.country;
+                    this.selectedRegion = detectedLocation.region ?? '';
+                    this.syncRegion();
                     this.detected = true;
                 } catch (error) {
                     this.detectionFailed = true;
@@ -44,32 +66,58 @@
         @csrf
         <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200 space-y-6">
             <div>
-                <label for="patient_timezone" class="block text-sm font-medium text-gray-700 mb-2">
-                    {{ __('booking_timezone.label') }}
+                <label for="patient_country" class="block text-sm font-medium text-gray-700 mb-2">
+                    {{ __('booking_timezone.country_label') }}
                 </label>
                 <select
-                    name="patient_timezone"
-                    id="patient_timezone"
-                    x-ref="timezone"
+                    name="patient_country"
+                    id="patient_country"
+                    x-ref="country"
+                    x-model="selectedCountry"
+                    @change="syncRegion()"
                     required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-900 @error('patient_timezone') border-red-500 @enderror"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-900 @error('patient_country') border-red-500 @enderror"
                 >
-                    @foreach ($timezones as $timezone)
-                        <option value="{{ $timezone }}" @selected(old('patient_timezone', $patientTimezone) === $timezone)>
-                            {{ $timezone }}
+                    @foreach ($countries as $countryCode => $timezone)
+                        <option value="{{ $countryCode }}" @selected(old('patient_country', $patientCountry) === $countryCode)>
+                            {{ __('booking_timezone.countries.'.$countryCode) }}
                         </option>
                     @endforeach
                 </select>
 
-                <p class="mt-2 text-sm text-gray-600">{{ __('booking_timezone.help') }}</p>
+                <p class="mt-2 text-sm text-gray-600">{{ __('booking_timezone.country_help') }}</p>
                 <p x-show="detected" x-cloak class="mt-2 text-sm text-green-700">
-                    {{ __('booking_timezone.detected') }}
+                    {{ __('booking_timezone.country_detected') }}
                 </p>
                 <p x-show="detectionFailed" x-cloak class="mt-2 text-sm text-amber-700">
-                    {{ __('booking_timezone.detection_failed') }}
+                    {{ __('booking_timezone.country_detection_failed') }}
                 </p>
 
-                @error('patient_timezone')
+                @error('patient_country')
+                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div x-show="hasRegions()" x-cloak>
+                <label for="patient_region" class="block text-sm font-medium text-gray-700 mb-2">
+                    {{ __('booking_timezone.region_label') }}
+                </label>
+                <select
+                    name="patient_region"
+                    id="patient_region"
+                    x-model="selectedRegion"
+                    :required="hasRegions()"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-900 @error('patient_region') border-red-500 @enderror"
+                >
+                    <option value="">{{ __('booking_timezone.region_placeholder') }}</option>
+                    <template x-for="(timezone, regionCode) in regionOptions()" :key="regionCode">
+                        <option :value="regionCode" x-text="regionLabels[selectedCountry][regionCode]"></option>
+                    </template>
+                </select>
+
+                <p class="mt-2 text-sm text-gray-600">{{ __('booking_timezone.region_help') }}</p>
+
+                @error('patient_region')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>

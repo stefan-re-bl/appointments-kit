@@ -109,7 +109,7 @@ final class CriticalBookingFlowTest extends TestCase
         );
     }
 
-    public function test_public_booking_without_timezone_cookie_uses_explicit_form_timezone(): void
+    public function test_public_booking_without_timezone_cookie_uses_selected_country_timezone(): void
     {
         Bus::fake();
 
@@ -122,9 +122,12 @@ final class CriticalBookingFlowTest extends TestCase
             ])
             ->post(route('book.store.date'), [
                 'date' => '2026-07-06',
-                'patient_timezone' => 'America/Argentina/Buenos_Aires',
+                'patient_country' => 'AR',
+                'patient_region' => 'AR-BUE',
             ])
             ->assertRedirect(route('book.time'))
+            ->assertSessionHas('booking.patient_country', 'AR')
+            ->assertSessionHas('booking.patient_region', 'AR-BUE')
             ->assertSessionHas('booking.patient_timezone', 'America/Argentina/Buenos_Aires');
 
         $response = $this
@@ -134,7 +137,6 @@ final class CriticalBookingFlowTest extends TestCase
             ->post(route('book.store'), [
                 'patient_name' => 'Paciente sin cookie',
                 'patient_email' => 'no-cookie@example.test',
-                'patient_timezone' => 'Asia/Tokyo',
             ] + $this->legalAcceptance());
 
         $response->assertRedirect(route('book.success'));
@@ -145,7 +147,7 @@ final class CriticalBookingFlowTest extends TestCase
         ]);
     }
 
-    public function test_date_step_exposes_editable_timezone_selector_and_detection_fallback(): void
+    public function test_date_step_exposes_editable_country_selector_and_detection_fallback(): void
     {
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
@@ -156,13 +158,36 @@ final class CriticalBookingFlowTest extends TestCase
             ])
             ->get(route('book.date'))
             ->assertOk()
-            ->assertSee('name="patient_timezone"', false)
-            ->assertSee('America/Argentina/Buenos_Aires')
-            ->assertSeeText(__('booking_timezone.help'))
-            ->assertSeeText(__('booking_timezone.detection_failed'));
+            ->assertSee('name="patient_country"', false)
+            ->assertDontSee('name="patient_timezone"', false)
+            ->assertSeeText(__('booking_timezone.countries.AR'))
+            ->assertSee('name="patient_region"', false)
+            ->assertSeeText(__('booking_timezone.region_label'))
+            ->assertSeeText(__('booking_timezone.region_placeholder'))
+            ->assertSeeText(__('booking_timezone.country_help'))
+            ->assertSeeText(__('booking_timezone.country_detection_failed'));
     }
 
-    public function test_booking_date_rejects_invalid_explicit_timezone(): void
+    public function test_booking_date_accepts_country_without_region_when_country_has_single_timezone(): void
+    {
+        [$therapist, $sessionType] = $this->makeBookableTherapist();
+
+        $this
+            ->withSession([
+                'booking.therapist_id' => $therapist->id,
+                'booking.session_type_id' => $sessionType->id,
+            ])
+            ->post(route('book.store.date'), [
+                'date' => '2026-07-06',
+                'patient_country' => 'BO',
+            ])
+            ->assertRedirect(route('book.time'))
+            ->assertSessionHas('booking.patient_country', 'BO')
+            ->assertSessionMissing('booking.patient_region')
+            ->assertSessionHas('booking.patient_timezone', 'America/La_Paz');
+    }
+
+    public function test_booking_date_requires_region_when_country_has_multiple_timezones(): void
     {
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
@@ -174,10 +199,29 @@ final class CriticalBookingFlowTest extends TestCase
             ])
             ->post(route('book.store.date'), [
                 'date' => '2026-07-06',
-                'patient_timezone' => 'Invalid/Timezone',
+                'patient_country' => 'MX',
             ])
             ->assertRedirect(route('book.date'))
-            ->assertSessionHasErrors('patient_timezone')
+            ->assertSessionHasErrors('patient_region')
+            ->assertSessionMissing('booking.patient_timezone');
+    }
+
+    public function test_booking_date_rejects_invalid_country(): void
+    {
+        [$therapist, $sessionType] = $this->makeBookableTherapist();
+
+        $this
+            ->from(route('book.date'))
+            ->withSession([
+                'booking.therapist_id' => $therapist->id,
+                'booking.session_type_id' => $sessionType->id,
+            ])
+            ->post(route('book.store.date'), [
+                'date' => '2026-07-06',
+                'patient_country' => 'ZZ',
+            ])
+            ->assertRedirect(route('book.date'))
+            ->assertSessionHasErrors('patient_country')
             ->assertSessionMissing('booking.patient_timezone');
     }
 

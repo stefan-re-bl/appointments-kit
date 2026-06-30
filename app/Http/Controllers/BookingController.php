@@ -9,6 +9,7 @@ use App\Models\SessionType;
 use App\Models\Therapist;
 use App\Rules\ValidTimezone;
 use App\Services\BookingService;
+use App\Services\CountryTimezoneService;
 use App\Services\SlotGenerationService;
 use App\Services\TimezoneService;
 use Carbon\Carbon;
@@ -119,7 +120,7 @@ final class BookingController extends Controller implements HasMiddleware
     /**
      * Paso 3: Selección de Fecha
      */
-    public function date(Request $request): View|RedirectResponse
+    public function date(Request $request, CountryTimezoneService $countryTimezoneService): View|RedirectResponse
     {
         $therapist = $this->activeTherapistFromSession();
 
@@ -138,17 +139,46 @@ final class BookingController extends Controller implements HasMiddleware
             return Redirect::route('book.session');
         }
 
+        $countries = $countryTimezoneService->countries();
+        $countryRegions = $countryTimezoneService->countryRegions();
+        $regionLabels = [];
+
+        foreach ($countryRegions as $countryCode => $regions) {
+            foreach (array_keys($regions) as $regionCode) {
+                $regionLabels[$countryCode][$regionCode] = __('booking_timezone.regions.'.$countryCode.'.'.$regionCode);
+            }
+        }
+
+        $timezoneLocations = $countryTimezoneService->timezoneLocations();
         $sessionTimezone = ValidTimezone::normalize(session('booking.patient_timezone'));
         $cookieTimezone = ValidTimezone::normalize($request->cookie('user_timezone'));
-        $patientTimezone = $sessionTimezone ?? $cookieTimezone ?? 'UTC';
-        $timezoneWasConfirmed = $sessionTimezone !== null;
-        $timezones = ValidTimezone::identifiers();
+        $timezoneLocation = $countryTimezoneService->locationForTimezone($sessionTimezone ?? $cookieTimezone);
+        $sessionCountry = session('booking.patient_country');
+        $patientCountry = $countryTimezoneService->isSupportedCountry($sessionCountry)
+            ? strtoupper((string) $sessionCountry)
+            : ($timezoneLocation['country'] ?? null);
+        $patientCountry ??= 'AR';
+        $sessionRegion = session('booking.patient_region');
+        $patientRegion = $countryTimezoneService->isSupportedRegion($patientCountry, $sessionRegion)
+            ? strtoupper((string) $sessionRegion)
+            : ($timezoneLocation['region'] ?? null);
+        $patientRegion ??= $countryTimezoneService->defaultRegionForCountry($patientCountry);
+        $patientTimezone = ValidTimezone::normalize(
+            $countryTimezoneService->timezoneForLocation($patientCountry, $patientRegion)
+                ?? $countryTimezoneService->timezoneForCountry($patientCountry)
+        ) ?? 'UTC';
+        $timezoneWasConfirmed = $countryTimezoneService->isSupportedCountry($sessionCountry);
         $minDate = now($patientTimezone)->toDateString();
 
         return view('book.date', compact(
+            'countries',
+            'countryRegions',
             'minDate',
+            'patientCountry',
+            'patientRegion',
             'patientTimezone',
-            'timezones',
+            'regionLabels',
+            'timezoneLocations',
             'timezoneWasConfirmed',
         ));
     }
@@ -156,7 +186,7 @@ final class BookingController extends Controller implements HasMiddleware
     /**
      * Procesar Paso 3: Guardar Fecha
      */
-    public function storeDate(Request $request): RedirectResponse
+    public function storeDate(Request $request, CountryTimezoneService $countryTimezoneService): RedirectResponse
     {
         $therapist = $this->activeTherapistFromSession();
 
@@ -175,22 +205,41 @@ final class BookingController extends Controller implements HasMiddleware
             return Redirect::route('book.session');
         }
 
-        $normalizedTimezone = ValidTimezone::normalize($request->input('patient_timezone'));
+        $countries = $countryTimezoneService->countries();
+        $countryRegions = $countryTimezoneService->countryRegions();
+        $patientCountry = strtoupper((string) $request->input('patient_country'));
+        $patientRegion = is_string($request->input('patient_region'))
+            ? strtoupper(trim((string) $request->input('patient_region')))
+            : null;
+        $patientRegion = $patientRegion === '' ? null : $patientRegion;
+        $normalizedTimezone = ValidTimezone::normalize(
+            $countryTimezoneService->timezoneForLocation($patientCountry, $patientRegion)
+                ?? $countryTimezoneService->timezoneForCountry($patientCountry)
+        );
 
-        if ($normalizedTimezone !== null) {
-            $request->merge(['patient_timezone' => $normalizedTimezone]);
-        }
+        $request->merge([
+            'patient_country' => $patientCountry,
+            'patient_region' => $patientRegion,
+        ]);
 
         $minDate = now($normalizedTimezone ?? 'UTC')->toDateString();
 
         $validated = $request->validate([
             'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:'.$minDate],
-            'patient_timezone' => ['required', 'string', new ValidTimezone],
+            'patient_country' => ['required', 'string', Rule::in(array_keys($countries))],
+            'patient_region' => [
+                Rule::requiredIf(fn (): bool => $countryTimezoneService->regionIsRequired($patientCountry)),
+                'nullable',
+                'string',
+                Rule::in(array_keys($countryRegions[$patientCountry] ?? [])),
+            ],
         ]);
 
         session()->put([
             'booking.date' => $validated['date'],
-            'booking.patient_timezone' => $validated['patient_timezone'],
+            'booking.patient_country' => $validated['patient_country'],
+            'booking.patient_region' => $validated['patient_region'] ?? null,
+            'booking.patient_timezone' => $normalizedTimezone,
         ]);
         session()->forget('booking.starts_at_utc');
 
@@ -200,7 +249,7 @@ final class BookingController extends Controller implements HasMiddleware
     /**
      * Paso 4: Selección de Hora (Alpine + API)
      */
-    public function time(): View|RedirectResponse
+    public function time(CountryTimezoneService $countryTimezoneService): View|RedirectResponse
     {
         $therapist = $this->activeTherapistFromSession();
 
@@ -220,11 +269,19 @@ final class BookingController extends Controller implements HasMiddleware
             ->findOrFail((int) session('booking.session_type_id'));
 
         $date = session('booking.date');
+        $patientCountry = $countryTimezoneService->isSupportedCountry(session('booking.patient_country'))
+            ? (string) session('booking.patient_country')
+            : $countryTimezoneService->countryForTimezone($patientTimezone);
+        $patientRegion = $countryTimezoneService->isSupportedRegion($patientCountry, session('booking.patient_region'))
+            ? (string) session('booking.patient_region')
+            : ($countryTimezoneService->locationForTimezone($patientTimezone)['region'] ?? null);
 
         return view('book.time', [
             'sessionType' => $sessionType,
             'date' => $date,
             'therapistId' => $therapist->id,
+            'patientCountry' => $patientCountry,
+            'patientRegion' => $patientRegion,
             'patientTimezone' => $patientTimezone,
         ]);
     }
@@ -268,8 +325,10 @@ final class BookingController extends Controller implements HasMiddleware
     /**
      * Paso 5: Confirmación y Datos del Paciente
      */
-    public function confirm(TimezoneService $timezoneService): View|RedirectResponse
-    {
+    public function confirm(
+        TimezoneService $timezoneService,
+        CountryTimezoneService $countryTimezoneService,
+    ): View|RedirectResponse {
         $therapist = $this->activeTherapistFromSession();
         $sessionTypeId = session('booking.session_type_id');
         $dateLocal = session('booking.date');
@@ -287,12 +346,20 @@ final class BookingController extends Controller implements HasMiddleware
             ->findOrFail((int) $sessionTypeId);
 
         $localTime = $timezoneService->formatForDisplay($startsAtUtc, 'H:i', $patientTimezone);
+        $patientCountry = $countryTimezoneService->isSupportedCountry(session('booking.patient_country'))
+            ? (string) session('booking.patient_country')
+            : $countryTimezoneService->countryForTimezone($patientTimezone);
+        $patientRegion = $countryTimezoneService->isSupportedRegion($patientCountry, session('booking.patient_region'))
+            ? (string) session('booking.patient_region')
+            : ($countryTimezoneService->locationForTimezone($patientTimezone)['region'] ?? null);
 
         return view('book.confirm', compact(
             'therapist',
             'sessionType',
             'dateLocal',
             'localTime',
+            'patientCountry',
+            'patientRegion',
             'patientTimezone',
         ));
     }
@@ -386,6 +453,8 @@ final class BookingController extends Controller implements HasMiddleware
                 'booking.session_type_id',
                 'booking.date',
                 'booking.starts_at_utc',
+                'booking.patient_country',
+                'booking.patient_region',
                 'booking.patient_timezone',
             ]);
 

@@ -48,8 +48,9 @@ final class DemoDataSeeder extends Seeder
             $therapist->fill([
                 'timezone' => $data['timezone'],
                 'bio' => "Terapeuta profesional ubicado en {$data['timezone']}.",
-                'google_meet_link' => 'https://meet.google.com/fake-link-' . $user->id,
+                'google_meet_link' => 'https://meet.google.com/fake-link-'.$user->id,
                 'is_active' => true,
+                'is_approved' => true,
             ]);
 
             $therapist->save();

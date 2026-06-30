@@ -32,8 +32,17 @@
             </div>
 
             <div class="flex justify-between gap-6">
-                <span class="text-gray-500">{{ __('booking_timezone.label') }}:</span>
-                <span class="font-medium text-gray-900 text-right">{{ $patientTimezone }}</span>
+                <span class="text-gray-500">{{ __('booking_timezone.country_label') }}:</span>
+                <span class="font-medium text-gray-900 text-right">
+                    @if ($patientCountry && $patientRegion)
+                        {{ __('booking_timezone.location_summary', [
+                            'country' => __('booking_timezone.countries.'.$patientCountry),
+                            'region' => __('booking_timezone.regions.'.$patientCountry.'.'.$patientRegion),
+                        ]) }}
+                    @else
+                        {{ $patientCountry ? __('booking_timezone.countries.'.$patientCountry) : $patientTimezone }}
+                    @endif
+                </span>
             </div>
 
             <div class="flex justify-between">
