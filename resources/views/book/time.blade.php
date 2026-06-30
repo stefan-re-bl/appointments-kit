@@ -32,10 +32,10 @@
         {{ \Carbon\Carbon::parse($date)->locale(app()->getLocale())->isoFormat('LL') }}
     </p>
     <p class="text-center text-sm text-gray-600 -mt-5 mb-8">
-        @if ($patientCountry && $patientRegion)
+        @if ($patientCountry && $patientTimezoneLabel)
             {{ __('booking_timezone.showing_location', [
                 'country' => __('booking_timezone.countries.'.$patientCountry),
-                'region' => __('booking_timezone.regions.'.$patientCountry.'.'.$patientRegion),
+                'region' => $patientTimezoneLabel,
             ]) }}
         @else
             {{ __('booking_timezone.showing_country', [

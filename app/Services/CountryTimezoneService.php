@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Carbon\CarbonImmutable;
+use DateTimeZone;
+
 final class CountryTimezoneService
 {
     /**
-     * Default booking timezone per country.
+     * Default timezone per supported country. Region choices are not maintained
+     * manually; they are computed from PHP/IANA for the selected booking date.
      *
      * @var array<string, string>
      */
@@ -38,71 +42,17 @@ final class CountryTimezoneService
     ];
 
     /**
-     * @var array<string, array<string, string>>
-     */
-    private const REGION_TIMEZONES = [
-        'AR' => [
-            'AR-BUE' => 'America/Argentina/Buenos_Aires',
-            'AR-CAT' => 'America/Argentina/Catamarca',
-            'AR-CBA' => 'America/Argentina/Cordoba',
-            'AR-JUJ' => 'America/Argentina/Jujuy',
-            'AR-MDZ' => 'America/Argentina/Mendoza',
-            'AR-SLA' => 'America/Argentina/Salta',
-            'AR-SJN' => 'America/Argentina/San_Juan',
-            'AR-SLU' => 'America/Argentina/San_Luis',
-            'AR-TUC' => 'America/Argentina/Tucuman',
-            'AR-USH' => 'America/Argentina/Ushuaia',
-        ],
-        'BR' => [
-            'BR-AC' => 'America/Rio_Branco',
-            'BR-AM' => 'America/Manaus',
-            'BR-PE' => 'America/Recife',
-            'BR-SP' => 'America/Sao_Paulo',
-        ],
-        'CA' => [
-            'CA-BC' => 'America/Vancouver',
-            'CA-AB' => 'America/Edmonton',
-            'CA-MB' => 'America/Winnipeg',
-            'CA-ON' => 'America/Toronto',
-            'CA-QC' => 'America/Toronto',
-            'CA-NS' => 'America/Halifax',
-            'CA-NL' => 'America/St_Johns',
-        ],
-        'CL' => [
-            'CL-CL' => 'America/Santiago',
-            'CL-EI' => 'Pacific/Easter',
-        ],
-        'EC' => [
-            'EC-EC' => 'America/Guayaquil',
-            'EC-GAL' => 'Pacific/Galapagos',
-        ],
-        'ES' => [
-            'ES-ES' => 'Europe/Madrid',
-            'ES-CN' => 'Atlantic/Canary',
-        ],
-        'MX' => [
-            'MX-CMX' => 'America/Mexico_City',
-            'MX-ROO' => 'America/Cancun',
-            'MX-CHH' => 'America/Chihuahua',
-            'MX-BCN' => 'America/Tijuana',
-            'MX-BCS' => 'America/Mazatlan',
-        ],
-        'US' => [
-            'US-ET' => 'America/New_York',
-            'US-CT' => 'America/Chicago',
-            'US-MT' => 'America/Denver',
-            'US-PT' => 'America/Los_Angeles',
-            'US-AK' => 'America/Anchorage',
-            'US-HI' => 'Pacific/Honolulu',
-        ],
-    ];
-
-    /**
      * @return array<string, string>
      */
     public function countries(): array
     {
         return self::COUNTRY_TIMEZONES;
+    }
+
+    public function isSupportedCountry(mixed $countryCode): bool
+    {
+        return is_string($countryCode)
+            && array_key_exists(strtoupper(trim($countryCode)), self::COUNTRY_TIMEZONES);
     }
 
     public function timezoneForCountry(mixed $countryCode): ?string
@@ -114,45 +64,115 @@ final class CountryTimezoneService
         return self::COUNTRY_TIMEZONES[strtoupper(trim($countryCode))] ?? null;
     }
 
-    public function timezoneForLocation(mixed $countryCode, mixed $regionCode): ?string
+    /**
+     * @return list<string>
+     */
+    public function timezonesForCountry(mixed $countryCode): array
     {
-        if (! is_string($countryCode)) {
+        if (! $this->isSupportedCountry($countryCode)) {
+            return [];
+        }
+
+        $countryCode = strtoupper(trim((string) $countryCode));
+        $timezones = DateTimeZone::listIdentifiers(DateTimeZone::PER_COUNTRY, $countryCode);
+
+        if ($timezones === []) {
+            $timezones = [self::COUNTRY_TIMEZONES[$countryCode]];
+        }
+
+        return array_values(array_unique($timezones));
+    }
+
+    /**
+     * @return array<string, array{offset: int, label: string, timezones: list<string>}>
+     */
+    public function timezoneOptionsForCountryOnDate(mixed $countryCode, mixed $date): array
+    {
+        if (! $this->isSupportedCountry($countryCode)) {
+            return [];
+        }
+
+        $countryCode = strtoupper(trim((string) $countryCode));
+        $date = $this->bookingDate($date);
+        $groups = [];
+
+        foreach ($this->timezonesForCountry($countryCode) as $timezone) {
+            $offset = $date->setTimezone(new DateTimeZone($timezone))->getOffset();
+            $groups[$offset][] = $timezone;
+        }
+
+        ksort($groups);
+
+        $options = [];
+
+        foreach ($groups as $offset => $timezones) {
+            sort($timezones);
+
+            $timezone = in_array(self::COUNTRY_TIMEZONES[$countryCode], $timezones, true)
+                ? self::COUNTRY_TIMEZONES[$countryCode]
+                : $timezones[0];
+
+            $options[$timezone] = [
+                'offset' => (int) $offset,
+                'label' => $this->formatTimezoneOptionLabel((int) $offset, $timezones),
+                'timezones' => array_values($timezones),
+            ];
+        }
+
+        return $options;
+    }
+
+    public function regionIsRequired(mixed $countryCode, mixed $date): bool
+    {
+        return count($this->timezoneOptionsForCountryOnDate($countryCode, $date)) > 1;
+    }
+
+    public function timezoneForLocation(mixed $countryCode, mixed $date, mixed $selectedTimezone): ?string
+    {
+        $options = $this->timezoneOptionsForCountryOnDate($countryCode, $date);
+
+        if ($options === []) {
             return null;
         }
 
-        $countryCode = strtoupper(trim($countryCode));
-        $regions = $this->regionsForCountry($countryCode);
-
-        if ($regions === []) {
-            return $this->timezoneForCountry($countryCode);
+        if (count($options) === 1) {
+            return array_key_first($options);
         }
 
-        if (! is_string($regionCode)) {
+        if (! is_string($selectedTimezone)) {
             return null;
         }
 
-        return $regions[strtoupper(trim($regionCode))] ?? null;
+        $selectedTimezone = trim($selectedTimezone);
+
+        return array_key_exists($selectedTimezone, $options) ? $selectedTimezone : null;
     }
 
     public function countryForTimezone(?string $timezone): ?string
     {
-        return $this->locationForTimezone($timezone)['country'] ?? null;
+        if ($timezone === null) {
+            return null;
+        }
+
+        foreach (array_keys(self::COUNTRY_TIMEZONES) as $countryCode) {
+            if (in_array($timezone, $this->timezonesForCountry($countryCode), true)) {
+                return $countryCode;
+            }
+        }
+
+        return null;
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, array{country: string}>
      */
     public function timezoneCountries(): array
     {
         $timezoneCountries = [];
 
-        foreach (self::COUNTRY_TIMEZONES as $countryCode => $timezone) {
-            $timezoneCountries[$timezone] = $countryCode;
-        }
-
-        foreach (self::REGION_TIMEZONES as $countryCode => $regions) {
-            foreach ($regions as $timezone) {
-                $timezoneCountries[$timezone] = $countryCode;
+        foreach (array_keys(self::COUNTRY_TIMEZONES) as $countryCode) {
+            foreach ($this->timezonesForCountry($countryCode) as $timezone) {
+                $timezoneCountries[$timezone] = ['country' => $countryCode];
             }
         }
 
@@ -160,94 +180,61 @@ final class CountryTimezoneService
     }
 
     /**
-     * @return array<string, array<string, string|null>>
+     * @return array<string, list<string>>
      */
-    public function timezoneLocations(): array
+    public function countryTimezones(): array
     {
-        $timezoneLocations = [];
+        $countryTimezones = [];
 
-        foreach (self::COUNTRY_TIMEZONES as $countryCode => $timezone) {
-            $timezoneLocations[$timezone] = [
-                'country' => $countryCode,
-                'region' => null,
-            ];
+        foreach (array_keys(self::COUNTRY_TIMEZONES) as $countryCode) {
+            $countryTimezones[$countryCode] = $this->timezonesForCountry($countryCode);
         }
 
-        foreach (self::REGION_TIMEZONES as $countryCode => $regions) {
-            foreach ($regions as $regionCode => $timezone) {
-                if (($timezoneLocations[$timezone]['region'] ?? null) !== null) {
-                    continue;
-                }
+        return $countryTimezones;
+    }
 
-                $timezoneLocations[$timezone] = [
-                    'country' => $countryCode,
-                    'region' => $regionCode,
-                ];
-            }
+    private function bookingDate(mixed $date): CarbonImmutable
+    {
+        if (is_string($date) && $date !== '') {
+            return CarbonImmutable::createFromFormat('Y-m-d H:i:s', "{$date} 12:00:00", 'UTC')
+                ?: CarbonImmutable::now('UTC');
         }
 
-        return $timezoneLocations;
+        return CarbonImmutable::now('UTC')->setTime(12, 0);
     }
 
     /**
-     * @return array{country: string, region: string|null}|null
+     * @param  list<string>  $timezones
      */
-    public function locationForTimezone(?string $timezone): ?array
+    private function formatTimezoneOptionLabel(int $offset, array $timezones): string
     {
-        if ($timezone === null) {
-            return null;
-        }
+        return $this->formatOffset($offset).' ('.$this->formatTimezoneSamples($timezones).')';
+    }
 
-        return $this->timezoneLocations()[$timezone] ?? null;
+    private function formatOffset(int $offset): string
+    {
+        $sign = $offset < 0 ? '-' : '+';
+        $absoluteOffset = abs($offset);
+        $hours = intdiv($absoluteOffset, 3600);
+        $minutes = intdiv($absoluteOffset % 3600, 60);
+
+        return sprintf('UTC%s%02d:%02d', $sign, $hours, $minutes);
     }
 
     /**
-     * @return array<string, array<string, string>>
+     * @param  list<string>  $timezones
      */
-    public function countryRegions(): array
+    private function formatTimezoneSamples(array $timezones): string
     {
-        return self::REGION_TIMEZONES;
-    }
+        $samples = array_map(
+            fn (string $timezone): string => str_replace('_', ' ', (string) str($timezone)->afterLast('/')),
+            array_slice($timezones, 0, 3),
+        );
 
-    /**
-     * @return array<string, string>
-     */
-    public function regionsForCountry(mixed $countryCode): array
-    {
-        if (! is_string($countryCode)) {
-            return [];
+        if (count($timezones) > 3) {
+            $samples[] = '+'.(count($timezones) - 3);
         }
 
-        return self::REGION_TIMEZONES[strtoupper(trim($countryCode))] ?? [];
-    }
-
-    public function defaultRegionForCountry(mixed $countryCode): ?string
-    {
-        $regions = $this->regionsForCountry($countryCode);
-
-        if ($regions === []) {
-            return null;
-        }
-
-        return array_key_first($regions);
-    }
-
-    public function isSupportedRegion(mixed $countryCode, mixed $regionCode): bool
-    {
-        if (! is_string($regionCode)) {
-            return false;
-        }
-
-        return array_key_exists(strtoupper(trim($regionCode)), $this->regionsForCountry($countryCode));
-    }
-
-    public function regionIsRequired(mixed $countryCode): bool
-    {
-        return $this->regionsForCountry($countryCode) !== [];
-    }
-
-    public function isSupportedCountry(mixed $countryCode): bool
-    {
-        return $this->timezoneForCountry($countryCode) !== null;
+        return implode(', ', $samples);
     }
 }

@@ -12,27 +12,52 @@
         x-data="{
             detected: false,
             detectionFailed: false,
-            countryRegions: @js($countryRegions),
-            regionLabels: @js($regionLabels),
+            countryTimezones: @js($countryTimezones),
             selectedCountry: @js(old('patient_country', $patientCountry)),
-            selectedRegion: @js(old('patient_region', $patientRegion)),
-            timezoneLocations: @js($timezoneLocations),
+            selectedDate: @js(old('date', $selectedDate)),
+            selectedTimezone: @js(old('patient_timezone', $patientTimezone)),
+            timezoneCountries: @js($timezoneCountries),
             timezoneConfirmed: @js($timezoneWasConfirmed),
-            regionOptions() {
-                return this.countryRegions[this.selectedCountry] ?? {};
+            effectiveTimezoneOptions() {
+                const groups = {};
+
+                for (const timezone of this.countryTimezones[this.selectedCountry] ?? []) {
+                    const offset = this.offsetForTimezone(timezone);
+                    groups[offset] ??= [];
+                    groups[offset].push(timezone);
+                }
+
+                return Object.entries(groups)
+                    .sort(([offsetA], [offsetB]) => Number(offsetA) - Number(offsetB))
+                    .map(([offset, timezones]) => {
+                        timezones.sort();
+
+                        return {
+                            timezone: timezones.includes(this.selectedTimezone) ? this.selectedTimezone : timezones[0],
+                            label: `${this.formatOffset(Number(offset))} (${this.timezoneSamples(timezones)})`,
+                            timezones,
+                        };
+                    });
             },
-            hasRegions() {
-                return Object.keys(this.regionOptions()).length > 0;
+            hasTimezoneRegions() {
+                return this.effectiveTimezoneOptions().length > 1;
             },
-            syncRegion() {
-                if (! this.hasRegions()) {
-                    this.selectedRegion = '';
+            syncTimezone() {
+                const options = this.effectiveTimezoneOptions();
+
+                if (options.length <= 1) {
+                    this.selectedTimezone = '';
                     return;
                 }
 
-                if (! this.regionOptions()[this.selectedRegion]) {
-                    this.selectedRegion = '';
+                const currentOption = options.find(option => option.timezones.includes(this.selectedTimezone));
+
+                if (currentOption) {
+                    this.selectedTimezone = currentOption.timezone;
+                    return;
                 }
+
+                this.selectedTimezone = options[0]?.timezone ?? '';
             },
             detectTimezone() {
                 if (this.timezoneConfirmed) {
@@ -43,25 +68,69 @@
                     const detectedTimezone = window.Intl
                         ? Intl.DateTimeFormat().resolvedOptions().timeZone
                         : null;
-                    const detectedLocation = detectedTimezone
-                        ? this.timezoneLocations[detectedTimezone]
+                    const detectedCountry = detectedTimezone
+                        ? this.timezoneCountries[detectedTimezone]?.country
                         : null;
 
-                    if (! detectedLocation) {
+                    if (! detectedCountry) {
                         this.detectionFailed = true;
                         return;
                     }
 
-                    this.selectedCountry = detectedLocation.country;
-                    this.selectedRegion = detectedLocation.region ?? '';
-                    this.syncRegion();
+                    this.selectedCountry = detectedCountry;
+                    this.selectedTimezone = detectedTimezone;
+                    this.syncTimezone();
                     this.detected = true;
                 } catch (error) {
                     this.detectionFailed = true;
                 }
             },
+            offsetForTimezone(timezone) {
+                const date = this.selectedDate || @js($minDate);
+                const timestamp = Date.parse(`${date}T12:00:00Z`);
+                const parts = new Intl.DateTimeFormat('en-US', {
+                    timeZone: timezone,
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hourCycle: 'h23',
+                }).formatToParts(new Date(timestamp));
+                const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+                const localAsUtc = Date.UTC(
+                    Number(values.year),
+                    Number(values.month) - 1,
+                    Number(values.day),
+                    Number(values.hour),
+                    Number(values.minute),
+                    Number(values.second),
+                );
+
+                return Math.round((localAsUtc - timestamp) / 60000) * 60;
+            },
+            formatOffset(offset) {
+                const sign = offset < 0 ? '-' : '+';
+                const absoluteOffset = Math.abs(offset);
+                const hours = String(Math.floor(absoluteOffset / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((absoluteOffset % 3600) / 60)).padStart(2, '0');
+
+                return `UTC${sign}${hours}:${minutes}`;
+            },
+            timezoneSamples(timezones) {
+                const samples = timezones
+                    .slice(0, 3)
+                    .map(timezone => timezone.split('/').pop().replaceAll('_', ' '));
+
+                if (timezones.length > 3) {
+                    samples.push(`+${timezones.length - 3}`);
+                }
+
+                return samples.join(', ');
+            },
         }"
-        x-init="detectTimezone()"
+        x-init="detectTimezone(); syncTimezone()"
     >
         @csrf
         <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200 space-y-6">
@@ -74,7 +143,7 @@
                     id="patient_country"
                     x-ref="country"
                     x-model="selectedCountry"
-                    @change="syncRegion()"
+                    @change="syncTimezone()"
                     required
                     class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-900 @error('patient_country') border-red-500 @enderror"
                 >
@@ -98,34 +167,42 @@
                 @enderror
             </div>
 
-            <div x-show="hasRegions()" x-cloak>
-                <label for="patient_region" class="block text-sm font-medium text-gray-700 mb-2">
+            <div>
+                <label for="date" class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.date') }}</label>
+                <input
+                    type="date"
+                    name="date"
+                    id="date"
+                    min="{{ $minDate }}"
+                    x-model="selectedDate"
+                    @change="syncTimezone()"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-900"
+                >
+            </div>
+
+            <div x-show="hasTimezoneRegions()" x-cloak>
+                <label for="patient_timezone" class="block text-sm font-medium text-gray-700 mb-2">
                     {{ __('booking_timezone.region_label') }}
                 </label>
                 <select
-                    name="patient_region"
-                    id="patient_region"
-                    x-model="selectedRegion"
-                    :required="hasRegions()"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-900 @error('patient_region') border-red-500 @enderror"
+                    name="patient_timezone"
+                    id="patient_timezone"
+                    x-model="selectedTimezone"
+                    :required="hasTimezoneRegions()"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-900 @error('patient_timezone') border-red-500 @enderror"
                 >
                     <option value="">{{ __('booking_timezone.region_placeholder') }}</option>
-                    <template x-for="(timezone, regionCode) in regionOptions()" :key="regionCode">
-                        <option :value="regionCode" x-text="regionLabels[selectedCountry][regionCode]"></option>
+                    <template x-for="option in effectiveTimezoneOptions()" :key="option.timezone">
+                        <option :value="option.timezone" x-text="option.label"></option>
                     </template>
                 </select>
 
                 <p class="mt-2 text-sm text-gray-600">{{ __('booking_timezone.region_help') }}</p>
 
-                @error('patient_region')
+                @error('patient_timezone')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                 @enderror
-            </div>
-
-            <div>
-                <label for="date" class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.date') }}</label>
-                <input type="date" name="date" id="date" min="{{ $minDate }}" value="{{ old('date') }}" required
-                       class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-900">
             </div>
         </div>
 
