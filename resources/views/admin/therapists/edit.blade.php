@@ -32,11 +32,11 @@
                         name="name"
                         type="text"
                         value="{{ old('name', $therapist->user->name) }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                         required
                     >
                     @error('name')
-                        <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -49,11 +49,11 @@
                         name="email"
                         type="email"
                         value="{{ old('email', $therapist->user->email) }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                         required
                     >
                     @error('email')
-                        <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
@@ -79,11 +79,11 @@
                         name="timezone"
                         type="text"
                         value="{{ old('timezone', $therapist->timezone) }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                         required
                     >
                     @error('timezone')
-                        <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -96,10 +96,10 @@
                         name="google_meet_link"
                         type="url"
                         value="{{ old('google_meet_link', $therapist->google_meet_link) }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                     >
                     @error('google_meet_link')
-                        <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -112,10 +112,10 @@
                         name="avatar_url"
                         type="url"
                         value="{{ old('avatar_url', $therapist->avatar_url) }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                     >
                     @error('avatar_url')
-                        <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -127,10 +127,10 @@
                         id="bio"
                         name="bio"
                         rows="5"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                     >{{ old('bio', $therapist->bio) }}</textarea>
                     @error('bio')
-                        <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -143,7 +143,7 @@
                             name="is_active"
                             value="1"
                             @checked(old('is_active', $therapist->is_active))
-                            class="mt-1 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                            class="mt-1 rounded border-slate-300 text-indigo-700 focus:ring-indigo-500/30"
                         >
                         <span>
                             <span class="block text-sm font-medium text-slate-950">
@@ -156,7 +156,7 @@
                     </label>
 
                     @error('is_active')
-                        <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -169,7 +169,7 @@
                             name="is_approved"
                             value="1"
                             @checked(old('is_approved', $therapist->is_approved))
-                            class="mt-1 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                            class="mt-1 rounded border-slate-300 text-indigo-700 focus:ring-indigo-500/30"
                         >
                         <span>
                             <span class="block text-sm font-medium text-slate-950">
@@ -182,7 +182,7 @@
                     </label>
 
                     @error('is_approved')
-                        <p class="mt-1 text-sm text-rose-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
@@ -198,7 +198,7 @@
 
             <button
                 type="submit"
-                class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+                class="rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800"
             >
                 {{ __('app.admin.common.save') }}
             </button>

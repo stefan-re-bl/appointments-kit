@@ -8,9 +8,9 @@
         : (string) $status;
 
     $classes = match ($value) {
-        \App\Enums\PaymentStatus::PAID->value => 'inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800',
-        \App\Enums\PaymentStatus::WAIVED->value => 'inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800',
-        default => 'inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800',
+        \App\Enums\PaymentStatus::PAID->value => 'inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-800',
+        \App\Enums\PaymentStatus::WAIVED->value => 'inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700',
+        default => 'inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-800',
     };
 @endphp
 

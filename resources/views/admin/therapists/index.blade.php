@@ -15,7 +15,7 @@
                         type="search"
                         value="{{ $search }}"
                         placeholder="{{ __('app.admin.therapists.search_placeholder') }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                     >
                 </div>
 
@@ -24,7 +24,7 @@
                     <select
                         id="approval_status"
                         name="approval_status"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                     >
                         @foreach (['all', 'pending', 'approved', 'inactive'] as $status)
                             <option value="{{ $status }}" @selected($approvalStatus === $status)>
@@ -36,7 +36,7 @@
 
                 <button
                     type="submit"
-                    class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+                    class="rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800"
                 >
                     {{ __('app.admin.therapists.search') }}
                 </button>
@@ -81,15 +81,15 @@
                             </span>
 
                             @if (! $therapist->is_active)
-                                <span class="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700">
+                                <span class="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-medium text-rose-800">
                                     {{ __('app.admin.therapists.inactive') }}
                                 </span>
                             @elseif ($therapist->is_approved)
-                                <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                                <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-800">
                                     {{ __('app.admin.therapists.status_approved') }}
                                 </span>
                             @else
-                                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
+                                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-800">
                                     {{ __('app.admin.therapists.pending_approval') }}
                                 </span>
                             @endif

@@ -16,14 +16,14 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex min-h-screen flex-col bg-gray-50 font-sans text-gray-900 antialiased">
+<body class="flex min-h-screen flex-col bg-[#fbf9fc] font-sans text-slate-950 antialiased">
     <!-- Navbar Pública -->
-    <nav class="border-b border-gray-200 bg-white shadow">
+    <nav class="border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 justify-between">
                 <div class="flex">
                     <div class="flex flex-shrink-0 items-center">
-                        <a href="/" class="text-2xl font-bold tracking-tight text-indigo-600">
+                        <a href="/" class="text-2xl font-bold tracking-tight text-slate-700">
                             {{ config('app.name', 'Umbralia') }}
                         </a>
                     </div>
@@ -36,7 +36,7 @@
     <main class="flex-1">
         @isset($slot)
             <div class="mx-auto flex min-h-[calc(100vh-13rem)] w-full max-w-md flex-col justify-center px-4 py-10 sm:px-6 lg:px-8">
-                <div class="rounded-2xl bg-white px-6 py-8 shadow-sm ring-1 ring-gray-200 sm:px-8">
+                <div class="rounded-2xl bg-white px-6 py-8 shadow-sm ring-1 ring-slate-200 sm:px-8">
                     {{ $slot }}
                 </div>
             </div>
@@ -46,22 +46,22 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-gray-200 bg-white py-8">
+    <footer class="border-t border-slate-200 bg-white py-8">
         <div class="mx-auto flex max-w-7xl flex-col items-center justify-between px-4 sm:px-6 md:flex-row lg:px-8">
-            <p class="text-sm text-gray-500">
+            <p class="text-sm text-slate-500">
                 &copy; {{ date('Y') }} {{ config('app.name') }}. {{ __('app.all_rights_reserved') }}
             </p>
 
             <div class="mt-4 flex space-x-6 md:mt-0">
-                <a href="{{ route('legal.privacy') }}" class="text-sm text-gray-400 hover:text-gray-500">
+                <a href="{{ route('legal.privacy') }}" class="text-sm text-slate-500 hover:text-slate-700">
                     {{ __('legal.nav.privacy') }}
                 </a>
 
-                <a href="{{ route('legal.terms') }}" class="text-sm text-gray-400 hover:text-gray-500">
+                <a href="{{ route('legal.terms') }}" class="text-sm text-slate-500 hover:text-slate-700">
                     {{ __('legal.nav.terms') }}
                 </a>
 
-                <a href="{{ route('legal.emergency-notice') }}" class="text-sm text-gray-400 hover:text-gray-500">
+                <a href="{{ route('legal.emergency-notice') }}" class="text-sm text-slate-500 hover:text-slate-700">
                     {{ __('legal.nav.emergency') }}
                 </a>
             </div>

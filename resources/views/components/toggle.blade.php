@@ -7,10 +7,10 @@
         name="{{ $name }}" 
         value="1"
         {{ old($name) ? 'checked' : '' }}
-        {{ $attributes->merge(['class' => 'h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500']) }}
+        {{ $attributes->merge(['class' => 'h-4 w-4 rounded border-indigo-300 text-slate-600 focus:ring-indigo-500/30']) }}
     />
-    <label for="{{ $name }}" class="ml-2 block text-sm text-gray-900">{{ $label }}</label>
+    <label for="{{ $name }}" class="ml-2 block text-sm text-slate-950">{{ $label }}</label>
     @error($name)
-        <p class="ml-2 text-sm text-red-600">{{ $message }}</p>
+        <p class="ml-2 text-sm text-rose-700">{{ $message }}</p>
     @enderror
 </div>

@@ -7,7 +7,7 @@
     <section class="bg-slate-50 py-16">
         <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
             <div>
-                <p class="text-sm font-semibold uppercase text-emerald-700">{{ __('app.contact.eyebrow') }}</p>
+                <p class="text-sm font-semibold uppercase text-indigo-700">{{ __('app.contact.eyebrow') }}</p>
                 <h1 class="mt-3 text-3xl font-bold text-slate-950 sm:text-4xl">{{ __('app.contact.title') }}</h1>
                 <p class="mt-4 text-base leading-7 text-slate-600">{{ __('app.contact.description') }}</p>
                 <div class="mt-8 rounded-lg border border-amber-200 bg-amber-50 p-4">
@@ -24,7 +24,7 @@
                 @endif
 
                 @if ($errors->any())
-                    <div class="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                    <div class="mb-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
                         <p class="font-semibold">{{ __('app.contact.validation_title') }}</p>
                     </div>
                 @endif
@@ -40,10 +40,10 @@
                             type="text"
                             value="{{ old('name') }}"
                             required
-                            class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-700 focus:ring-emerald-700"
+                            class="mt-2 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                         >
                         @error('name')
-                            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
+                            <p class="mt-2 text-sm text-rose-700">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -55,10 +55,10 @@
                             type="email"
                             value="{{ old('email') }}"
                             required
-                            class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-700 focus:ring-emerald-700"
+                            class="mt-2 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                         >
                         @error('email')
-                            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
+                            <p class="mt-2 text-sm text-rose-700">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -68,7 +68,7 @@
                             id="inquiry_type"
                             name="inquiry_type"
                             required
-                            class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-700 focus:ring-emerald-700"
+                            class="mt-2 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                         >
                             @foreach ($inquiryTypes as $inquiryType)
                                 <option value="{{ $inquiryType->value }}" @selected(old('inquiry_type', request('type')) === $inquiryType->value)>
@@ -77,7 +77,7 @@
                             @endforeach
                         </select>
                         @error('inquiry_type')
-                            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
+                            <p class="mt-2 text-sm text-rose-700">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -93,15 +93,15 @@
                             name="message"
                             rows="7"
                             required
-                            class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-emerald-700 focus:ring-emerald-700"
+                            class="mt-2 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                         >{{ old('message') }}</textarea>
                         @error('message')
-                            <p class="mt-2 text-sm text-red-700">{{ $message }}</p>
+                            <p class="mt-2 text-sm text-rose-700">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div>
-                        <button type="submit" class="inline-flex rounded-md bg-emerald-700 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2">
+                        <button type="submit" class="inline-flex rounded-lg bg-indigo-700 px-5 py-3 text-sm font-semibold text-white hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">
                             {{ __('app.contact.submit') }}
                         </button>
                     </div>

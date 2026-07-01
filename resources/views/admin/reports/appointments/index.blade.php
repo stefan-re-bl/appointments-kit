@@ -27,7 +27,7 @@
 
             <a
                 href="{{ route('admin.reports.appointments.export', $exportFilters) }}"
-                class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
+                class="inline-flex items-center justify-center rounded-xl bg-indigo-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-800"
             >
                 {{ __('reports.actions.export_csv') }}
             </a>
@@ -49,11 +49,11 @@
                         name="date_from"
                         type="date"
                         value="{{ $filters['date_from'] }}"
-                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                     >
 
                     @error('date_from')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -67,11 +67,11 @@
                         name="date_to"
                         type="date"
                         value="{{ $filters['date_to'] }}"
-                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                     >
 
                     @error('date_to')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -83,7 +83,7 @@
                     <select
                         id="therapist_id"
                         name="therapist_id"
-                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-slate-500 focus:ring-slate-500"
+                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                     >
                         <option value="">{{ __('reports.filters.all_therapists') }}</option>
 
@@ -98,14 +98,14 @@
                     </select>
 
                     @error('therapist_id')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="flex items-end gap-2">
                     <button
                         type="submit"
-                        class="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
+                        class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-800"
                     >
                         {{ __('reports.actions.apply_filters') }}
                     </button>

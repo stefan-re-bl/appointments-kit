@@ -9,7 +9,7 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="h-screen overflow-hidden bg-gray-50 font-sans antialiased">
+<body class="h-screen overflow-hidden bg-[#fbf9fc] font-sans text-slate-950 antialiased">
     <!-- Script de Zona Horaria -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -22,11 +22,11 @@
         <!-- Sidebar -->
         <aside
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-            class="fixed inset-y-0 left-0 z-30 w-64 flex-shrink-0 transform overflow-y-auto bg-gray-900 transition duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0"
+            class="fixed inset-y-0 left-0 z-30 w-64 flex-shrink-0 transform overflow-y-auto bg-indigo-950 transition duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0"
         >
             <!-- Logo Area -->
-            <div class="flex h-16 items-center bg-gray-950 px-6 shadow-md">
-                <svg class="h-6 w-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex h-16 items-center bg-indigo-950 px-6 shadow-md ring-1 ring-white/10">
+                <svg class="h-6 w-6 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -44,7 +44,7 @@
             <nav class="mt-6">
                 <a
                     href="{{ url('/dashboard') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('dashboard') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('dashboard') ? 'bg-indigo-800 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-indigo-900 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -60,7 +60,7 @@
 
                 <a
                     href="{{ route('session-types.index') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('session-types.*') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('session-types.*') ? 'bg-indigo-800 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-indigo-900 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -76,7 +76,7 @@
 
                 <a
                     href="{{ route('availabilities.index') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('availabilities.*') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('availabilities.*') ? 'bg-indigo-800 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-indigo-900 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -92,7 +92,7 @@
 
                 <a
                     href="{{ route('therapist.appointments.index') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('therapist.appointments.*') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('therapist.appointments.*') ? 'bg-indigo-800 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-indigo-900 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -111,11 +111,11 @@
         <!-- Contenedor Principal -->
         <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
             <!-- Top Navbar -->
-            <header class="z-20 flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-6 shadow-sm">
+            <header class="z-20 flex h-16 flex-shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 shadow-sm sm:px-6">
                 <div class="flex items-center">
                     <button
                         @click="sidebarOpen = !sidebarOpen"
-                        class="text-gray-500 focus:outline-none lg:hidden"
+                        class="rounded-lg p-2 text-slate-600 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 lg:hidden"
                     >
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path
@@ -133,7 +133,7 @@
                     <div x-data="{ langOpen: false }" class="relative">
                         <button
                             @click="langOpen = !langOpen"
-                            class="flex items-center text-sm text-gray-600 hover:text-gray-800 focus:outline-none"
+                            class="flex items-center text-sm text-slate-600 hover:text-slate-950 focus:outline-none"
                         >
                             <svg class="mr-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
@@ -156,18 +156,18 @@
                             x-transition:leave="transition ease-in duration-75"
                             x-transition:leave-start="transform opacity-100 scale-100"
                             x-transition:leave-end="transform opacity-0 scale-95"
-                            class="absolute right-0 z-50 mt-2 w-36 rounded-md border border-gray-100 bg-white py-1 shadow-lg"
+                            class="absolute right-0 z-50 mt-2 w-36 rounded-lg border border-slate-200 bg-white py-1 shadow-lg"
                         >
                             <a
                                 href="{{ request()->fullUrlWithQuery(['lang' => 'es']) }}"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ app()->getLocale() === 'es' ? 'font-bold text-indigo-600' : '' }}"
+                                class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 {{ app()->getLocale() === 'es' ? 'font-bold text-slate-600' : '' }}"
                             >
                                 🇪🇸 {{ __('app.spanish') }}
                             </a>
 
                             <a
                                 href="{{ request()->fullUrlWithQuery(['lang' => 'en']) }}"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ app()->getLocale() === 'en' ? 'font-bold text-indigo-600' : '' }}"
+                                class="block px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 {{ app()->getLocale() === 'en' ? 'font-bold text-slate-600' : '' }}"
                             >
                                 🇺🇸 {{ __('app.english') }}
                             </a>
@@ -178,17 +178,17 @@
                     <div class="flex items-center" x-data="{ userMenuOpen: false }">
                         <button
                             @click="userMenuOpen = !userMenuOpen"
-                            class="relative flex items-center space-x-3 focus:outline-none"
+                            class="relative flex min-w-0 items-center space-x-3 focus:outline-none"
                         >
-                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-xs font-bold text-white shadow-sm">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-700 text-xs font-bold text-white shadow-sm">
                                 {{ strtoupper(Auth::user()->name[0]) }}
                             </div>
 
-                            <span class="hidden text-sm font-medium text-gray-700 md:inline">
+                            <span class="hidden max-w-44 truncate text-sm font-medium text-slate-700 md:inline">
                                 {{ Auth::user()->name }}
                             </span>
 
-                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
@@ -207,12 +207,12 @@
                             x-transition:leave="transition ease-in duration-75"
                             x-transition:leave-start="transform opacity-100 scale-100"
                             x-transition:leave-end="transform opacity-0 scale-95"
-                            class="absolute right-6 top-14 z-50 mt-2 w-48 rounded-md border border-gray-100 bg-white py-1 shadow-lg"
+                            class="absolute right-4 top-14 z-50 mt-2 w-48 rounded-lg border border-slate-200 bg-white py-1 shadow-lg sm:right-6"
                         >
-                            <div class="border-b border-gray-100 px-4 py-2">
-                                <p class="text-xs text-gray-500">
+                            <div class="border-b border-slate-200 px-4 py-2">
+                                <p class="text-xs text-slate-500">
                                     {{ __('app.role') }}:
-                                    <span class="font-semibold text-indigo-600">
+                                    <span class="font-semibold text-slate-600">
                                         {{ Auth::user()->role->value }}
                                     </span>
                                 </p>
@@ -223,9 +223,9 @@
 
                                 <button
                                     type="submit"
-                                    class="flex w-full items-center px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                                    class="flex w-full items-center px-4 py-2 text-left text-sm text-slate-600 hover:bg-slate-50"
                                 >
-                                    <svg class="mr-2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="mr-2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
@@ -243,16 +243,16 @@
             </header>
 
             <!-- Page Content -->
-            <main class="min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-gray-50">
+            <main class="min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#fbf9fc]">
                 @isset($header)
-                    <div class="bg-white shadow">
+                    <div class="border-b border-slate-200 bg-white shadow-sm">
                         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                             {{ $header }}
                         </div>
                     </div>
                 @endisset
 
-                <div class="min-w-0 max-w-full p-6">
+                <div class="min-w-0 max-w-full p-4 sm:p-6">
                     {{ $slot }}
                 </div>
             </main>

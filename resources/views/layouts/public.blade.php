@@ -13,31 +13,31 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-white font-sans text-gray-900 antialiased">
+<body class="bg-[#fbf9fc] font-sans text-slate-950 antialiased">
     <header
         x-data="{ mobileOpen: false }"
-        class="sticky top-0 z-50 border-b border-gray-200 bg-white"
+        class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur"
     >
         <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:h-[4.5rem] lg:px-8">
-            <a href="{{ route('home') }}" class="flex items-center gap-2 text-xl font-bold text-gray-950">
-                <span class="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-700 text-sm font-bold text-white">U</span>
+            <a href="{{ route('home') }}" class="flex items-center gap-2 text-xl font-bold text-slate-950">
+                <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-700 text-sm font-bold text-white ring-1 ring-indigo-300/60">U</span>
                 <span>Umbralia</span>
             </a>
 
             <nav class="hidden items-center gap-7 lg:flex" aria-label="{{ __('app.home.nav.aria') }}">
-                <a href="{{ route('information.how-it-works') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
+                <a href="{{ route('information.how-it-works') }}" class="text-sm font-medium text-indigo-700 hover:text-indigo-800">
                     {{ __('app.home.nav.how_it_works') }}
                 </a>
-                <a href="{{ route('information.patients') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
+                <a href="{{ route('information.patients') }}" class="text-sm font-medium text-indigo-700 hover:text-indigo-800">
                     {{ __('information.nav.patients') }}
                 </a>
-                <a href="{{ route('information.payment-and-cancellation') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
+                <a href="{{ route('information.payment-and-cancellation') }}" class="text-sm font-medium text-indigo-700 hover:text-indigo-800">
                     {{ __('information.nav.payment_and_cancellation') }}
                 </a>
-                <a href="{{ route('information.faq') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
+                <a href="{{ route('information.faq') }}" class="text-sm font-medium text-indigo-700 hover:text-indigo-800">
                     {{ __('app.home.nav.faq') }}
                 </a>
-                <a href="{{ route('contact.create') }}" class="text-sm font-medium text-gray-600 hover:text-emerald-800">
+                <a href="{{ route('contact.create') }}" class="text-sm font-medium text-indigo-700 hover:text-indigo-800">
                     {{ __('app.home.nav.contact') }}
                 </a>
             </nav>
@@ -45,24 +45,24 @@
             <div class="hidden items-center gap-3 lg:flex">
                 <a
                     href="{{ request()->fullUrlWithQuery(['lang' => app()->getLocale() === 'es' ? 'en' : 'es']) }}"
-                    class="text-sm font-semibold text-gray-600 hover:text-emerald-800"
+                    class="text-sm font-semibold text-indigo-700 hover:text-indigo-800"
                 >
                     {{ app()->getLocale() === 'es' ? 'EN' : 'ES' }}
                 </a>
 
                 @auth
-                    <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-gray-700 hover:text-emerald-800">
+                    <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-indigo-700 hover:text-indigo-800">
                         {{ __('app.dashboard') }}
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="text-sm font-semibold text-gray-700 hover:text-emerald-800">
+                    <a href="{{ route('login') }}" class="text-sm font-semibold text-indigo-700 hover:text-indigo-800">
                         {{ __('app.home.nav.login') }}
                     </a>
                 @endauth
 
                 <a
                     href="{{ route('book.index') }}"
-                    class="rounded-md bg-emerald-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2"
+                    class="rounded-lg bg-indigo-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2"
                 >
                     {{ __('app.home.nav.book') }}
                 </a>
@@ -70,7 +70,7 @@
 
             <button
                 type="button"
-                class="flex h-10 w-10 items-center justify-center text-gray-700 lg:hidden"
+                class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-50 lg:hidden"
                 @click="mobileOpen = !mobileOpen"
                 :aria-expanded="mobileOpen"
                 aria-controls="public-mobile-menu"
@@ -90,19 +90,19 @@
             x-cloak
             x-show="mobileOpen"
             x-transition
-            class="border-t border-gray-200 bg-white px-4 py-5 lg:hidden"
+            class="border-t border-slate-200 bg-white px-4 py-5 shadow-lg lg:hidden"
         >
             <nav class="flex flex-col gap-4" aria-label="{{ __('app.home.nav.mobile_aria') }}">
-                <a href="{{ route('information.how-it-works') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.how_it_works') }}</a>
-                <a href="{{ route('information.patients') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('information.nav.patients') }}</a>
-                <a href="{{ route('information.payment-and-cancellation') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('information.nav.payment_and_cancellation') }}</a>
-                <a href="{{ route('information.faq') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.faq') }}</a>
-                <a href="{{ route('contact.create') }}" @click="mobileOpen = false" class="font-medium text-gray-700">{{ __('app.home.nav.contact') }}</a>
-                <div class="mt-2 flex items-center justify-between border-t border-gray-200 pt-4">
-                    <a href="{{ request()->fullUrlWithQuery(['lang' => app()->getLocale() === 'es' ? 'en' : 'es']) }}" class="font-semibold text-gray-700">
+                <a href="{{ route('information.how-it-works') }}" @click="mobileOpen = false" class="font-medium text-slate-700">{{ __('app.home.nav.how_it_works') }}</a>
+                <a href="{{ route('information.patients') }}" @click="mobileOpen = false" class="font-medium text-slate-700">{{ __('information.nav.patients') }}</a>
+                <a href="{{ route('information.payment-and-cancellation') }}" @click="mobileOpen = false" class="font-medium text-slate-700">{{ __('information.nav.payment_and_cancellation') }}</a>
+                <a href="{{ route('information.faq') }}" @click="mobileOpen = false" class="font-medium text-slate-700">{{ __('app.home.nav.faq') }}</a>
+                <a href="{{ route('contact.create') }}" @click="mobileOpen = false" class="font-medium text-slate-700">{{ __('app.home.nav.contact') }}</a>
+                <div class="mt-2 flex items-center justify-between gap-3 border-t border-slate-200 pt-4">
+                    <a href="{{ request()->fullUrlWithQuery(['lang' => app()->getLocale() === 'es' ? 'en' : 'es']) }}" class="font-semibold text-slate-700">
                         {{ app()->getLocale() === 'es' ? 'English' : 'Español' }}
                     </a>
-                    <a href="{{ route('book.index') }}" class="rounded-md bg-emerald-700 px-4 py-2.5 font-semibold text-white">
+                    <a href="{{ route('book.index') }}" class="rounded-lg bg-indigo-700 px-4 py-2.5 font-semibold text-white">
                         {{ __('app.home.nav.book') }}
                     </a>
                 </div>
@@ -114,11 +114,11 @@
         @yield('content')
     </main>
 
-    <footer id="contact" class="border-t border-gray-200 bg-gray-950 text-gray-300">
+    <footer id="contact" class="border-t border-slate-200 bg-indigo-950 text-slate-100">
         <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
             <div>
                 <p class="text-xl font-bold text-white">Umbralia</p>
-                <p class="mt-3 max-w-sm text-sm leading-6 text-gray-400">
+                <p class="mt-3 max-w-sm text-sm leading-6 text-slate-200">
                     {{ __('app.home.footer.description') }}
                 </p>
             </div>
@@ -152,8 +152,8 @@
             </div>
         </div>
 
-        <div class="border-t border-gray-800">
-            <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-xs text-gray-500 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+        <div class="border-t border-white/10">
+            <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-xs text-slate-300 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
                 <p>&copy; {{ date('Y') }} Umbralia. {{ __('app.all_rights_reserved') }}</p>
                 <p>{{ __('legal.footer.disclaimer') }}</p>
             </div>

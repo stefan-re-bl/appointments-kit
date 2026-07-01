@@ -58,7 +58,7 @@
                         <select
                             id="therapist_id"
                             name="therapist_id"
-                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                             @change="submitFilters()"
                         >
                             <option value="">{{ __('app.admin.appointments.filters.all_therapists') }}</option>
@@ -80,7 +80,7 @@
                         <select
                             id="status"
                             name="status"
-                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                             @change="submitFilters()"
                         >
                             <option value="">{{ __('app.admin.appointments.filters.all_statuses') }}</option>
@@ -102,7 +102,7 @@
                         <select
                             id="payment_status"
                             name="payment_status"
-                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                             @change="submitFilters()"
                         >
                             <option value="">{{ __('app.admin.appointments.filters.all_payment_statuses') }}</option>
@@ -126,7 +126,7 @@
                             name="date_from"
                             type="date"
                             value="{{ $filters['date_from'] ?? '' }}"
-                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                             @change="submitFilters()"
                         >
                     </div>
@@ -140,7 +140,7 @@
                             name="date_to"
                             type="date"
                             value="{{ $filters['date_to'] ?? '' }}"
-                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                             @change="submitFilters()"
                         >
                     </div>
@@ -149,7 +149,7 @@
                 <div class="mt-4 flex flex-wrap items-center gap-3">
                     <button
                         type="submit"
-                        class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+                        class="rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800"
                     >
                         {{ __('app.admin.appointments.filters.apply') }}
                     </button>

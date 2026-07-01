@@ -14,7 +14,7 @@
                     <select
                         id="status"
                         name="status"
-                        class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                     >
                         <option value="all" @selected($selectedStatus === 'all')>
                             {{ __('app.admin.contact_messages.filters.all_statuses') }}
@@ -27,7 +27,7 @@
                     </select>
                 </div>
 
-                <button type="submit" class="inline-flex justify-center rounded-md bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">
+                <button type="submit" class="inline-flex justify-center rounded-md bg-indigo-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-800">
                     {{ __('app.admin.contact_messages.filters.apply') }}
                 </button>
 
@@ -77,7 +77,7 @@
                             <select
                                 id="status_{{ $contactMessage->id }}"
                                 name="status"
-                                class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
                             >
                                 @foreach ($statuses as $status)
                                     <option value="{{ $status->value }}" @selected($contactMessage->status === $status)>
@@ -86,7 +86,7 @@
                                 @endforeach
                             </select>
 
-                            <button type="submit" class="mt-4 w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500">
+                            <button type="submit" class="mt-4 w-full rounded-md bg-indigo-700 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-800">
                                 {{ __('app.admin.contact_messages.update_status') }}
                             </button>
                         </form>

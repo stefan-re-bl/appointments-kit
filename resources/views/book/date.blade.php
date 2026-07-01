@@ -1,10 +1,10 @@
 @extends('layouts.guest')
 
 @section('content')
-<div class="max-w-md mx-auto">
-    <a href="{{ route('book.session') }}" class="text-indigo-600 hover:text-indigo-800 text-sm mb-4 inline-block">&larr; {{ __('app.back') }}</a>
+<div class="mx-auto max-w-2xl">
+    <a href="{{ route('book.session') }}" class="mb-4 inline-block text-sm font-medium text-indigo-700 hover:text-indigo-800">&larr; {{ __('app.back') }}</a>
     
-    <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">{{ __('app.select_date') }}</h1>
+    <h1 class="mb-8 text-center text-3xl font-bold text-slate-950">{{ __('app.select_date') }}</h1>
 
     <form
         action="{{ route('book.store.date') }}"
@@ -133,9 +133,9 @@
         x-init="detectTimezone(); syncTimezone()"
     >
         @csrf
-        <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200 space-y-6">
+        <div class="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <div>
-                <label for="patient_country" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="patient_country" class="mb-2 block text-sm font-medium text-slate-800">
                     {{ __('booking_timezone.country_label') }}
                 </label>
                 <select
@@ -145,7 +145,7 @@
                     x-model="selectedCountry"
                     @change="syncTimezone()"
                     required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-900 @error('patient_country') border-red-500 @enderror"
+                    class="w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 @error('patient_country') border-rose-300 @enderror"
                 >
                     @foreach ($countries as $countryCode => $timezone)
                         <option value="{{ $countryCode }}" @selected(old('patient_country', $patientCountry) === $countryCode)>
@@ -154,21 +154,18 @@
                     @endforeach
                 </select>
 
-                <p class="mt-2 text-sm text-gray-600">{{ __('booking_timezone.country_help') }}</p>
-                <p x-show="detected" x-cloak class="mt-2 text-sm text-green-700">
+                <p class="mt-2 text-sm text-slate-600">{{ __('booking_timezone.country_help') }}</p>
+                <p x-show="detected" x-cloak class="mt-2 text-sm text-emerald-800">
                     {{ __('booking_timezone.country_detected') }}
-                </p>
-                <p x-show="detectionFailed" x-cloak class="mt-2 text-sm text-amber-700">
-                    {{ __('booking_timezone.country_detection_failed') }}
                 </p>
 
                 @error('patient_country')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-2 text-sm text-rose-700">{{ $message }}</p>
                 @enderror
             </div>
 
             <div>
-                <label for="date" class="block text-sm font-medium text-gray-700 mb-2">{{ __('app.date') }}</label>
+                <label for="date" class="mb-2 block text-sm font-medium text-slate-800">{{ __('app.date') }}</label>
                 <input
                     type="date"
                     name="date"
@@ -177,12 +174,12 @@
                     x-model="selectedDate"
                     @change="syncTimezone()"
                     required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-900"
+                    class="w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
                 >
             </div>
 
             <div x-show="hasTimezoneRegions()" x-cloak>
-                <label for="patient_timezone" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="patient_timezone" class="mb-2 block text-sm font-medium text-slate-800">
                     {{ __('booking_timezone.region_label') }}
                 </label>
                 <select
@@ -190,7 +187,7 @@
                     id="patient_timezone"
                     x-model="selectedTimezone"
                     :required="hasTimezoneRegions()"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-gray-900 @error('patient_timezone') border-red-500 @enderror"
+                    class="w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 @error('patient_timezone') border-rose-300 @enderror"
                 >
                     <option value="">{{ __('booking_timezone.region_placeholder') }}</option>
                     <template x-for="option in effectiveTimezoneOptions()" :key="option.timezone">
@@ -198,15 +195,15 @@
                     </template>
                 </select>
 
-                <p class="mt-2 text-sm text-gray-600">{{ __('booking_timezone.region_help') }}</p>
+                <p class="mt-2 text-sm text-slate-600">{{ __('booking_timezone.region_help') }}</p>
 
                 @error('patient_timezone')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    <p class="mt-2 text-sm text-rose-700">{{ $message }}</p>
                 @enderror
             </div>
         </div>
 
-        <button type="submit" class="w-full mt-6 bg-indigo-600 text-white py-3 px-4 rounded-md font-semibold hover:bg-indigo-700 transition shadow-lg">
+        <button type="submit" class="mt-6 w-full rounded-lg bg-indigo-700 px-4 py-3 font-semibold text-white shadow-lg shadow-slate-900/10 transition hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">
             {{ __('app.find_slots') }}
         </button>
     </form>
