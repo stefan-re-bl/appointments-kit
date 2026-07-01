@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -24,10 +25,14 @@ final class DashboardController extends Controller implements HasMiddleware
         ];
     }
 
-    public function __invoke(Request $request): View
+    public function __invoke(Request $request): RedirectResponse|View
     {
         /** @var User $user */
         $user = $request->user();
+
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.index');
+        }
 
         $therapist = $user->therapist()
             ->withCount([

@@ -88,7 +88,11 @@ return [
         'therapist_bio_help' => 'Briefly explain how you work and what a person can expect before booking.',
         'google_meet_link' => 'Online meeting link',
         'google_meet_link_help' => 'This link is required to appear publicly and receive bookings.',
+        'avatar_upload' => 'Upload profile photo',
+        'avatar_upload_help' => 'Use a JPG, PNG, or WebP image up to 2 MB. It will be shown cropped as a circle.',
+        'avatar_preview_alt' => 'Profile photo preview',
         'avatar_url' => 'Avatar URL',
+        'avatar_url_help' => 'Optional. If you upload a photo, it will take priority over this URL.',
     ],
 
     // Availabilities

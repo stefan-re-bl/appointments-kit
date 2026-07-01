@@ -40,10 +40,17 @@ class ProfileController extends Controller
         $request->user()->save();
 
         if ($request->user()->therapist) {
+            $avatarUrl = $validated['avatar_url'] ?? null;
+
+            if ($request->hasFile('avatar')) {
+                $avatarPath = $request->file('avatar')->store('therapists/avatars', 'public');
+                $avatarUrl = '/storage/'.$avatarPath;
+            }
+
             $request->user()->therapist->update([
                 'bio' => $validated['bio'] ?? null,
                 'google_meet_link' => $validated['google_meet_link'] ?? null,
-                'avatar_url' => $validated['avatar_url'] ?? null,
+                'avatar_url' => $avatarUrl,
             ]);
         }
 

@@ -28,6 +28,7 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'bio' => ['nullable', 'string', 'max:5000'],
             'google_meet_link' => ['nullable', 'url', 'max:2048'],
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'avatar_url' => ['nullable', 'url', 'max:2048'],
         ];
     }

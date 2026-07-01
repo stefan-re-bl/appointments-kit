@@ -105,6 +105,22 @@
 
                     <span class="mx-3">{{ __('app.appointments.management.title') }}</span>
                 </a>
+
+                <a
+                    href="{{ route('profile.edit') }}"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('profile.*') ? 'bg-indigo-800 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-indigo-900 hover:text-white' }} transition-colors duration-200"
+                >
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M5.121 17.804A9 9 0 1118.88 17.8M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        ></path>
+                    </svg>
+
+                    <span class="mx-3">{{ __('app.dashboard_onboarding.quick_links.profile') }}</span>
+                </a>
             </nav>
         </aside>
 

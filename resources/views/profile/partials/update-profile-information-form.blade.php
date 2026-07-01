@@ -13,7 +13,7 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-6 space-y-6">
         @csrf
         @method('patch')
 
@@ -48,6 +48,50 @@
         </div>
 
         @if ($user->therapist)
+            @php
+                $avatarPreviewUrl = $user->therapist->avatar_url
+                    ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name);
+            @endphp
+
+            <div
+                x-data="{
+                    previewUrl: @js($avatarPreviewUrl),
+                    updatePreview(event) {
+                        const [file] = event.target.files;
+
+                        if (! file) {
+                            return;
+                        }
+
+                        this.previewUrl = URL.createObjectURL(file);
+                    },
+                }"
+                class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+            >
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+                    <img
+                        src="{{ $avatarPreviewUrl }}"
+                        :src="previewUrl"
+                        alt="{{ __('app.profile.avatar_preview_alt') }}"
+                        class="h-24 w-24 rounded-full border border-slate-200 bg-white object-cover shadow-sm"
+                    >
+
+                    <div class="min-w-0 flex-1">
+                        <x-input-label for="avatar" :value="__('app.profile.avatar_upload')" />
+                        <input
+                            id="avatar"
+                            name="avatar"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            class="mt-2 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-700 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-indigo-800"
+                            x-on:change="updatePreview($event)"
+                        >
+                        <p class="mt-2 text-sm text-slate-600">{{ __('app.profile.avatar_upload_help') }}</p>
+                        <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+                    </div>
+                </div>
+            </div>
+
             <div>
                 <x-input-label for="bio" :value="__('app.profile.therapist_bio')" />
                 <textarea
@@ -70,6 +114,7 @@
             <div>
                 <x-input-label for="avatar_url" :value="__('app.profile.avatar_url')" />
                 <x-text-input id="avatar_url" name="avatar_url" type="url" class="mt-1 block w-full" :value="old('avatar_url', $user->therapist->avatar_url)" />
+                <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.avatar_url_help') }}</p>
                 <x-input-error class="mt-2" :messages="$errors->get('avatar_url')" />
             </div>
         @endif

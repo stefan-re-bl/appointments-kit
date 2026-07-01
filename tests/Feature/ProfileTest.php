@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Enums\Role;
+use App\Models\Therapist;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 final class ProfileTest extends TestCase
@@ -62,6 +65,39 @@ final class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
+    }
+
+    public function test_therapist_can_upload_local_profile_photo(): void
+    {
+        Storage::fake('public');
+
+        $user = $this->createTherapistUser();
+        $therapist = Therapist::factory()->for($user)->create([
+            'avatar_url' => null,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'bio' => $therapist->bio,
+                'google_meet_link' => $therapist->google_meet_link,
+                'avatar' => UploadedFile::fake()->image('avatar.jpg', 512, 512),
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $avatarUrl = $therapist->refresh()->avatar_url;
+
+        $this->assertIsString($avatarUrl);
+        $this->assertStringContainsString('/storage/therapists/avatars/', $avatarUrl);
+
+        $storedPath = substr($avatarUrl, strpos($avatarUrl, '/storage/') + strlen('/storage/'));
+
+        Storage::disk('public')->assertExists($storedPath);
     }
 
     public function test_user_can_delete_their_account(): void

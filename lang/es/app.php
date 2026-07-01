@@ -88,7 +88,11 @@ return [
         'therapist_bio_help' => 'Contá brevemente cómo trabajás y qué puede esperar una persona antes de reservar.',
         'google_meet_link' => 'Link de reunión online',
         'google_meet_link_help' => 'Este link es necesario para aparecer públicamente y recibir reservas.',
+        'avatar_upload' => 'Subir foto de perfil',
+        'avatar_upload_help' => 'Usá una imagen JPG, PNG o WebP de hasta 2 MB. Se mostrará recortada en formato circular.',
+        'avatar_preview_alt' => 'Vista previa de la foto de perfil',
         'avatar_url' => 'URL de avatar',
+        'avatar_url_help' => 'Opcional. Si subís una foto, tendrá prioridad sobre esta URL.',
     ],
 
     // Disponibilidades

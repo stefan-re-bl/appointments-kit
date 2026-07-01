@@ -162,7 +162,7 @@ final class CriticalBookingFlowTest extends TestCase
             ->assertSeeText(__('booking_timezone.region_label'))
             ->assertSeeText(__('booking_timezone.region_placeholder'))
             ->assertSeeText(__('booking_timezone.country_help'))
-            ->assertSeeText(__('booking_timezone.country_detection_failed'));
+            ->assertDontSeeText(__('booking_timezone.country_detection_failed'));
     }
 
     public function test_booking_date_accepts_country_without_region_when_country_has_single_timezone(): void
