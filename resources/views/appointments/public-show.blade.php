@@ -148,6 +148,17 @@
                                     {{ __('app.appointment_public.payment_manual_note') }}
                                 </p>
                             @endif
+
+                            @if (filled($appointment->therapist?->payment_instructions))
+                                <div class="mt-4 border-t border-slate-200 pt-4">
+                                    <h3 class="text-sm font-semibold text-slate-900">
+                                        {{ __('app.appointment_public.payment_instructions_title') }}
+                                    </h3>
+                                    <p class="mt-2 whitespace-pre-line text-sm leading-6 text-slate-700">
+                                        {{ $appointment->therapist->payment_instructions }}
+                                    </p>
+                                </div>
+                            @endif
                         </div>
                     </section>
 

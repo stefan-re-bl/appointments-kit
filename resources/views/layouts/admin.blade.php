@@ -63,6 +63,18 @@
                 </a>
 
                 <a
+                    href="{{ route('admin.activity-logs.index') }}"
+                    @class([
+                        'flex items-center rounded-xl px-4 py-3 text-sm font-medium transition',
+                        'bg-indigo-700/30 text-white ring-1 ring-amber-200/20' => request()->routeIs('admin.activity-logs.*'),
+                        'text-slate-200 hover:bg-white/10 hover:text-white' => ! request()->routeIs('admin.activity-logs.*'),
+                    ])
+                >
+                    <span class="mr-3">◎</span>
+                    {{ __('app.admin.nav.activity_logs') }}
+                </a>
+
+                <a
                     href="{{ route('admin.contact-messages.index') }}"
                     @class([
                         'flex items-center rounded-xl px-4 py-3 text-sm font-medium transition',

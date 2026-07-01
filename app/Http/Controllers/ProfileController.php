@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
+use App\Rules\ValidTimezone;
+use App\Services\CountryTimezoneService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,17 +17,36 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request, CountryTimezoneService $countryTimezoneService): View
     {
+        /** @var User $user */
+        $user = $request->user();
+        $therapistTimezone = ValidTimezone::normalize($user->therapist?->timezone) ?? 'UTC';
+        $therapistCountry = $countryTimezoneService->countryForTimezone($therapistTimezone) ?? 'AR';
+        $timezoneReferenceDate = now('UTC')->toDateString();
+        $timezoneOptions = $countryTimezoneService->timezoneOptionsForCountryOnDate(
+            $therapistCountry,
+            $timezoneReferenceDate,
+        );
+
+        if (! array_key_exists($therapistTimezone, $timezoneOptions)) {
+            $therapistTimezone = array_key_first($timezoneOptions) ?? $therapistTimezone;
+        }
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'countries' => $countryTimezoneService->countries(),
+            'countryTimezones' => $countryTimezoneService->countryTimezones(),
+            'therapistCountry' => $therapistCountry,
+            'therapistTimezone' => $therapistTimezone,
+            'timezoneReferenceDate' => $timezoneReferenceDate,
+            'user' => $user,
         ]);
     }
 
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request, CountryTimezoneService $countryTimezoneService): RedirectResponse
     {
         $validated = $request->validated();
 
@@ -40,6 +62,14 @@ class ProfileController extends Controller
         $request->user()->save();
 
         if ($request->user()->therapist) {
+            $previousTimezone = $request->user()->therapist->timezone;
+            $therapistTimezone = ValidTimezone::normalize(
+                $countryTimezoneService->timezoneForLocation(
+                    $validated['therapist_country'] ?? null,
+                    now('UTC')->toDateString(),
+                    $validated['therapist_timezone'] ?? null,
+                )
+            ) ?? $previousTimezone;
             $avatarUrl = $validated['avatar_url'] ?? null;
 
             if ($request->hasFile('avatar')) {
@@ -49,9 +79,18 @@ class ProfileController extends Controller
 
             $request->user()->therapist->update([
                 'bio' => $validated['bio'] ?? null,
+                'specialties' => $validated['specialties'] ?? null,
+                'therapeutic_approach' => $validated['therapeutic_approach'] ?? null,
+                'payment_instructions' => $validated['payment_instructions'] ?? null,
                 'google_meet_link' => $validated['google_meet_link'] ?? null,
                 'avatar_url' => $avatarUrl,
+                'timezone' => $therapistTimezone,
             ]);
+
+            if ($therapistTimezone !== $previousTimezone) {
+                return Redirect::route('availabilities.index')
+                    ->with('status', __('app.profile.timezone_changed_review_availability'));
+            }
         }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');

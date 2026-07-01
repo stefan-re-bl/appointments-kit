@@ -7,9 +7,9 @@ namespace App\Mail;
 use App\Models\Appointment;
 use App\Services\TimezoneService;
 use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 final class BookingConfirmed extends Mailable
@@ -83,6 +83,7 @@ final class BookingConfirmed extends Mailable
             'displayTimezone' => $displayTimezone,
             'appointmentUrl' => route('appointments.public.show', $this->appointment->token),
             'meetLink' => $this->appointment->therapist?->google_meet_link,
+            'paymentInstructions' => $this->appointment->therapist?->payment_instructions,
             'therapistName' => $this->appointment->therapist?->user?->name,
             'patientName' => $this->appointment->patient_name,
             'sessionTypeName' => $this->appointment->sessionType?->name,

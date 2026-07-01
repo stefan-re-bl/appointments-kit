@@ -74,6 +74,7 @@ final class ProfileTest extends TestCase
         $user = $this->createTherapistUser();
         $therapist = Therapist::factory()->for($user)->create([
             'avatar_url' => null,
+            'timezone' => 'America/Argentina/Buenos_Aires',
         ]);
 
         $response = $this
@@ -83,6 +84,7 @@ final class ProfileTest extends TestCase
                 'email' => $user->email,
                 'bio' => $therapist->bio,
                 'google_meet_link' => $therapist->google_meet_link,
+                'therapist_country' => 'AR',
                 'avatar' => UploadedFile::fake()->image('avatar.jpg', 512, 512),
             ]);
 
@@ -98,6 +100,65 @@ final class ProfileTest extends TestCase
         $storedPath = substr($avatarUrl, strpos($avatarUrl, '/storage/') + strlen('/storage/'));
 
         Storage::disk('public')->assertExists($storedPath);
+    }
+
+    public function test_therapist_can_update_public_profile_details_and_payment_instructions(): void
+    {
+        $user = $this->createTherapistUser();
+        $therapist = Therapist::factory()->for($user)->create([
+            'timezone' => 'America/Argentina/Buenos_Aires',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'bio' => 'Trabajo con procesos de ansiedad.',
+                'specialties' => 'Ansiedad, duelos y crisis vitales.',
+                'therapeutic_approach' => 'Enfoque integrativo con perspectiva contextual.',
+                'payment_instructions' => 'Transferencia a alias UMBRALIA.TEST antes de la sesión.',
+                'google_meet_link' => $therapist->google_meet_link,
+                'avatar_url' => $therapist->avatar_url,
+                'therapist_country' => 'AR',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $therapist->refresh();
+
+        $this->assertSame('Ansiedad, duelos y crisis vitales.', $therapist->specialties);
+        $this->assertSame('Enfoque integrativo con perspectiva contextual.', $therapist->therapeutic_approach);
+        $this->assertSame('Transferencia a alias UMBRALIA.TEST antes de la sesión.', $therapist->payment_instructions);
+    }
+
+    public function test_therapist_timezone_change_redirects_to_availability_review(): void
+    {
+        $user = $this->createTherapistUser();
+        $therapist = Therapist::factory()->for($user)->create([
+            'timezone' => 'America/Argentina/Buenos_Aires',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'bio' => $therapist->bio,
+                'google_meet_link' => $therapist->google_meet_link,
+                'avatar_url' => $therapist->avatar_url,
+                'therapist_country' => 'ES',
+                'therapist_timezone' => 'Europe/Madrid',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertSessionHas('status', __('app.profile.timezone_changed_review_availability'))
+            ->assertRedirect(route('availabilities.index'));
+
+        $this->assertSame('Europe/Madrid', $therapist->refresh()->timezone);
     }
 
     public function test_user_can_delete_their_account(): void

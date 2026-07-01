@@ -8,6 +8,7 @@ use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Models\ActivityLog;
 use App\Models\Appointment;
+use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use RuntimeException;
@@ -90,5 +91,34 @@ final class ActivityLogTest extends TestCase
         $this->expectException(RuntimeException::class);
 
         $log->delete();
+    }
+
+    public function test_admin_can_view_activity_log_index(): void
+    {
+        $admin = User::factory()->admin()->create([
+            'name' => 'Admin Umbralia',
+        ]);
+
+        $appointment = Appointment::factory()->create([
+            'patient_name' => 'Paciente Auditada',
+            'status' => AppointmentStatus::CONFIRMED,
+            'payment_status' => PaymentStatus::PENDING,
+        ]);
+
+        $this->actingAs($appointment->therapist->user);
+
+        $appointment->forceFill([
+            'payment_status' => PaymentStatus::PAID,
+            'paid_at' => CarbonImmutable::now('UTC'),
+        ])->save();
+
+        $this
+            ->actingAs($admin)
+            ->get(route('admin.activity-logs.index'))
+            ->assertOk()
+            ->assertSeeText(__('app.admin.activity_logs.title'))
+            ->assertSeeText('Paciente Auditada')
+            ->assertSeeText(__('app.admin.activity_logs.events.appointment.payment_updated'))
+            ->assertDontSeeText('app.admin.activity_logs.events.appointment.payment_updated');
     }
 }

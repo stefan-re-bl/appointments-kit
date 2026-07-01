@@ -16,7 +16,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
-#[Fillable(['slug', 'timezone', 'google_meet_link', 'bio', 'is_active', 'is_approved', 'avatar_url'])]
+#[Fillable([
+    'slug',
+    'timezone',
+    'google_meet_link',
+    'bio',
+    'specialties',
+    'therapeutic_approach',
+    'payment_instructions',
+    'is_active',
+    'is_approved',
+    'avatar_url',
+])]
 #[Hidden([])]
 class Therapist extends Model
 {

@@ -212,10 +212,7 @@
                         </div>
 
                         <div class="flex flex-wrap gap-2 lg:justify-end">
-                            <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700">
-                                {{ __('app.appointment_status.' . $appointment->status->value) }}
-                            </span>
-
+                            <x-appointment-status-badge :status="$appointment->status" />
                             <x-payment-status-badge :status="$appointment->payment_status" />
                         </div>
                     </article>

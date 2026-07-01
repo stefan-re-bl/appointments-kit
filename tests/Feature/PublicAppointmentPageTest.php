@@ -21,6 +21,7 @@ final class PublicAppointmentPageTest extends TestCase
     {
         $therapist = Therapist::factory()->create([
             'google_meet_link' => 'https://meet.google.com/test-room',
+            'payment_instructions' => 'Transferencia a alias UMBRALIA.TEST.',
         ]);
 
         $sessionType = SessionType::factory()
@@ -52,6 +53,7 @@ final class PublicAppointmentPageTest extends TestCase
             ->assertSeeText('10/07/2026 15:00')
             ->assertSeeText('10/07/2026 16:00')
             ->assertSeeText('America/Argentina/Cordoba')
+            ->assertSeeText('Transferencia a alias UMBRALIA.TEST.')
             ->assertSee('https://meet.google.com/test-room');
     }
 

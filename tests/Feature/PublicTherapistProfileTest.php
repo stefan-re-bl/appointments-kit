@@ -23,6 +23,8 @@ final class PublicTherapistProfileTest extends TestCase
         ]);
         $therapist = Therapist::factory()->for($user)->create([
             'bio' => 'Acompaño procesos terapéuticos online.',
+            'specialties' => 'Ansiedad, autoestima y duelos.',
+            'therapeutic_approach' => 'Trabajo con enfoque integrativo.',
             'timezone' => 'America/Argentina/Buenos_Aires',
             'google_meet_link' => 'https://meet.google.com/abc-defg-hij',
             'is_active' => true,
@@ -45,6 +47,8 @@ final class PublicTherapistProfileTest extends TestCase
             ->assertOk()
             ->assertSeeText('Marina Alvarez')
             ->assertSeeText('Acompaño procesos terapéuticos online.')
+            ->assertSeeText('Ansiedad, autoestima y duelos.')
+            ->assertSeeText('Trabajo con enfoque integrativo.')
             ->assertSeeText('America/Argentina/Buenos_Aires')
             ->assertSeeText('Consulta inicial')
             ->assertSeeText('ARS 25,000.00')

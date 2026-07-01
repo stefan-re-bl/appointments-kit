@@ -46,6 +46,32 @@
                     </div>
                 @endif
 
+                @if ($therapist->specialties || $therapist->therapeutic_approach)
+                    <div class="mt-10 grid gap-6 md:grid-cols-2">
+                        @if ($therapist->specialties)
+                            <section class="rounded-xl border border-gray-200 p-5">
+                                <h2 class="text-lg font-semibold text-gray-950">
+                                    {{ __('app.therapist_public.specialties_title') }}
+                                </h2>
+                                <p class="mt-3 whitespace-pre-line text-sm leading-7 text-gray-700">
+                                    {{ $therapist->specialties }}
+                                </p>
+                            </section>
+                        @endif
+
+                        @if ($therapist->therapeutic_approach)
+                            <section class="rounded-xl border border-gray-200 p-5">
+                                <h2 class="text-lg font-semibold text-gray-950">
+                                    {{ __('app.therapist_public.approach_title') }}
+                                </h2>
+                                <p class="mt-3 whitespace-pre-line text-sm leading-7 text-gray-700">
+                                    {{ $therapist->therapeutic_approach }}
+                                </p>
+                            </section>
+                        @endif
+                    </div>
+                @endif
+
                 <div class="mt-10">
                     <h2 class="text-xl font-semibold text-gray-950">
                         {{ __('app.therapist_public.sessions_title') }}

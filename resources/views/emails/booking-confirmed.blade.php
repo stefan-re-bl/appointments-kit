@@ -21,6 +21,13 @@
 @if ($recipientType === \App\Mail\BookingConfirmed::RECIPIENT_PATIENT)
 {{ __('app.emails.booking_confirmed.payment_patient_notice') }}
 
+@if (filled($paymentInstructions))
+<x-mail::panel>
+<strong>{{ __('app.emails.booking_confirmed.payment_instructions') }}</strong><br>
+{{ $paymentInstructions }}
+</x-mail::panel>
+@endif
+
 {{ __('legal.email.patient_disclaimer') }}
 @else
 {{ __('app.emails.booking_confirmed.payment_therapist_notice') }}

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\AppointmentReportController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
@@ -105,6 +106,9 @@ Route::middleware(['auth', 'verified', 'admin'])
 
         Route::get('/appointments', [AdminAppointmentController::class, 'index'])
             ->name('appointments.index');
+
+        Route::get('/activity-logs', [AdminActivityLogController::class, 'index'])
+            ->name('activity-logs.index');
 
         Route::get('/contact-messages', [AdminContactMessageController::class, 'index'])
             ->name('contact-messages.index');
