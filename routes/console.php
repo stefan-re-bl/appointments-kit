@@ -20,6 +20,13 @@ Schedule::command('appointments:send-reminders')
     ->withoutOverlapping()
     ->onOneServer();
 
+if ((bool) config('queue.schedule_worker', false)) {
+    Schedule::command('queue:work database --queue=default --stop-when-empty --max-time=50 --tries=3 --timeout=90')
+        ->everyMinute()
+        ->withoutOverlapping()
+        ->onOneServer();
+}
+
 if ((bool) config('monitoring.queue.enabled', true)) {
     $queueConnection = (string) config('monitoring.queue.connection', 'redis');
     $queueName = (string) config('monitoring.queue.queue', 'default');

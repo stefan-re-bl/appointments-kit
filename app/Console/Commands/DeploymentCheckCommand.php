@@ -15,7 +15,8 @@ final class DeploymentCheckCommand extends Command
 {
     protected $signature = 'deployment:check
         {--url= : Public HTTPS base URL to verify}
-        {--timeout=10 : HTTP timeout in seconds}';
+        {--timeout=10 : HTTP timeout in seconds}
+        {--profile=redis : Deployment profile to verify: redis or database}';
 
     protected $description = 'Verify production deployment configuration and public HTTPS endpoints.';
 
@@ -28,17 +29,18 @@ final class DeploymentCheckCommand extends Command
     {
         $baseUrl = $this->baseUrl();
         $timeout = max(1, (int) $this->option('timeout'));
+        $profile = (string) $this->option('profile');
 
         $this->record('APP_ENV', app()->environment('production'), (string) config('app.env'));
         $this->record('APP_DEBUG', config('app.debug') === false, config('app.debug') ? 'true' : 'false');
         $this->record('APP_URL uses HTTPS', str_starts_with($baseUrl, 'https://'), $baseUrl);
         $this->record('Configuration cached', app()->configurationIsCached(), app()->configurationIsCached() ? 'cached' : 'not cached');
-        $this->record('Queue uses Redis', config('queue.default') === 'redis', (string) config('queue.default'));
-        $this->record('Cache uses Redis', config('cache.default') === 'redis', (string) config('cache.default'));
-        $this->record('Session uses Redis', config('session.driver') === 'redis', (string) config('session.driver'));
+        $this->checkRuntimeProfile($profile);
 
         $this->checkDatabase();
-        $this->checkRedis();
+        if ($profile === 'redis') {
+            $this->checkRedis();
+        }
         $this->checkPublicEndpoints($baseUrl, $timeout);
 
         $this->table(['Check', 'Status', 'Detail'], $this->results);
@@ -63,6 +65,23 @@ final class DeploymentCheckCommand extends Command
         } catch (Throwable $exception) {
             $this->record('Database connection', false, $exception->getMessage());
         }
+    }
+
+    private function checkRuntimeProfile(string $profile): void
+    {
+        if (! in_array($profile, ['redis', 'database'], true)) {
+            $this->record('Deployment profile', false, $profile);
+
+            return;
+        }
+
+        $this->record('Deployment profile', true, $profile);
+
+        $expected = $profile === 'redis' ? 'redis' : 'database';
+
+        $this->record('Queue driver', config('queue.default') === $expected, (string) config('queue.default'));
+        $this->record('Cache store', config('cache.default') === $expected, (string) config('cache.default'));
+        $this->record('Session driver', config('session.driver') === $expected, (string) config('session.driver'));
     }
 
     private function checkRedis(): void

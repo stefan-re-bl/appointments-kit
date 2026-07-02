@@ -51,7 +51,7 @@ Para compilar assets:
 
 ## Operación
 
-La guía de deploy vive en `docs/deploy/vps.md`. Antes de publicar, validar:
+Las guías de deploy viven en `docs/deploy/vps.md` y `docs/deploy/hostinger-business.md`. Antes de publicar, validar:
 
 - `.env` productivo con `APP_ENV=production` y `APP_DEBUG=false`.
 - Migraciones ejecutadas.

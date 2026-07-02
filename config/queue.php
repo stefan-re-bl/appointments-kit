@@ -15,6 +15,8 @@ return [
 
     'default' => env('QUEUE_CONNECTION', 'database'),
 
+    'schedule_worker' => env('SCHEDULE_QUEUE_WORKER', false),
+
     /*
     |--------------------------------------------------------------------------
     | Queue Connections
