@@ -113,6 +113,26 @@ return [
     'inactive' => 'Inactivo',
     'delete' => 'Eliminar',
     'edit' => 'Editar',
+    'availability' => [
+        'create_title' => 'Añadir Rangos Horarios',
+        'day_of_week' => 'Día de la semana',
+        'ranges' => 'Rangos Horarios',
+        'add_range' => '+ Añadir Rango',
+        'start' => 'Inicio',
+        'end' => 'Fin',
+        'cancel' => 'Cancelar',
+        'save' => 'Guardar Disponibilidad',
+        'saved' => 'Disponibilidad guardada correctamente.',
+        'deleted' => 'Horario eliminado.',
+        'errors' => [
+            'unauthorized' => 'Acceso no autorizado.',
+            'forbidden' => 'No tienes permiso para modificar esta disponibilidad.',
+            'overlap' => 'Los rangos horarios se solapan con horarios ya existentes o entre sí.',
+        ],
+        'validation' => [
+            'end_after' => 'La hora de fin debe ser posterior a la hora de inicio.',
+        ],
+    ],
 
     // Días de la semana (ISO-8601: 1=Lunes, 7=Domingo)
     'day_1' => 'Lunes',

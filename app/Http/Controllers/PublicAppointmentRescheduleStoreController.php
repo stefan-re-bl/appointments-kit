@@ -39,8 +39,6 @@ final class PublicAppointmentRescheduleStoreController extends Controller implem
             return response()->view('appointments.public.not-found', status: 404);
         }
 
-        app()->instance('user.timezone', $appointment->patient_timezone ?: 'UTC');
-
         $validated = $request->validate([
             'date' => ['required', 'date_format:Y-m-d'],
             'start_utc' => ['required', 'date'],

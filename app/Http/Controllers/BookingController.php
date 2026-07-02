@@ -8,6 +8,7 @@ use App\Jobs\SendBookingConfirmedEmails;
 use App\Models\SessionType;
 use App\Models\Therapist;
 use App\Rules\ValidTimezone;
+use App\Services\AvailableSlotResolver;
 use App\Services\BookingService;
 use App\Services\CountryTimezoneService;
 use App\Services\SlotGenerationService;
@@ -360,7 +361,7 @@ final class BookingController extends Controller implements HasMiddleware
     public function store(
         Request $request,
         BookingService $bookingService,
-        SlotGenerationService $slotGenerationService,
+        AvailableSlotResolver $availableSlotResolver,
     ): RedirectResponse {
         $therapist = $this->activeTherapistFromSession();
 
@@ -387,18 +388,16 @@ final class BookingController extends Controller implements HasMiddleware
             return Redirect::route('book.index');
         }
 
-        app()->instance('user.timezone', $patientTimezone);
-
         $sessionType = SessionType::where('therapist_id', $therapist->id)
             ->where('is_active', true)
             ->findOrFail((int) session('booking.session_type_id'));
 
-        $selectedSlot = $this->findSelectedSlot(
-            $slotGenerationService,
+        $selectedSlot = $availableSlotResolver->resolve(
             $therapist,
             (string) session('booking.date'),
             (int) $sessionType->duration_minutes,
             (string) session('booking.starts_at_utc'),
+            $patientTimezone,
         );
 
         if ($selectedSlot === null) {
@@ -493,8 +492,6 @@ final class BookingController extends Controller implements HasMiddleware
             ]);
         }
 
-        app()->instance('user.timezone', $timezone);
-
         $therapist = Therapist::query()
             ->publiclyBookable()
             ->findOrFail((int) $request->therapist_id);
@@ -503,6 +500,7 @@ final class BookingController extends Controller implements HasMiddleware
             $therapist,
             $validated['date'],
             (int) $validated['duration'],
+            $timezone,
         );
 
         return response()->json($slots);
@@ -520,45 +518,5 @@ final class BookingController extends Controller implements HasMiddleware
             ->with('user')
             ->publiclyBookable()
             ->find((int) $therapistId);
-    }
-
-    /**
-     * @return array{start_utc: mixed, end_utc: mixed, label?: mixed}|null
-     */
-    private function findSelectedSlot(
-        SlotGenerationService $slotGenerationService,
-        Therapist $therapist,
-        string $date,
-        int $durationMinutes,
-        string $selectedStartUtc,
-    ): ?array {
-        $slots = $slotGenerationService->generate(
-            $therapist,
-            $date,
-            $durationMinutes,
-        );
-
-        foreach ($slots as $slot) {
-            if (
-                ! is_array($slot)
-                || ! array_key_exists('start_utc', $slot)
-                || ! array_key_exists('end_utc', $slot)
-            ) {
-                continue;
-            }
-
-            try {
-                $slotStartUtc = Carbon::parse((string) $slot['start_utc'], 'UTC')->utc();
-                $requestedStartUtc = Carbon::parse($selectedStartUtc, 'UTC')->utc();
-            } catch (Throwable) {
-                return null;
-            }
-
-            if ($slotStartUtc->equalTo($requestedStartUtc)) {
-                return $slot;
-            }
-        }
-
-        return null;
     }
 }

@@ -60,9 +60,14 @@ final class TimezoneAuditTest extends TestCase
             'is_active' => true,
         ]);
 
-        app()->instance('user.timezone', 'America/New_York');
+        app()->instance('user.timezone', 'UTC');
 
-        $slots = app(SlotGenerationService::class)->generate($therapist, '2026-07-06', 60);
+        $slots = app(SlotGenerationService::class)->generate(
+            $therapist,
+            '2026-07-06',
+            60,
+            'America/New_York',
+        );
 
         $this->assertCount(1, $slots);
         $this->assertSame('2026-07-06T07:00:00+00:00', $slots[0]['start_utc']);
@@ -87,9 +92,12 @@ final class TimezoneAuditTest extends TestCase
             'is_active' => true,
         ]);
 
-        app()->instance('user.timezone', 'UTC');
-
-        $slots = app(SlotGenerationService::class)->generate($therapist, '2026-03-08', 60);
+        $slots = app(SlotGenerationService::class)->generate(
+            $therapist,
+            '2026-03-08',
+            60,
+            'UTC',
+        );
 
         $this->assertCount(1, $slots);
         $this->assertSame('2026-03-08T13:00:00+00:00', $slots[0]['start_utc']);

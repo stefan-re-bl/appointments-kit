@@ -113,6 +113,26 @@ return [
     'inactive' => 'Inactive',
     'delete' => 'Delete',
     'edit' => 'Edit',
+    'availability' => [
+        'create_title' => 'Add Time Ranges',
+        'day_of_week' => 'Day of the week',
+        'ranges' => 'Time Ranges',
+        'add_range' => '+ Add Range',
+        'start' => 'Start',
+        'end' => 'End',
+        'cancel' => 'Cancel',
+        'save' => 'Save Availability',
+        'saved' => 'Availability saved successfully.',
+        'deleted' => 'Time range deleted.',
+        'errors' => [
+            'unauthorized' => 'Unauthorized access.',
+            'forbidden' => 'You do not have permission to modify this availability.',
+            'overlap' => 'The time ranges overlap with existing times or each other.',
+        ],
+        'validation' => [
+            'end_after' => 'The end time must be after the start time.',
+        ],
+    ],
 
     // Days of the week (ISO-8601: 1=Monday, 7=Sunday)
     'day_1' => 'Monday',

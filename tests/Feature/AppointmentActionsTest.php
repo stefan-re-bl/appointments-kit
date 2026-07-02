@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Actions\Appointments\CancelAppointment;
+use App\Actions\Appointments\RescheduleAction;
 use App\Actions\Appointments\RescheduleAppointment;
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
@@ -15,6 +16,7 @@ use App\Models\Appointment;
 use App\Models\SessionType;
 use App\Models\Therapist;
 use App\Models\User;
+use App\Services\TimezoneService;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -81,6 +83,48 @@ class AppointmentActionsTest extends TestCase
         Mail::assertNothingQueued();
     }
 
+    public function test_reschedule_action_uses_an_available_generated_slot(): void
+    {
+        Mail::fake();
+        app()->instance('user.timezone', 'America/Argentina/Buenos_Aires');
+
+        $appointment = $this->createAppointment([
+            'starts_at' => CarbonImmutable::parse('2026-08-10 16:00:00', 'UTC'),
+            'ends_at' => CarbonImmutable::parse('2026-08-10 17:00:00', 'UTC'),
+            'reschedule_count' => 0,
+        ]);
+
+        $timezoneService = app(TimezoneService::class);
+
+        $appointment->therapist->availabilities()->create([
+            'day_of_week' => 2,
+            'start_time' => $timezoneService->timeToUtc(
+                '15:00',
+                'America/Argentina/Buenos_Aires',
+                2,
+            ),
+            'end_time' => $timezoneService->timeToUtc(
+                '16:00',
+                'America/Argentina/Buenos_Aires',
+                2,
+            ),
+            'is_active' => true,
+        ]);
+
+        $result = app(RescheduleAction::class)->execute(
+            appointment: $appointment,
+            date: '2026-08-11',
+            startUtc: '2026-08-11T18:00:00+00:00',
+        );
+
+        $this->assertInstanceOf(Appointment::class, $result);
+        $this->assertSame(1, $result->reschedule_count);
+        $this->assertTrue($result->starts_at->equalTo(CarbonImmutable::parse('2026-08-11 18:00:00', 'UTC')));
+        $this->assertTrue($result->ends_at->equalTo(CarbonImmutable::parse('2026-08-11 19:00:00', 'UTC')));
+
+        Mail::assertQueued(AppointmentRescheduled::class, 2);
+    }
+
     public function test_it_cancels_an_appointment_and_queues_emails(): void
     {
         Mail::fake();
@@ -114,7 +158,7 @@ class AppointmentActionsTest extends TestCase
     }
 
     /**
-     * @param array<string, mixed> $overrides
+     * @param  array<string, mixed>  $overrides
      */
     private function createAppointment(array $overrides = []): Appointment
     {
@@ -126,11 +170,15 @@ class AppointmentActionsTest extends TestCase
             ->for($user)
             ->create([
                 'timezone' => 'America/Argentina/Buenos_Aires',
+                'is_active' => true,
+                'is_approved' => true,
             ]);
 
         $sessionType = SessionType::factory()
             ->for($therapist)
-            ->create();
+            ->create([
+                'duration_minutes' => 60,
+            ]);
 
         return Appointment::factory()
             ->for($therapist)

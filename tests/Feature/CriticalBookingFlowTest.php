@@ -61,6 +61,7 @@ final class CriticalBookingFlowTest extends TestCase
             $therapist,
             '2026-07-06',
             60,
+            'America/Argentina/Buenos_Aires',
         );
 
         $this->assertSame(

@@ -37,7 +37,7 @@ final class StoreAvailabilityRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'slots.*.end_time.after' => 'La hora de fin debe ser posterior a la hora de inicio.',
+            'slots.*.end_time.after' => __('app.availability.validation.end_after'),
         ];
     }
 }

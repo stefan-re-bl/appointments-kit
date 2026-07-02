@@ -18,14 +18,20 @@ class SlotGenerationService
      *
      * @param  string  $date  Fecha en formato Y-m-d
      * @param  int  $durationMinutes  Duración de la sesión
+     * @param  string|null  $displayTimezone  Zona horaria para formatear labels; usa la del terapeuta si no se indica.
      */
-    public function generate(Therapist $therapist, string $date, int $durationMinutes): array
-    {
+    public function generate(
+        Therapist $therapist,
+        string $date,
+        int $durationMinutes,
+        ?string $displayTimezone = null,
+    ): array {
         if (! $therapist->is_active || ! $therapist->is_approved) {
             return [];
         }
 
         $therapistTz = $therapist->timezone;
+        $displayTimezone ??= $therapistTz;
 
         // 1. Crear la fecha solicitada en la zona horaria del terapeuta
         $dateCarbon = Carbon::parse($date, $therapistTz);
@@ -53,7 +59,6 @@ class SlotGenerationService
 
         // 4. Generar slots
         $slots = [];
-        $userTz = app('user.timezone'); // Zona horaria del paciente (inyectada por middleware)
 
         foreach ($availabilities as $availability) {
             // Convertir la hora UTC de la BD a la hora local del terapeuta para esa fecha específica (Manejo de DST)
@@ -90,7 +95,7 @@ class SlotGenerationService
                     'start_utc' => $slotStartUtc->toIso8601String(),
                     'end_utc' => $slotEndUtc->toIso8601String(),
                     // Formateado para el paciente usando su propia zona horaria
-                    'label' => $slotStartUtc->copy()->setTimezone($userTz)->format('H:i'),
+                    'label' => $slotStartUtc->copy()->setTimezone($displayTimezone)->format('H:i'),
                 ];
 
                 $currentStartUtc->addMinutes($durationMinutes);
