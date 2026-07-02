@@ -21,7 +21,7 @@ final class PublicHomePageTest extends TestCase
             ->assertSeeText(__('app.home.faq.title'))
             ->assertSeeText(__('app.home.emergency.title'))
             ->assertSee(route('book.index'), false)
-            ->assertSee(asset('images/umbralia-home-hero.webp'), false);
+            ->assertSee('images/umbralia-home-hero-indigo.png', false);
     }
 
     public function test_public_home_can_be_rendered_in_english(): void

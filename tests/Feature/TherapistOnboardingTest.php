@@ -80,6 +80,7 @@ final class TherapistOnboardingTest extends TestCase
         Therapist::factory()->for($user)->create([
             'bio' => null,
             'google_meet_link' => null,
+            'timezone' => 'America/Argentina/Buenos_Aires',
         ]);
 
         $this
@@ -90,6 +91,8 @@ final class TherapistOnboardingTest extends TestCase
                 'bio' => 'Bio actualizada para pacientes.',
                 'google_meet_link' => 'https://meet.google.com/abc-defg-hij',
                 'avatar_url' => 'https://example.test/avatar.jpg',
+                'therapist_country' => 'AR',
+                'therapist_timezone' => 'America/Argentina/Buenos_Aires',
             ])
             ->assertRedirect(route('profile.edit'));
 
