@@ -1,10 +1,12 @@
 @extends('layouts.guest')
 
 @section('content')
-<div class="mx-auto max-w-2xl">
-    <a href="{{ route('book.time') }}" class="mb-4 inline-block text-sm font-medium text-indigo-700 hover:text-indigo-800">&larr; {{ __('app.change_date') }}</a>
+<div class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+    <a href="{{ route('book.time') }}" class="mb-6 inline-flex items-center text-sm font-semibold text-indigo-700 hover:text-indigo-800">&larr; {{ __('app.change_date') }}</a>
 
-    <h1 class="mb-8 text-center text-3xl font-bold text-slate-950">{{ __('app.confirm_booking') }}</h1>
+    @include('book.partials.stepper', ['currentStep' => 5])
+
+    <h1 class="mb-8 text-center text-3xl font-bold tracking-tight text-slate-950">{{ __('app.confirm_booking') }}</h1>
 
     <!-- Mensaje de Error General (del try/catch del controlador) -->
     @error('general')
@@ -14,21 +16,21 @@
         </div>
     @enderror
 
-    <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-200 bg-slate-50 p-6">
             <h2 class="text-lg font-semibold text-slate-950">{{ $sessionType->name }}</h2>
             <p class="text-slate-600">{{ $therapist->user->name }}</p>
         </div>
 
-        <div class="p-6 space-y-4">
-            <div class="flex justify-between">
+        <div class="space-y-4 p-6">
+            <div class="flex justify-between gap-6">
                 <span class="text-slate-500">{{ __('app.date') }}:</span>
-                <span class="font-medium text-slate-950">{{ \Carbon\Carbon::parse($dateLocal)->locale(app()->getLocale())->isoFormat('LL') }}</span>
+                <span class="text-right font-medium text-slate-950">{{ \Carbon\Carbon::parse($dateLocal)->locale(app()->getLocale())->isoFormat('LL') }}</span>
             </div>
 
-            <div class="flex justify-between">
+            <div class="flex justify-between gap-6">
                 <span class="text-slate-500">{{ __('app.time') }}:</span>
-                <span class="font-medium text-slate-950">{{ $localTime }}</span>
+                <span class="text-right font-medium text-slate-950">{{ $localTime }}</span>
             </div>
 
             <div class="flex justify-between gap-6">
@@ -45,14 +47,14 @@
                 </span>
             </div>
 
-            <div class="flex justify-between">
+            <div class="flex justify-between gap-6">
                 <span class="text-slate-500">{{ __('app.duration') }}:</span>
-                <span class="font-medium text-slate-950">{{ $sessionType->duration_minutes }} min</span>
+                <span class="text-right font-medium text-slate-950">{{ $sessionType->duration_minutes }} min</span>
             </div>
 
-            <div class="flex justify-between">
+            <div class="flex justify-between gap-6 border-t border-slate-200 pt-4">
                 <span class="text-slate-500">{{ __('app.total') }}:</span>
-                <span class="text-lg font-bold text-indigo-700">{{ $sessionType->price }} {{ $sessionType->currency }}</span>
+                <span class="text-right text-lg font-bold text-indigo-700">{{ $sessionType->price }} {{ $sessionType->currency }}</span>
             </div>
         </div>
     </div>
@@ -60,7 +62,7 @@
     <form action="{{ route('book.store') }}" method="POST" class="mt-8">
         @csrf
 
-        <div class="space-y-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
             <h3 class="mb-2 font-medium text-slate-950">{{ __('app.your_details') }}</h3>
 
             <div>
@@ -71,7 +73,7 @@
                     id="patient_name"
                     value="{{ old('patient_name') }}"
                     required
-                    class="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500/30 @error('patient_name') border-rose-400 @enderror"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30 @error('patient_name') border-rose-400 @enderror"
                 >
 
                 @error('patient_name')
@@ -87,7 +89,7 @@
                     id="patient_email"
                     value="{{ old('patient_email') }}"
                     required
-                    class="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500/30 @error('patient_email') border-rose-400 @enderror"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30 @error('patient_email') border-rose-400 @enderror"
                 >
 
                 @error('patient_email')
@@ -97,7 +99,7 @@
 
         </div>
 
-        <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
+        <div class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4">
             <div class="flex">
                 <div class="flex-shrink-0">
                     <svg class="h-5 w-5 text-amber-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -118,7 +120,7 @@
             </div>
         </div>
 
-        <div class="mt-6 rounded-xl border border-rose-200 bg-rose-50 p-4">
+        <div class="mt-6 rounded-2xl border border-rose-200 bg-rose-50 p-4">
             <h3 class="text-sm font-semibold text-rose-950">{{ __('legal.booking.emergency_title') }}</h3>
             <p class="mt-2 text-sm leading-6 text-rose-800">{{ __('legal.booking.emergency_text') }}</p>
             <a href="{{ route('legal.emergency-notice') }}" class="mt-2 inline-flex text-sm font-semibold text-rose-900 underline hover:text-rose-700" target="_blank" rel="noopener">
@@ -126,7 +128,7 @@
             </a>
         </div>
 
-        <div class="mt-6 space-y-4 rounded-xl border border-slate-200 bg-white p-4">
+        <div class="mt-6 space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <label class="flex gap-3 text-sm text-slate-600">
                 <input
                     type="checkbox"
@@ -163,7 +165,7 @@
             @enderror
         </div>
 
-        <button type="submit" class="mt-6 flex w-full items-center justify-center rounded-lg bg-indigo-700 px-4 py-3 text-lg font-bold text-white shadow-lg shadow-slate-900/10 transition hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">
+        <button type="submit" class="mt-6 flex w-full items-center justify-center rounded-lg bg-indigo-700 px-4 py-3 text-lg font-bold text-white shadow-sm transition hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">
             {{ __('app.confirm_and_book') }}
         </button>
     </form>
