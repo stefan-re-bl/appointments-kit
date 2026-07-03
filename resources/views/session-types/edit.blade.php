@@ -2,20 +2,20 @@
     <div class="py-8">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <div class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                <h2 class="mb-6 text-2xl font-bold text-slate-900">Editar Tipo de Sesión</h2>
+                <h2 class="mb-6 text-2xl font-bold text-slate-900">{{ __('app.session_type_management.edit_title') }}</h2>
 
                 <form action="{{ route('session-types.update', $sessionType) }}" method="POST">
                     @csrf @method('PUT')
 
-                    <x-input name="name" label="Nombre del Tipo de Sesión" type="text" :value="old('name', $sessionType->name)" />
+                    <x-input name="name" :label="__('app.session_type_management.fields.name')" type="text" :value="old('name', $sessionType->name)" />
 
                     <div class="mt-4">
-                        <x-select name="duration_minutes" label="Duración (minutos)" :options="['30' => '30 minutos', '60' => '60 minutos', '90' => '90 minutos']" :selected="old('duration_minutes', $sessionType->duration_minutes)" />
+                        <x-select name="duration_minutes" :label="__('app.session_type_management.fields.duration_minutes')" :options="__('app.session_type_management.duration_options')" :selected="old('duration_minutes', $sessionType->duration_minutes)" />
                     </div>
 
                     <div class="mt-4 grid gap-4 sm:grid-cols-2">
-                        <x-input name="price" label="Precio" type="number" step="0.01" :value="old('price', $sessionType->price)" />
-                        <x-select name="currency" label="Moneda" :options="['ARS' => 'Pesos Argentinos (ARS)', 'USD' => 'Dólares (USD)']" :selected="old('currency', $sessionType->currency)" />
+                        <x-input name="price" :label="__('app.session_type_management.fields.price')" type="number" step="0.01" :value="old('price', $sessionType->price)" />
+                        <x-select name="currency" :label="__('app.session_type_management.fields.currency')" :options="__('app.session_type_management.currency_options')" :selected="old('currency', $sessionType->currency)" />
                     </div>
 
                     <div class="mt-6 flex items-center">
@@ -27,14 +27,14 @@
                                 <span :class="active ? 'translate-x-5' : 'translate-x-0'"
                                       class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
                             </button>
-                            <span class="ml-3 text-sm text-slate-600" x-text="active ? 'Activo' : 'Inactivo'"></span>
+                            <span class="ml-3 text-sm text-slate-600" x-text="active ? @js(__('app.active')) : @js(__('app.inactive'))"></span>
                             <input type="hidden" name="is_active" :value="active ? 1 : 0">
                         </div>
                     </div>
 
                     <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                        <a href="{{ route('session-types.index') }}" class="inline-flex justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">Cancelar</a>
-                        <button type="submit" class="rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">Actualizar</button>
+                        <a href="{{ route('session-types.index') }}" class="inline-flex justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">{{ __('app.session_type_management.cancel') }}</a>
+                        <button type="submit" class="rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">{{ __('app.session_type_management.update') }}</button>
                     </div>
                 </form>
             </div>

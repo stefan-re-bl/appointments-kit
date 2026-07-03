@@ -27,7 +27,7 @@ final class SessionTypeController implements HasMiddleware
                 $user = Auth::user();
 
                 if (! $user instanceof User || ! $user->therapist) {
-                    abort(403, 'Acceso no autorizado.');
+                    abort(403, __('app.session_type_management.errors.unauthorized'));
                 }
 
                 // Si estamos editando/actualizando/eliminando, verificar pertenencia.
@@ -35,7 +35,7 @@ final class SessionTypeController implements HasMiddleware
 
                 if ($routeSessionType instanceof SessionType) {
                     if ((int) $routeSessionType->therapist_id !== (int) $user->therapist->id) {
-                        abort(403, 'No tienes permiso para modificar este tipo de sesión.');
+                        abort(403, __('app.session_type_management.errors.forbidden'));
                     }
                 }
 
@@ -70,7 +70,7 @@ final class SessionTypeController implements HasMiddleware
         $user->therapist->sessionTypes()->create($validated);
 
         return redirect()->route('session-types.index')
-            ->with('success', 'Tipo de sesión creado exitosamente.');
+            ->with('success', __('app.session_type_management.created'));
     }
 
     public function edit(SessionType $sessionType): View
@@ -86,7 +86,7 @@ final class SessionTypeController implements HasMiddleware
         $sessionType->update($validated);
 
         return redirect()->route('session-types.index')
-            ->with('success', 'Tipo de sesión actualizado exitosamente.');
+            ->with('success', __('app.session_type_management.updated'));
     }
 
     public function destroy(SessionType $sessionType): RedirectResponse
@@ -94,6 +94,6 @@ final class SessionTypeController implements HasMiddleware
         $sessionType->delete();
 
         return redirect()->route('session-types.index')
-            ->with('success', 'Tipo de sesión eliminado exitosamente.');
+            ->with('success', __('app.session_type_management.deleted'));
     }
 }

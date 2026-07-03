@@ -41,4 +41,18 @@ final class StoreSessionTypeRequest extends FormRequest
             'is_active' => ['sometimes', 'boolean'],
         ];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => __('app.session_type_management.fields.name'),
+            'duration_minutes' => __('app.session_type_management.fields.duration_minutes'),
+            'price' => __('app.session_type_management.fields.price'),
+            'currency' => __('app.session_type_management.fields.currency'),
+            'is_active' => __('app.session_type_management.fields.is_active'),
+        ];
+    }
 }
