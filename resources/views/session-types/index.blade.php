@@ -10,7 +10,7 @@
             
             <!-- Botón para Crear -->
             <div class="flex justify-end">
-                <a href="{{ route('session-types.create') }}" class="inline-flex items-center rounded-lg border border-transparent bg-indigo-700 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">
+                <a href="{{ route('session-types.create') }}" class="inline-flex items-center rounded-lg border border-transparent bg-umbralia-title px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2">
                     {{ __('app.session_type_management.create_new') }}
                 </a>
             </div>
@@ -37,7 +37,7 @@
                                 </span>
                             </div>
                             <div class="mt-4 flex flex-wrap gap-3 text-sm font-medium">
-                                <a href="{{ route('session-types.edit', $type) }}" class="text-indigo-700 hover:text-indigo-800">{{ __('app.edit') }}</a>
+                                <a href="{{ route('session-types.edit', $type) }}" class="text-umbralia-title hover:text-umbralia-title">{{ __('app.edit') }}</a>
                                 <form action="{{ route('session-types.destroy', $type) }}" method="POST" onsubmit="return confirm(@js(__('app.session_type_management.confirm_delete')));">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="text-rose-700 hover:text-rose-800">{{ __('app.delete') }}</button>
@@ -72,7 +72,7 @@
                                     </span>
                                 </td>
                                 <td class="flex gap-3 px-4 py-3">
-                                    <a href="{{ route('session-types.edit', $type) }}" class="font-medium text-indigo-700 hover:text-indigo-800">{{ __('app.edit') }}</a>
+                                    <a href="{{ route('session-types.edit', $type) }}" class="font-medium text-umbralia-title hover:text-umbralia-title">{{ __('app.edit') }}</a>
                                     <form action="{{ route('session-types.destroy', $type) }}" method="POST" onsubmit="return confirm(@js(__('app.session_type_management.confirm_delete')));">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="font-medium text-rose-700 hover:text-rose-800">{{ __('app.delete') }}</button>

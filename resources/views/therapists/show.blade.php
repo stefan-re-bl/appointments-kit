@@ -3,9 +3,9 @@
 @section('title', __('app.therapist_public.meta_title', ['name' => $therapist->user->name]))
 
 @section('content')
-    <div class="bg-[#fbf9fc]">
+    <div class="bg-white">
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-            <a href="{{ route('book.index') }}" class="inline-flex items-center text-sm font-semibold text-indigo-700 hover:text-indigo-900">
+            <a href="{{ route('book.index') }}" class="inline-flex items-center text-sm font-semibold text-umbralia-title hover:text-umbralia-title">
                 <span aria-hidden="true" class="mr-2">&larr;</span>
                 <span>
                     {{ __('app.therapist_public.back_to_booking') }}
@@ -27,10 +27,10 @@
                                 >
 
                                 <div class="min-w-0">
-                                    <p class="text-sm font-semibold uppercase tracking-wide text-indigo-700">
+                                    <p class="text-sm font-semibold uppercase tracking-wide text-umbralia-title">
                                         {{ __('app.therapist_public.eyebrow') }}
                                     </p>
-                                    <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+                                    <h1 class="mt-2 text-3xl font-bold tracking-tight text-umbralia-title sm:text-4xl">
                                         {{ $therapist->user->name }}
                                     </h1>
                                     <div class="mt-4 flex flex-wrap gap-2">
@@ -47,7 +47,7 @@
 
                         @if ($therapist->bio)
                             <div class="px-5 py-6 sm:px-7">
-                                <h2 class="text-xl font-semibold text-slate-950">
+                                <h2 class="text-xl font-semibold text-umbralia-title">
                                     {{ __('app.therapist_public.about_title') }}
                                 </h2>
                                 <p class="mt-3 max-w-3xl whitespace-pre-line text-base leading-8 text-slate-700">
@@ -61,7 +61,7 @@
                         <div class="grid gap-4 md:grid-cols-2">
                             @if ($therapist->specialties)
                                 <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
-                                    <h2 class="text-lg font-semibold text-slate-950">
+                                    <h2 class="text-lg font-semibold text-umbralia-title">
                                         {{ __('app.therapist_public.specialties_title') }}
                                     </h2>
                                     <p class="mt-3 whitespace-pre-line text-sm leading-7 text-slate-700">
@@ -72,7 +72,7 @@
 
                             @if ($therapist->therapeutic_approach)
                                 <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
-                                    <h2 class="text-lg font-semibold text-slate-950">
+                                    <h2 class="text-lg font-semibold text-umbralia-title">
                                         {{ __('app.therapist_public.approach_title') }}
                                     </h2>
                                     <p class="mt-3 whitespace-pre-line text-sm leading-7 text-slate-700">
@@ -85,7 +85,7 @@
 
                     <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-7">
                         <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                            <h2 class="text-xl font-semibold text-slate-950">
+                            <h2 class="text-xl font-semibold text-umbralia-title">
                                 {{ __('app.therapist_public.sessions_title') }}
                             </h2>
                         </div>
@@ -93,7 +93,7 @@
                         <div class="mt-5 grid gap-4 md:grid-cols-2">
                             @forelse ($therapist->sessionTypes as $sessionType)
                                 <article class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                                    <h3 class="font-semibold text-slate-950">{{ $sessionType->name }}</h3>
+                                    <h3 class="font-semibold text-umbralia-title">{{ $sessionType->name }}</h3>
                                     <div class="mt-4 flex items-end justify-between gap-4">
                                         <p class="text-sm text-slate-600">
                                             {{ __('app.therapist_public.session_duration', ['minutes' => $sessionType->duration_minutes]) }}
@@ -113,7 +113,7 @@
                 </div>
 
                 <aside class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 lg:sticky lg:top-24 lg:p-6">
-                    <h2 class="text-lg font-semibold text-slate-950">
+                    <h2 class="text-lg font-semibold text-umbralia-title">
                         {{ __('app.therapist_public.booking_card_title') }}
                     </h2>
                     <p class="mt-2 text-sm leading-6 text-slate-600">
@@ -124,7 +124,7 @@
                         @csrf
                         <input type="hidden" name="therapist_id" value="{{ $therapist->id }}">
 
-                        <button type="submit" class="w-full rounded-lg bg-indigo-700 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">
+                        <button type="submit" class="w-full rounded-lg bg-umbralia-title px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2">
                             {{ __('app.therapist_public.book_cta') }}
                         </button>
                     </form>

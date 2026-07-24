@@ -22,8 +22,8 @@
                         <!-- Alpine.js Toggle para is_active -->
                         <div x-data="{ active: true }" class="flex items-center">
                             <button type="button" @click="active = !active"
-                                    :class="active ? 'bg-indigo-700' : 'bg-slate-200'"
-                                    class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">
+                                    :class="active ? 'bg-umbralia-title' : 'bg-slate-200'"
+                                    class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2">
                                 <span :class="active ? 'translate-x-5' : 'translate-x-0'"
                                       class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
                             </button>
@@ -34,7 +34,7 @@
 
                     <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                         <a href="{{ route('session-types.index') }}" class="inline-flex justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">{{ __('app.session_type_management.cancel') }}</a>
-                        <button type="submit" class="rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">{{ __('app.session_type_management.save') }}</button>
+                        <button type="submit" class="rounded-lg bg-umbralia-title px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2">{{ __('app.session_type_management.save') }}</button>
                     </div>
                 </form>
             </div>

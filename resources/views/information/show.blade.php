@@ -8,16 +8,18 @@
 @section('meta_description', $content['meta_description'])
 
 @section('content')
-<section class="relative isolate overflow-hidden bg-indigo-950 bg-cover bg-center" style="background-image: url('{{ asset('images/umbralia-home-hero.webp') }}');">
-    <div class="absolute inset-0 bg-indigo-950/76"></div>
+<section class="relative isolate overflow-hidden bg-umbralia-title bg-cover bg-center lg:bg-right" style="background-image: url('{{ asset('images/umbralia-information-hero.jpg') }}');">
+    <div class="absolute inset-0 bg-white/90"></div>
     <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <p class="text-sm font-semibold uppercase text-amber-200">{{ $content['eyebrow'] }}</p>
-        <h1 class="mt-4 max-w-4xl text-4xl font-bold leading-tight text-white sm:text-5xl">{{ $content['title'] }}</h1>
-        <p class="mt-5 max-w-3xl text-lg leading-8 text-slate-100">{{ $content['intro'] }}</p>
+        <div class="max-w-3xl">
+            <p class="text-sm font-semibold uppercase text-umbralia-accent">{{ $content['eyebrow'] }}</p>
+            <h1 class="mt-4 text-4xl font-bold leading-tight text-umbralia-title sm:text-5xl">{{ $content['title'] }}</h1>
+            <p class="mt-5 text-lg leading-8 text-black">{{ $content['intro'] }}</p>
+        </div>
     </div>
 </section>
 
-<div class="border-b border-slate-200 bg-slate-50">
+<div class="border-b border-slate-200 bg-white">
     <nav class="public-section-nav mx-auto flex max-w-7xl gap-5 overflow-x-auto px-4 py-4 text-sm font-semibold text-slate-600 sm:px-6 lg:px-8" aria-label="{{ __('information.section_navigation') }}">
         <a href="{{ route('information.how-it-works') }}" class="whitespace-nowrap hover:text-slate-950">{{ __('app.home.nav.how_it_works') }}</a>
         <a href="{{ route('information.patients') }}" class="whitespace-nowrap hover:text-slate-950">{{ __('information.nav.patients') }}</a>
@@ -31,9 +33,9 @@
         @if ($page === 'how_it_works')
             <ol class="grid gap-8 md:grid-cols-2">
                 @foreach ($content['sections'] as $index => $section)
-                    <li class="border-t-2 border-indigo-700 pt-6">
-                        <span class="text-sm font-bold text-amber-700">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</span>
-                        <h2 class="mt-3 text-2xl font-semibold text-slate-950">{{ $section['title'] }}</h2>
+                    <li class="border-t-2 border-umbralia-accent pt-6">
+                        <span class="text-sm font-bold text-umbralia-accent-dark">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</span>
+                        <h2 class="mt-3 text-2xl font-semibold text-umbralia-title">{{ $section['title'] }}</h2>
                         <p class="mt-3 leading-7 text-slate-600">{{ $section['description'] }}</p>
                     </li>
                 @endforeach
@@ -54,14 +56,14 @@
             <div class="space-y-14">
                 @foreach ($content['sections'] as $section)
                     <section class="grid gap-5 border-b border-slate-200 pb-12 last:border-0 last:pb-0 md:grid-cols-[0.8fr_1.2fr]">
-                        <h2 class="text-2xl font-semibold text-slate-950">{{ $section['title'] }}</h2>
+                        <h2 class="text-2xl font-semibold text-umbralia-title">{{ $section['title'] }}</h2>
                         <div>
                             <p class="leading-7 text-slate-600">{{ $section['description'] }}</p>
                             @isset($section['items'])
                                 <ul class="mt-5 space-y-3">
                                     @foreach ($section['items'] as $item)
                                         <li class="flex gap-3 text-sm leading-6 text-slate-600">
-                                            <span class="mt-1 flex h-5 w-5 flex-none items-center justify-center rounded-full bg-indigo-50 text-xs font-bold text-slate-700">✓</span>
+                                            <span class="mt-1 flex h-5 w-5 flex-none items-center justify-center rounded-full bg-umbralia-accent-soft text-xs font-bold text-slate-700">✓</span>
                                             <span>{{ $item }}</span>
                                         </li>
                                     @endforeach
@@ -75,17 +77,17 @@
 
         @isset($content['notice'])
             <aside class="mt-14 border-l-4 border-amber-500 bg-rose-50 px-6 py-5">
-                <h2 class="font-semibold text-slate-950">{{ $content['notice']['title'] }}</h2>
+                <h2 class="font-semibold text-umbralia-title">{{ $content['notice']['title'] }}</h2>
                 <p class="mt-2 text-sm leading-6 text-slate-600">{{ $content['notice']['description'] }}</p>
             </aside>
         @endisset
 
         <div class="mt-14 flex flex-col items-start justify-between gap-6 border-t border-slate-200 pt-10 sm:flex-row sm:items-center">
             <div>
-                <h2 class="text-xl font-semibold text-slate-950">{{ $content['cta']['title'] }}</h2>
+                <h2 class="text-xl font-semibold text-umbralia-title">{{ $content['cta']['title'] }}</h2>
                 <p class="mt-2 text-sm leading-6 text-slate-600">{{ $content['cta']['description'] }}</p>
             </div>
-            <a href="{{ route('book.index') }}" class="w-full flex-none rounded-lg bg-indigo-700 px-6 py-3 text-center font-semibold text-white hover:bg-indigo-800 sm:w-auto">{{ $content['cta']['label'] }}</a>
+            <a href="{{ route('book.index') }}" class="w-full flex-none rounded-lg bg-umbralia-title px-6 py-3 text-center font-semibold text-white hover:bg-umbralia-title/90 sm:w-auto">{{ $content['cta']['label'] }}</a>
         </div>
     </div>
 </section>

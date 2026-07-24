@@ -6,10 +6,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="h-screen overflow-hidden bg-[#fbf9fc] font-sans text-slate-950 antialiased">
+<body class="h-screen overflow-hidden bg-white font-sans text-slate-950 antialiased">
     <!-- Script de Zona Horaria -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -22,11 +23,11 @@
         <!-- Sidebar -->
         <aside
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-            class="fixed inset-y-0 left-0 z-30 w-64 flex-shrink-0 transform overflow-y-auto bg-indigo-950 transition duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0"
+            class="fixed inset-y-0 left-0 z-30 w-64 flex-shrink-0 transform overflow-y-auto bg-umbralia-title transition duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0"
         >
             <!-- Logo Area -->
-            <div class="flex h-16 items-center bg-indigo-950 px-6 shadow-md ring-1 ring-white/10">
-                <svg class="h-6 w-6 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex h-16 items-center bg-umbralia-title px-6 shadow-md ring-1 ring-white/10">
+                <svg class="h-6 w-6 text-umbralia-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -44,7 +45,7 @@
             <nav class="mt-6">
                 <a
                     href="{{ url('/dashboard') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('dashboard') ? 'bg-indigo-800 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-indigo-900 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('dashboard') ? 'bg-umbralia-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-umbralia-title/90 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -60,7 +61,7 @@
 
                 <a
                     href="{{ route('session-types.index') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('session-types.*') ? 'bg-indigo-800 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-indigo-900 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('session-types.*') ? 'bg-umbralia-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-umbralia-title/90 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -76,7 +77,7 @@
 
                 <a
                     href="{{ route('availabilities.index') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('availabilities.*') ? 'bg-indigo-800 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-indigo-900 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('availabilities.*') ? 'bg-umbralia-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-umbralia-title/90 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -92,7 +93,7 @@
 
                 <a
                     href="{{ route('therapist.appointments.index') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('therapist.appointments.*') ? 'bg-indigo-800 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-indigo-900 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('therapist.appointments.*') ? 'bg-umbralia-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-umbralia-title/90 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -108,7 +109,7 @@
 
                 <a
                     href="{{ route('profile.edit') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('profile.*') ? 'bg-indigo-800 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-indigo-900 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('profile.*') ? 'bg-umbralia-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-umbralia-title/90 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -131,7 +132,7 @@
                 <div class="flex items-center">
                     <button
                         @click="sidebarOpen = !sidebarOpen"
-                        class="rounded-lg p-2 text-slate-600 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 lg:hidden"
+                        class="rounded-lg p-2 text-slate-600 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 lg:hidden"
                     >
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path
@@ -196,7 +197,7 @@
                             @click="userMenuOpen = !userMenuOpen"
                             class="relative flex min-w-0 items-center space-x-3 focus:outline-none"
                         >
-                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-700 text-xs font-bold text-white shadow-sm">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-umbralia-title text-xs font-bold text-white shadow-sm">
                                 {{ strtoupper(Auth::user()->name[0]) }}
                             </div>
 
@@ -259,7 +260,7 @@
             </header>
 
             <!-- Page Content -->
-            <main class="min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#fbf9fc]">
+            <main class="min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-white">
                 @isset($header)
                     <div class="border-b border-slate-200 bg-white shadow-sm">
                         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">

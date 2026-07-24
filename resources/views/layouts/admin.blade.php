@@ -1,24 +1,25 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-indigo-950">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-umbralia-title">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? __('app.admin.layout.title') }} - {{ config('app.name', 'Umbralia') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="h-screen overflow-hidden bg-indigo-950 text-slate-100 antialiased">
+<body class="h-screen overflow-hidden bg-umbralia-title text-slate-100 antialiased">
     <div
         x-data="{ sidebarOpen: false }"
         class="flex h-full overflow-hidden"
     >
         <aside
-            class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full border-r border-white/10 bg-indigo-950/95 backdrop-blur transition-transform duration-200 lg:static lg:translate-x-0"
+            class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full border-r border-white/10 bg-umbralia-title/95 backdrop-blur transition-transform duration-200 lg:static lg:translate-x-0"
             :class="{ 'translate-x-0': sidebarOpen }"
         >
             <div class="flex h-16 items-center justify-between border-b border-white/10 px-6">
                 <a href="{{ route('admin.index') }}" class="flex items-center gap-3">
-                    <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-700 text-sm font-bold text-white ring-1 ring-amber-200/40">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-umbralia-title text-sm font-bold text-white ring-1 ring-umbralia-accent/40">
                         U
                     </span>
                     <span>
@@ -42,7 +43,7 @@
                     href="{{ route('admin.appointments.index') }}"
                     @class([
                         'flex items-center rounded-xl px-4 py-3 text-sm font-medium transition',
-                        'bg-indigo-700/30 text-white ring-1 ring-amber-200/20' => request()->routeIs('admin.appointments.*'),
+                        'bg-umbralia-title/30 text-white ring-1 ring-umbralia-accent/20' => request()->routeIs('admin.appointments.*'),
                         'text-slate-200 hover:bg-white/10 hover:text-white' => ! request()->routeIs('admin.appointments.*'),
                     ])
                 >
@@ -54,7 +55,7 @@
                     href="{{ route('admin.therapists.index') }}"
                     @class([
                         'flex items-center rounded-xl px-4 py-3 text-sm font-medium transition',
-                        'bg-indigo-700/30 text-white ring-1 ring-amber-200/20' => request()->routeIs('admin.therapists.*'),
+                        'bg-umbralia-title/30 text-white ring-1 ring-umbralia-accent/20' => request()->routeIs('admin.therapists.*'),
                         'text-slate-200 hover:bg-white/10 hover:text-white' => ! request()->routeIs('admin.therapists.*'),
                     ])
                 >
@@ -66,7 +67,7 @@
                     href="{{ route('admin.activity-logs.index') }}"
                     @class([
                         'flex items-center rounded-xl px-4 py-3 text-sm font-medium transition',
-                        'bg-indigo-700/30 text-white ring-1 ring-amber-200/20' => request()->routeIs('admin.activity-logs.*'),
+                        'bg-umbralia-title/30 text-white ring-1 ring-umbralia-accent/20' => request()->routeIs('admin.activity-logs.*'),
                         'text-slate-200 hover:bg-white/10 hover:text-white' => ! request()->routeIs('admin.activity-logs.*'),
                     ])
                 >
@@ -78,7 +79,7 @@
                     href="{{ route('admin.contact-messages.index') }}"
                     @class([
                         'flex items-center rounded-xl px-4 py-3 text-sm font-medium transition',
-                        'bg-indigo-700/30 text-white ring-1 ring-amber-200/20' => request()->routeIs('admin.contact-messages.*'),
+                        'bg-umbralia-title/30 text-white ring-1 ring-umbralia-accent/20' => request()->routeIs('admin.contact-messages.*'),
                         'text-slate-200 hover:bg-white/10 hover:text-white' => ! request()->routeIs('admin.contact-messages.*'),
                     ])
                 >
@@ -90,7 +91,7 @@
                     href="{{ route('admin.reports.appointments.index') }}"
                     @class([
                         'flex items-center rounded-xl px-4 py-3 text-sm font-medium transition',
-                        'bg-indigo-700/30 text-white ring-1 ring-amber-200/20' => request()->routeIs('admin.reports.*'),
+                        'bg-umbralia-title/30 text-white ring-1 ring-umbralia-accent/20' => request()->routeIs('admin.reports.*'),
                         'text-slate-200 hover:bg-white/10 hover:text-white' => ! request()->routeIs('admin.reports.*'),
                     ])
                 >
@@ -104,12 +105,12 @@
         <div
             x-show="sidebarOpen"
             x-cloak
-            class="fixed inset-0 z-30 bg-indigo-950/70 lg:hidden"
+            class="fixed inset-0 z-30 bg-umbralia-title/70 lg:hidden"
             @click="sidebarOpen = false"
         ></div>
 
         <div class="min-w-0 flex flex-1 flex-col overflow-hidden">
-            <header class="flex h-16 shrink-0 items-center justify-between border-b border-white/10 bg-indigo-950/85 px-4 backdrop-blur sm:px-6 lg:px-8">
+            <header class="flex h-16 shrink-0 items-center justify-between border-b border-white/10 bg-umbralia-title/85 px-4 backdrop-blur sm:px-6 lg:px-8">
                 <div class="flex items-center gap-3">
                     <button
                         type="button"
@@ -131,7 +132,7 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <span class="hidden rounded-full border border-amber-200/30 bg-amber-200/10 px-3 py-1 text-xs font-medium text-amber-100 sm:inline-flex">
+                    <span class="hidden rounded-full border border-umbralia-accent/30 bg-umbralia-accent/10 px-3 py-1 text-xs font-medium text-umbralia-accent-soft sm:inline-flex">
                         {{ __('app.admin.layout.admin_role') }}
                     </span>
 
@@ -148,7 +149,7 @@
                 </div>
             </header>
 
-            <main class="min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#fbf9fc] text-slate-950">
+            <main class="min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-white text-slate-950">
                 <div class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                     @if (session('success'))
                         <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">

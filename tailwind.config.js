@@ -12,10 +12,11 @@ export default {
     theme: {
         extend: {
             colors: {
-                coral: {
-                    400: '#fb7185',
-                    700: '#be123c',
-                    800: '#9f1239',
+                umbralia: {
+                    title: '#540D6D',
+                    accent: '#3ACEAE',
+                    'accent-dark': '#239f92',
+                    'accent-soft': '#e8faf7',
                 },
             },
             fontFamily: {

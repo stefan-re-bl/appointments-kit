@@ -27,7 +27,7 @@
 
             <a
                 href="{{ route('admin.reports.appointments.export', $exportFilters) }}"
-                class="inline-flex items-center justify-center rounded-xl bg-indigo-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-800"
+                class="inline-flex items-center justify-center rounded-xl bg-umbralia-title px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-umbralia-title/90"
             >
                 {{ __('reports.actions.export_csv') }}
             </a>
@@ -49,7 +49,7 @@
                         name="date_from"
                         type="date"
                         value="{{ $filters['date_from'] }}"
-                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                     >
 
                     @error('date_from')
@@ -67,7 +67,7 @@
                         name="date_to"
                         type="date"
                         value="{{ $filters['date_to'] }}"
-                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                     >
 
                     @error('date_to')
@@ -83,7 +83,7 @@
                     <select
                         id="therapist_id"
                         name="therapist_id"
-                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                     >
                         <option value="">{{ __('reports.filters.all_therapists') }}</option>
 
@@ -105,7 +105,7 @@
                 <div class="flex items-end gap-2">
                     <button
                         type="submit"
-                        class="inline-flex w-full items-center justify-center rounded-xl bg-indigo-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-800"
+                        class="inline-flex w-full items-center justify-center rounded-xl bg-umbralia-title px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-umbralia-title/90"
                     >
                         {{ __('reports.actions.apply_filters') }}
                     </button>

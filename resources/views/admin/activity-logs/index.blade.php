@@ -6,7 +6,7 @@
 @section('content')
     <div class="space-y-6">
         <div>
-            <h2 class="text-2xl font-semibold text-slate-950">
+            <h2 class="text-2xl font-semibold text-umbralia-title">
                 {{ __('app.admin.activity_logs.title') }}
             </h2>
             <p class="mt-1 text-sm text-slate-600">
@@ -58,7 +58,7 @@
                                     }
 
                                     return $base . ($isNew
-                                        ? 'bg-indigo-50 text-indigo-800 ring-indigo-100'
+                                        ? 'bg-umbralia-accent-soft text-umbralia-title ring-umbralia-accent-soft'
                                         : 'bg-slate-100 text-slate-800 ring-slate-200');
                                 };
                             @endphp
@@ -67,7 +67,7 @@
                                     {{ $timezoneService->formatForDisplay($log->created_at, 'd/m/Y H:i') }}
                                 </td>
                                 <td class="px-4 py-4">
-                                    <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-800 ring-1 ring-indigo-100">
+                                    <span class="rounded-full bg-umbralia-accent-soft px-3 py-1 text-xs font-semibold text-umbralia-title ring-1 ring-umbralia-accent-soft">
                                         {{ __('app.admin.activity_logs.events.' . $log->event) }}
                                     </span>
                                 </td>

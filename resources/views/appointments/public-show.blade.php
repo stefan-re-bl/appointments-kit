@@ -5,10 +5,10 @@
 @section('title', __('app.appointment_public.title'))
 
 @section('content')
-    <div class="min-h-screen bg-[#fbf9fc] py-10">
+    <div class="min-h-screen bg-white py-10">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <div class="mb-8 text-center">
-                <h1 class="text-3xl font-bold tracking-tight text-slate-950">
+                <h1 class="text-3xl font-bold tracking-tight text-umbralia-title">
                     {{ __('app.appointment_public.title') }}
                 </h1>
 
@@ -30,7 +30,7 @@
             @endif
 
             <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-                <div class="border-b border-indigo-800 bg-indigo-950 px-6 py-5">
+                <div class="border-b border-umbralia-accent bg-umbralia-title px-6 py-5">
                     <p class="text-sm font-medium text-slate-200">
                         {{ __('app.appointment_public.appointment_code') }}
                     </p>
@@ -42,7 +42,7 @@
 
                 <div class="grid gap-6 p-6">
                     <section>
-                        <h2 class="text-lg font-semibold text-slate-950">
+                        <h2 class="text-lg font-semibold text-umbralia-title">
                             {{ __('app.appointment_public.sections.patient') }}
                         </h2>
 
@@ -68,7 +68,7 @@
                     </section>
 
                     <section class="border-t border-slate-200 pt-6">
-                        <h2 class="text-lg font-semibold text-slate-950">
+                        <h2 class="text-lg font-semibold text-umbralia-title">
                             {{ __('app.appointment_public.sections.appointment') }}
                         </h2>
 
@@ -130,7 +130,7 @@
                     </section>
 
                     <section class="border-t border-slate-200 pt-6">
-                        <h2 class="text-lg font-semibold text-slate-950">
+                        <h2 class="text-lg font-semibold text-umbralia-title">
                             {{ __('app.appointment_public.sections.payment') }}
                         </h2>
 
@@ -163,7 +163,7 @@
                     </section>
 
                     <section class="border-t border-slate-200 pt-6">
-                        <h2 class="text-lg font-semibold text-slate-950">
+                        <h2 class="text-lg font-semibold text-umbralia-title">
                             {{ __('appointment_policy.sections.policy') }}
                         </h2>
 
@@ -175,7 +175,7 @@
                     </section>
 
                     <section class="border-t border-slate-200 pt-6">
-                        <h2 class="text-lg font-semibold text-slate-950">
+                        <h2 class="text-lg font-semibold text-umbralia-title">
                             {{ __('app.appointment_public.sections.actions') }}
                         </h2>
 
@@ -185,7 +185,7 @@
                                     href="{{ $appointment->therapist->google_meet_link }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    class="inline-flex items-center justify-center rounded-lg bg-indigo-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-800"
+                                    class="inline-flex items-center justify-center rounded-lg bg-umbralia-title px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-umbralia-title/90"
                                 >
                                     {{ __('app.appointment_public.actions.join_meet') }}
                                 </a>
@@ -210,7 +210,7 @@
                             @if ($canReschedule && filled($rescheduleUrl ?? null))
                                 <a
                                     href="{{ $rescheduleUrl }}"
-                                    class="inline-flex items-center justify-center rounded-lg bg-indigo-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-800"
+                                    class="inline-flex items-center justify-center rounded-lg bg-umbralia-title px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-umbralia-title/90"
                                 >
                                     {{ __('appointment_policy.actions.request_reschedule') }}
                                 </a>

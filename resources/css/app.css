@@ -6,11 +6,13 @@
     :root {
         --umbralia-ink: #0f172a;
         --umbralia-muted: #475569;
-        --umbralia-primary: #4338ca;
-        --umbralia-primary-dark: #312e81;
-        --umbralia-primary-soft: #eef2ff;
-        --umbralia-gold: #c7a76a;
-        --umbralia-warm: #f8fafc;
+        --umbralia-primary: #540D6D;
+        --umbralia-primary-dark: #3f0a53;
+        --umbralia-primary-soft: #f6eef9;
+        --umbralia-accent: #3ACEAE;
+        --umbralia-accent-dark: #239f92;
+        --umbralia-accent-soft: #e8faf7;
+        --umbralia-warm: #ffffff;
     }
 
     body {
@@ -18,8 +20,17 @@
         background: var(--umbralia-warm);
     }
 
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: var(--umbralia-primary);
+    }
+
     ::selection {
-        background: #dbe4ff;
+        background: var(--umbralia-accent-soft);
         color: var(--umbralia-ink);
     }
 }

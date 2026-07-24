@@ -33,7 +33,7 @@
                     <p class="text-sm mt-2 text-slate-900">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-slate-600 hover:text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500/30">
+                        <button form="send-verification" class="underline text-sm text-slate-600 hover:text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-umbralia-accent/30">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -83,7 +83,7 @@
                             name="avatar"
                             type="file"
                             accept="image/jpeg,image/png,image/webp"
-                            class="mt-2 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-700 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-indigo-800"
+                            class="mt-2 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-umbralia-title file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-umbralia-title/90"
                             x-on:change="updatePreview($event)"
                         >
                         <p class="mt-2 text-sm text-slate-600">{{ __('app.profile.avatar_upload_help') }}</p>
@@ -98,7 +98,7 @@
                     id="bio"
                     name="bio"
                     rows="5"
-                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                 >{{ old('bio', $user->therapist->bio) }}</textarea>
                 <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.therapist_bio_help') }}</p>
                 <x-input-error class="mt-2" :messages="$errors->get('bio')" />
@@ -110,7 +110,7 @@
                     id="specialties"
                     name="specialties"
                     rows="4"
-                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                 >{{ old('specialties', $user->therapist->specialties) }}</textarea>
                 <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.specialties_help') }}</p>
                 <x-input-error class="mt-2" :messages="$errors->get('specialties')" />
@@ -122,7 +122,7 @@
                     id="therapeutic_approach"
                     name="therapeutic_approach"
                     rows="4"
-                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                 >{{ old('therapeutic_approach', $user->therapist->therapeutic_approach) }}</textarea>
                 <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.therapeutic_approach_help') }}</p>
                 <x-input-error class="mt-2" :messages="$errors->get('therapeutic_approach')" />
@@ -141,7 +141,7 @@
                     id="payment_instructions"
                     name="payment_instructions"
                     rows="4"
-                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                 >{{ old('payment_instructions', $user->therapist->payment_instructions) }}</textarea>
                 <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.payment_instructions_help') }}</p>
                 <x-input-error class="mt-2" :messages="$errors->get('payment_instructions')" />
@@ -256,7 +256,7 @@
                         name="therapist_country"
                         x-model="selectedCountry"
                         x-on:change="syncTimezone()"
-                        class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                         required
                     >
                         @foreach ($countries as $countryCode => $timezone)
@@ -276,7 +276,7 @@
                         name="therapist_timezone"
                         x-model="selectedTimezone"
                         x-bind:required="hasTimezoneRegions()"
-                        class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                     >
                         <option value="">{{ __('booking_timezone.region_placeholder') }}</option>
                         <template x-for="option in effectiveTimezoneOptions()" :key="option.timezone">

@@ -14,7 +14,7 @@
 
         <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="mb-6">
-                <h2 class="text-base font-semibold text-slate-950">
+                <h2 class="text-base font-semibold text-umbralia-title">
                     {{ __('app.admin.therapists.account_section') }}
                 </h2>
                 <p class="mt-1 text-sm text-slate-500">
@@ -32,7 +32,7 @@
                         name="name"
                         type="text"
                         value="{{ old('name', $therapist->user->name) }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                         required
                     >
                     @error('name')
@@ -49,7 +49,7 @@
                         name="email"
                         type="email"
                         value="{{ old('email', $therapist->user->email) }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                         required
                     >
                     @error('email')
@@ -61,7 +61,7 @@
 
         <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="mb-6">
-                <h2 class="text-base font-semibold text-slate-950">
+                <h2 class="text-base font-semibold text-umbralia-title">
                     {{ __('app.admin.therapists.profile_section') }}
                 </h2>
                 <p class="mt-1 text-sm text-slate-500">
@@ -79,7 +79,7 @@
                         name="timezone"
                         type="text"
                         value="{{ old('timezone', $therapist->timezone) }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                         required
                     >
                     @error('timezone')
@@ -96,7 +96,7 @@
                         name="google_meet_link"
                         type="url"
                         value="{{ old('google_meet_link', $therapist->google_meet_link) }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                     >
                     @error('google_meet_link')
                         <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
@@ -112,7 +112,7 @@
                         name="avatar_url"
                         type="url"
                         value="{{ old('avatar_url', $therapist->avatar_url) }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                     >
                     @error('avatar_url')
                         <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
@@ -127,7 +127,7 @@
                         id="bio"
                         name="bio"
                         rows="5"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                     >{{ old('bio', $therapist->bio) }}</textarea>
                     @error('bio')
                         <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
@@ -143,7 +143,7 @@
                             name="is_active"
                             value="1"
                             @checked(old('is_active', $therapist->is_active))
-                            class="mt-1 rounded border-slate-300 text-indigo-700 focus:ring-indigo-500/30"
+                            class="mt-1 rounded border-slate-300 text-umbralia-title focus:ring-umbralia-accent/30"
                         >
                         <span>
                             <span class="block text-sm font-medium text-slate-950">
@@ -169,7 +169,7 @@
                             name="is_approved"
                             value="1"
                             @checked(old('is_approved', $therapist->is_approved))
-                            class="mt-1 rounded border-slate-300 text-indigo-700 focus:ring-indigo-500/30"
+                            class="mt-1 rounded border-slate-300 text-umbralia-title focus:ring-umbralia-accent/30"
                         >
                         <span>
                             <span class="block text-sm font-medium text-slate-950">
@@ -198,7 +198,7 @@
 
             <button
                 type="submit"
-                class="rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800"
+                class="rounded-xl bg-umbralia-title px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90"
             >
                 {{ __('app.admin.common.save') }}
             </button>

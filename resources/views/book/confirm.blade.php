@@ -2,11 +2,13 @@
 
 @section('content')
 <div class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-    <a href="{{ route('book.time') }}" class="mb-6 inline-flex items-center text-sm font-semibold text-indigo-700 hover:text-indigo-800">&larr; {{ __('app.change_date') }}</a>
+    <a href="{{ route('book.time') }}" class="mb-6 inline-flex items-center text-sm font-semibold text-umbralia-title hover:text-umbralia-title">&larr; {{ __('app.change_date') }}</a>
 
     @include('book.partials.stepper', ['currentStep' => 5])
 
-    <h1 class="mb-8 text-center text-3xl font-bold tracking-tight text-slate-950">{{ __('app.confirm_booking') }}</h1>
+    <div class="my-8 h-1 rounded-full bg-umbralia-accent"></div>
+
+    <h1 class="mb-8 text-center text-3xl font-bold tracking-tight text-umbralia-title">{{ __('app.confirm_booking') }}</h1>
 
     <!-- Mensaje de Error General (del try/catch del controlador) -->
     @error('general')
@@ -18,7 +20,7 @@
 
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-200 bg-slate-50 p-6">
-            <h2 class="text-lg font-semibold text-slate-950">{{ $sessionType->name }}</h2>
+            <h2 class="text-lg font-semibold text-umbralia-title">{{ $sessionType->name }}</h2>
             <p class="text-slate-600">{{ $therapist->user->name }}</p>
         </div>
 
@@ -54,7 +56,7 @@
 
             <div class="flex justify-between gap-6 border-t border-slate-200 pt-4">
                 <span class="text-slate-500">{{ __('app.total') }}:</span>
-                <span class="text-right text-lg font-bold text-indigo-700">{{ $sessionType->price }} {{ $sessionType->currency }}</span>
+                <span class="text-right text-lg font-bold text-umbralia-title">{{ $sessionType->price }} {{ $sessionType->currency }}</span>
             </div>
         </div>
     </div>
@@ -63,7 +65,7 @@
         @csrf
 
         <div class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <h3 class="mb-2 font-medium text-slate-950">{{ __('app.your_details') }}</h3>
+            <h3 class="mb-2 font-medium text-umbralia-title">{{ __('app.your_details') }}</h3>
 
             <div>
                 <label for="patient_name" class="mb-1 block text-sm font-medium text-slate-800">{{ __('app.name') }}</label>
@@ -73,7 +75,7 @@
                     id="patient_name"
                     value="{{ old('patient_name') }}"
                     required
-                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30 @error('patient_name') border-rose-400 @enderror"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30 @error('patient_name') border-rose-400 @enderror"
                 >
 
                 @error('patient_name')
@@ -89,7 +91,7 @@
                     id="patient_email"
                     value="{{ old('patient_email') }}"
                     required
-                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30 @error('patient_email') border-rose-400 @enderror"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30 @error('patient_email') border-rose-400 @enderror"
                 >
 
                 @error('patient_email')
@@ -135,14 +137,14 @@
                     name="accepted_terms"
                     value="1"
                     @checked(old('accepted_terms'))
-                    class="mt-1 rounded border-indigo-300 text-slate-600 focus:ring-indigo-500/30"
+                    class="mt-1 rounded border-umbralia-accent text-slate-600 focus:ring-umbralia-accent/30"
                     required
                 >
                 <span>
                     {{ __('legal.booking.accept_terms_prefix') }}
-                    <a href="{{ route('legal.terms') }}" class="font-semibold text-indigo-700 underline" target="_blank" rel="noopener">{{ __('legal.nav.terms') }}</a>
+                    <a href="{{ route('legal.terms') }}" class="font-semibold text-umbralia-title underline" target="_blank" rel="noopener">{{ __('legal.nav.terms') }}</a>
                     {{ __('legal.booking.accept_terms_and') }}
-                    <a href="{{ route('legal.privacy') }}" class="font-semibold text-indigo-700 underline" target="_blank" rel="noopener">{{ __('legal.nav.privacy') }}</a>.
+                    <a href="{{ route('legal.privacy') }}" class="font-semibold text-umbralia-title underline" target="_blank" rel="noopener">{{ __('legal.nav.privacy') }}</a>.
                 </span>
             </label>
             @error('accepted_terms')
@@ -155,7 +157,7 @@
                     name="accepted_email_communications"
                     value="1"
                     @checked(old('accepted_email_communications'))
-                    class="mt-1 rounded border-indigo-300 text-slate-600 focus:ring-indigo-500/30"
+                    class="mt-1 rounded border-umbralia-accent text-slate-600 focus:ring-umbralia-accent/30"
                     required
                 >
                 <span>{{ __('legal.booking.accept_email_communications') }}</span>
@@ -165,7 +167,7 @@
             @enderror
         </div>
 
-        <button type="submit" class="mt-6 flex w-full items-center justify-center rounded-lg bg-indigo-700 px-4 py-3 text-lg font-bold text-white shadow-sm transition hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">
+        <button type="submit" class="mt-6 flex w-full items-center justify-center rounded-lg bg-umbralia-title px-4 py-3 text-lg font-bold text-white shadow-sm transition hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2">
             {{ __('app.confirm_and_book') }}
         </button>
     </form>

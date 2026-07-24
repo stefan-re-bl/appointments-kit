@@ -2,11 +2,13 @@
 
 @section('content')
 <div class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-    <a href="{{ route('book.session') }}" class="mb-6 inline-flex items-center text-sm font-semibold text-indigo-700 hover:text-indigo-800">&larr; {{ __('app.back') }}</a>
+    <a href="{{ route('book.session') }}" class="mb-6 inline-flex items-center text-sm font-semibold text-umbralia-title hover:text-umbralia-title">&larr; {{ __('app.back') }}</a>
 
     @include('book.partials.stepper', ['currentStep' => 3])
+
+    <div class="my-8 h-1 rounded-full bg-umbralia-accent"></div>
     
-    <h1 class="mb-8 text-center text-3xl font-bold tracking-tight text-slate-950">{{ __('app.select_date') }}</h1>
+    <h1 class="mb-8 text-center text-3xl font-bold tracking-tight text-umbralia-title">{{ __('app.select_date') }}</h1>
 
     <form
         action="{{ route('book.store.date') }}"
@@ -147,7 +149,7 @@
                     x-model="selectedCountry"
                     @change="syncTimezone()"
                     required
-                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 @error('patient_country') border-rose-300 @enderror"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-umbralia-accent focus:ring-2 focus:ring-umbralia-accent/30 @error('patient_country') border-rose-300 @enderror"
                 >
                     @foreach ($countries as $countryCode => $timezone)
                         <option value="{{ $countryCode }}" @selected(old('patient_country', $patientCountry) === $countryCode)>
@@ -176,7 +178,7 @@
                     x-model="selectedDate"
                     @change="syncTimezone()"
                     required
-                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-umbralia-accent focus:ring-2 focus:ring-umbralia-accent/30"
                 >
             </div>
 
@@ -189,7 +191,7 @@
                     id="patient_timezone"
                     x-model="selectedTimezone"
                     :required="hasTimezoneRegions()"
-                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/30 @error('patient_timezone') border-rose-300 @enderror"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-umbralia-accent focus:ring-2 focus:ring-umbralia-accent/30 @error('patient_timezone') border-rose-300 @enderror"
                 >
                     <option value="">{{ __('booking_timezone.region_placeholder') }}</option>
                     <template x-for="option in effectiveTimezoneOptions()" :key="option.timezone">
@@ -205,7 +207,7 @@
             </div>
         </div>
 
-        <button type="submit" class="mt-6 w-full rounded-lg bg-indigo-700 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:ring-offset-2">
+        <button type="submit" class="mt-6 w-full rounded-lg bg-umbralia-title px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2">
             {{ __('app.find_slots') }}
         </button>
     </form>

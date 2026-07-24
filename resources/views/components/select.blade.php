@@ -5,7 +5,7 @@
     <select 
         id="{{ $name }}" 
         name="{{ $name }}" 
-        {{ $attributes->merge(['class' => 'mt-1 block w-full rounded-lg border-slate-200 shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30 sm:text-sm']) }}
+        {{ $attributes->merge(['class' => 'mt-1 block w-full rounded-lg border-slate-200 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30 sm:text-sm']) }}
     >
         @foreach($options as $value => $text)
             <option value="{{ $value }}" {{ old($name) == $value ? 'selected' : '' }}>{{ $text }}</option>

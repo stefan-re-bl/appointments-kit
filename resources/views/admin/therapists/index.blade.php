@@ -15,7 +15,7 @@
                         type="search"
                         value="{{ $search }}"
                         placeholder="{{ __('app.admin.therapists.search_placeholder') }}"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                     >
                 </div>
 
@@ -24,7 +24,7 @@
                     <select
                         id="approval_status"
                         name="approval_status"
-                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500/30"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
                     >
                         @foreach (['all', 'pending', 'approved', 'inactive'] as $status)
                             <option value="{{ $status }}" @selected($approvalStatus === $status)>
@@ -36,7 +36,7 @@
 
                 <button
                     type="submit"
-                    class="rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-800"
+                    class="rounded-xl bg-umbralia-title px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90"
                 >
                     {{ __('app.admin.therapists.search') }}
                 </button>
@@ -45,7 +45,7 @@
 
         <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div class="border-b border-slate-200 px-5 py-4">
-                <h2 class="text-base font-semibold text-slate-950">
+                <h2 class="text-base font-semibold text-umbralia-title">
                     {{ __('app.admin.therapists.list_title') }}
                 </h2>
             </div>

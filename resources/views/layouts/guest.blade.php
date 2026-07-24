@@ -8,6 +8,7 @@
     <title>
         {{ config('app.name', 'Laravel') }} - @yield('title', __('app.booking_title'))
     </title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -16,7 +17,7 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex min-h-screen flex-col bg-[#fbf9fc] font-sans text-slate-950 antialiased">
+<body class="flex min-h-screen flex-col bg-white font-sans text-slate-950 antialiased">
     <!-- Navbar Pública -->
     <nav class="border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

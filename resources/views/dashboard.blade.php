@@ -33,7 +33,7 @@
                 <section class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                         <div>
-                            <p class="text-sm font-semibold uppercase tracking-wide text-indigo-700">
+                            <p class="text-sm font-semibold uppercase tracking-wide text-umbralia-title">
                                 {{ __('app.dashboard_onboarding.eyebrow') }}
                             </p>
                             <h3 class="mt-2 text-2xl font-semibold text-gray-950">
@@ -108,16 +108,16 @@
                     </h3>
 
                     <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                        <a href="{{ route('profile.edit') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-indigo-300 hover:bg-indigo-50">
+                        <a href="{{ route('profile.edit') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-umbralia-accent hover:bg-umbralia-accent-soft">
                             {{ __('app.dashboard_onboarding.quick_links.profile') }}
                         </a>
-                        <a href="{{ route('session-types.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-indigo-300 hover:bg-indigo-50">
+                        <a href="{{ route('session-types.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-umbralia-accent hover:bg-umbralia-accent-soft">
                             {{ __('app.dashboard_onboarding.quick_links.session_types') }}
                         </a>
-                        <a href="{{ route('availabilities.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-indigo-300 hover:bg-indigo-50">
+                        <a href="{{ route('availabilities.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-umbralia-accent hover:bg-umbralia-accent-soft">
                             {{ __('app.dashboard_onboarding.quick_links.availability') }}
                         </a>
-                        <a href="{{ route('therapist.appointments.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-indigo-300 hover:bg-indigo-50">
+                        <a href="{{ route('therapist.appointments.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-umbralia-accent hover:bg-umbralia-accent-soft">
                             {{ __('app.dashboard_onboarding.quick_links.appointments') }}
                         </a>
                     </div>
