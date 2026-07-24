@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\Role;
+use App\Jobs\SendAppointmentReminderEmail;
 use App\Mail\AppointmentReminder;
 use App\Models\Appointment;
 use App\Models\SessionType;
@@ -16,6 +17,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 final class SendAppointmentRemindersCommandTest extends TestCase
@@ -40,27 +42,32 @@ final class SendAppointmentRemindersCommandTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_it_sends_reminder_for_confirmed_appointment_starting_within_next_hour(): void
+    public function test_it_queues_reminder_for_confirmed_appointment_starting_within_next_hour(): void
     {
         Mail::fake();
+        Queue::fake();
 
         $appointment = $this->makeAppointment();
 
         $this->artisan('appointments:send-reminders')
             ->assertExitCode(Command::SUCCESS);
 
-        Mail::assertSent(
-            AppointmentReminder::class,
-            fn (AppointmentReminder $mail): bool => $mail->hasTo('patient@example.test')
-                && $mail->appointment->patient_timezone === 'America/Argentina/Buenos_Aires'
+        Queue::assertPushed(
+            SendAppointmentReminderEmail::class,
+            1
         );
+        Mail::assertNothingSent();
 
-        $this->assertNotNull($appointment->refresh()->reminder_sent_at);
+        $appointment->refresh();
+
+        $this->assertNotNull($appointment->reminder_queued_at);
+        $this->assertNull($appointment->reminder_sent_at);
     }
 
     public function test_it_does_not_send_duplicate_reminders(): void
     {
         Mail::fake();
+        Queue::fake();
 
         $sentAt = $this->now->subMinutes(10)->toDateTimeString();
 
@@ -72,6 +79,7 @@ final class SendAppointmentRemindersCommandTest extends TestCase
             ->assertExitCode(Command::SUCCESS);
 
         Mail::assertNothingSent();
+        Queue::assertNothingPushed();
 
         $this->assertDatabaseHas('appointments', [
             'id' => $appointment->id,
@@ -82,6 +90,7 @@ final class SendAppointmentRemindersCommandTest extends TestCase
     public function test_it_does_not_send_reminder_for_cancelled_appointment(): void
     {
         Mail::fake();
+        Queue::fake();
 
         $appointment = $this->makeAppointment([
             'status' => AppointmentStatus::CANCELLED->value,
@@ -91,6 +100,7 @@ final class SendAppointmentRemindersCommandTest extends TestCase
             ->assertExitCode(Command::SUCCESS);
 
         Mail::assertNothingSent();
+        Queue::assertNothingPushed();
 
         $this->assertNull($appointment->refresh()->reminder_sent_at);
     }
@@ -98,6 +108,7 @@ final class SendAppointmentRemindersCommandTest extends TestCase
     public function test_it_does_not_send_reminder_for_appointment_outside_one_hour_window(): void
     {
         Mail::fake();
+        Queue::fake();
 
         $appointment = $this->makeAppointment([
             'starts_at' => $this->now->addMinutes(61)->toDateTimeString(),
@@ -108,6 +119,7 @@ final class SendAppointmentRemindersCommandTest extends TestCase
             ->assertExitCode(Command::SUCCESS);
 
         Mail::assertNothingSent();
+        Queue::assertNothingPushed();
 
         $this->assertNull($appointment->refresh()->reminder_sent_at);
     }
@@ -119,7 +131,7 @@ final class SendAppointmentRemindersCommandTest extends TestCase
         $appointment = $this->makeAppointment();
 
         $this->artisan('appointments:send-reminders --dry-run')
-            ->expectsOutput('Due appointment reminders: 1')
+            ->expectsOutput('Due appointment reminders to queue: 1')
             ->assertExitCode(Command::SUCCESS);
 
         Mail::assertNothingSent();
@@ -127,9 +139,10 @@ final class SendAppointmentRemindersCommandTest extends TestCase
         $this->assertNull($appointment->refresh()->reminder_sent_at);
     }
 
-    public function test_reminder_window_is_evaluated_in_utc_when_php_timezone_differs(): void
+    public function test_reminder_queue_window_is_evaluated_in_utc_when_php_timezone_differs(): void
     {
         Mail::fake();
+        Queue::fake();
 
         $originalTimezone = date_default_timezone_get();
         date_default_timezone_set('Asia/Tokyo');
@@ -143,19 +156,59 @@ final class SendAppointmentRemindersCommandTest extends TestCase
             $this->artisan('appointments:send-reminders')
                 ->assertExitCode(Command::SUCCESS);
 
-            Mail::assertSent(
-                AppointmentReminder::class,
-                fn (AppointmentReminder $mail): bool => $mail->hasTo('patient@example.test')
-            );
+            Queue::assertPushed(SendAppointmentReminderEmail::class, 1);
+            Mail::assertNothingSent();
 
-            $this->assertNotNull($appointment->refresh()->reminder_sent_at);
+            $this->assertNotNull($appointment->refresh()->reminder_queued_at);
             $this->assertSame(
                 $this->now->format('Y-m-d H:i'),
-                $appointment->reminder_sent_at->utc()->format('Y-m-d H:i'),
+                $appointment->reminder_queued_at->utc()->format('Y-m-d H:i'),
             );
         } finally {
             date_default_timezone_set($originalTimezone);
         }
+    }
+
+    public function test_reminder_job_sends_email_and_marks_reminder_as_sent(): void
+    {
+        Mail::fake();
+
+        $appointment = $this->makeAppointment([
+            'reminder_queued_at' => $this->now->toDateTimeString(),
+        ]);
+
+        (new SendAppointmentReminderEmail($appointment->id))->handle();
+
+        Mail::assertSent(
+            AppointmentReminder::class,
+            fn (AppointmentReminder $mail): bool => $mail->hasTo('patient@example.test')
+                && $mail->appointment->patient_timezone === 'America/Argentina/Buenos_Aires'
+        );
+
+        $appointment->refresh();
+
+        $this->assertNotNull($appointment->reminder_sent_at);
+        $this->assertNull($appointment->reminder_queued_at);
+        $this->assertNull($appointment->reminder_failed_at);
+        $this->assertSame(1, $appointment->reminder_attempts);
+    }
+
+    public function test_it_does_not_queue_duplicate_reminder_while_existing_queue_claim_is_fresh(): void
+    {
+        Mail::fake();
+        Queue::fake();
+
+        $appointment = $this->makeAppointment([
+            'reminder_queued_at' => $this->now->subMinutes(5)->toDateTimeString(),
+        ]);
+
+        $this->artisan('appointments:send-reminders')
+            ->assertExitCode(Command::SUCCESS);
+
+        Mail::assertNothingSent();
+        Queue::assertNothingPushed();
+
+        $this->assertNull($appointment->refresh()->reminder_sent_at);
     }
 
     /**

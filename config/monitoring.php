@@ -10,7 +10,7 @@ return [
     'queue' => [
         'enabled' => env('MONITORING_QUEUE_ENABLED', true),
 
-        'connection' => env('MONITORING_QUEUE_CONNECTION', 'redis'),
+        'connection' => env('MONITORING_QUEUE_CONNECTION', 'database'),
         'queue' => env('MONITORING_QUEUE_NAME', 'default'),
 
         'max_jobs' => env('MONITORING_QUEUE_MAX_JOBS', 25),
