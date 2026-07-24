@@ -12,7 +12,7 @@
     class="home-hero relative isolate flex items-center overflow-hidden bg-umbralia-title bg-cover bg-center"
     style="background-image: url('{{ asset('images/umbralia-home-hero-cover.jpeg') }}');"
 >
-    <div class="absolute inset-0 bg-umbralia-title/76 sm:bg-umbralia-title/64 lg:bg-umbralia-title/56"></div>
+    <div class="absolute inset-0 bg-umbralia-title/90 sm:bg-umbralia-title/75 lg:bg-umbralia-title/60"></div>
 
     <div class="relative mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div class="max-w-2xl">
