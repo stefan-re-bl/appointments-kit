@@ -27,6 +27,7 @@ use InvalidArgumentException;
     'is_active',
     'is_approved',
     'avatar_url',
+    'presentation_video_url',
 ])]
 #[Hidden([])]
 class Therapist extends Model

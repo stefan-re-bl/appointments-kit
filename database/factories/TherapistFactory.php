@@ -29,6 +29,7 @@ final class TherapistFactory extends Factory
             'is_active' => fake()->boolean(80),
             'is_approved' => true,
             'avatar_url' => fake()->imageUrl(200, 200, 'people'),
+            'presentation_video_url' => null,
         ];
     }
 

@@ -51,6 +51,7 @@
             @php
                 $avatarPreviewUrl = $user->therapist->avatar_url
                     ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name);
+                $presentationVideoPreviewUrl = $user->therapist->presentation_video_url;
             @endphp
 
             <div
@@ -88,6 +89,55 @@
                         >
                         <p class="mt-2 text-sm text-slate-600">{{ __('app.profile.avatar_upload_help') }}</p>
                         <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+                    </div>
+                </div>
+            </div>
+
+            <div
+                x-data="{
+                    previewUrl: @js($presentationVideoPreviewUrl),
+                    updatePreview(event) {
+                        const [file] = event.target.files;
+
+                        if (! file) {
+                            return;
+                        }
+
+                        if (this.previewUrl?.startsWith('blob:')) {
+                            URL.revokeObjectURL(this.previewUrl);
+                        }
+
+                        this.previewUrl = URL.createObjectURL(file);
+                        this.$nextTick(() => this.$refs.presentationVideo?.load());
+                    },
+                }"
+                class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+            >
+                <div class="space-y-4">
+                    <div x-show="previewUrl" x-cloak>
+                        <video
+                            x-ref="presentationVideo"
+                            :src="previewUrl || null"
+                            class="max-h-72 w-auto max-w-full rounded-lg bg-black shadow-sm ring-1 ring-slate-200"
+                            controls
+                            playsinline
+                        >
+                            {{ __('app.profile.presentation_video_fallback') }}
+                        </video>
+                    </div>
+
+                    <div>
+                        <x-input-label for="presentation_video" :value="__('app.profile.presentation_video_upload')" />
+                        <input
+                            id="presentation_video"
+                            name="presentation_video"
+                            type="file"
+                            accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                            class="mt-2 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-umbralia-title file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-umbralia-title/90"
+                            x-on:change="updatePreview($event)"
+                        >
+                        <p class="mt-2 text-sm text-slate-600">{{ __('app.profile.presentation_video_upload_help') }}</p>
+                        <x-input-error class="mt-2" :messages="$errors->get('presentation_video')" />
                     </div>
                 </div>
             </div>

@@ -71,10 +71,16 @@ class ProfileController extends Controller
                 )
             ) ?? $previousTimezone;
             $avatarUrl = $validated['avatar_url'] ?? null;
+            $presentationVideoUrl = $request->user()->therapist->presentation_video_url;
 
             if ($request->hasFile('avatar')) {
                 $avatarPath = $request->file('avatar')->store('therapists/avatars', 'public');
                 $avatarUrl = '/storage/'.$avatarPath;
+            }
+
+            if ($request->hasFile('presentation_video')) {
+                $presentationVideoPath = $request->file('presentation_video')->store('therapists/presentation-videos', 'public');
+                $presentationVideoUrl = '/storage/'.$presentationVideoPath;
             }
 
             $request->user()->therapist->update([
@@ -84,6 +90,7 @@ class ProfileController extends Controller
                 'payment_instructions' => $validated['payment_instructions'] ?? null,
                 'google_meet_link' => $validated['google_meet_link'] ?? null,
                 'avatar_url' => $avatarUrl,
+                'presentation_video_url' => $presentationVideoUrl,
                 'timezone' => $therapistTimezone,
             ]);
 

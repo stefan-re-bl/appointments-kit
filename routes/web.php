@@ -107,6 +107,12 @@ Route::middleware(['auth', 'verified', 'admin'])
         Route::get('/appointments', [AdminAppointmentController::class, 'index'])
             ->name('appointments.index');
 
+        Route::get('/appointments/events', [AdminAppointmentController::class, 'events'])
+            ->name('appointments.events');
+
+        Route::get('/appointments/day', [AdminAppointmentController::class, 'day'])
+            ->name('appointments.day');
+
         Route::get('/activity-logs', [AdminActivityLogController::class, 'index'])
             ->name('activity-logs.index');
 

@@ -57,6 +57,12 @@ class ProfileUpdateRequest extends FormRequest
             'payment_instructions' => ['nullable', 'string', 'max:3000'],
             'google_meet_link' => ['nullable', 'url', 'max:2048'],
             'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'presentation_video' => [
+                'nullable',
+                'file',
+                'mimetypes:video/mp4,video/webm,video/ogg,video/quicktime',
+                'max:51200',
+            ],
             'avatar_url' => [
                 'nullable',
                 'string',

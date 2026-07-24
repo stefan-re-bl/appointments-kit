@@ -102,6 +102,42 @@ final class ProfileTest extends TestCase
         Storage::disk('public')->assertExists($storedPath);
     }
 
+    public function test_therapist_can_upload_presentation_video(): void
+    {
+        Storage::fake('public');
+
+        $user = $this->createTherapistUser();
+        $therapist = Therapist::factory()->for($user)->create([
+            'presentation_video_url' => null,
+            'timezone' => 'America/Argentina/Buenos_Aires',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'bio' => $therapist->bio,
+                'google_meet_link' => $therapist->google_meet_link,
+                'avatar_url' => $therapist->avatar_url,
+                'therapist_country' => 'AR',
+                'presentation_video' => UploadedFile::fake()->create('presentation.mp4', 1024, 'video/mp4'),
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $presentationVideoUrl = $therapist->refresh()->presentation_video_url;
+
+        $this->assertIsString($presentationVideoUrl);
+        $this->assertStringContainsString('/storage/therapists/presentation-videos/', $presentationVideoUrl);
+
+        $storedPath = substr($presentationVideoUrl, strpos($presentationVideoUrl, '/storage/') + strlen('/storage/'));
+
+        Storage::disk('public')->assertExists($storedPath);
+    }
+
     public function test_therapist_can_update_public_profile_details_and_payment_instructions(): void
     {
         $user = $this->createTherapistUser();

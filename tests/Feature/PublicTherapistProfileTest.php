@@ -53,7 +53,29 @@ final class PublicTherapistProfileTest extends TestCase
             ->assertSeeText('Consulta inicial')
             ->assertSeeText('ARS 25,000.00')
             ->assertDontSeeText('Sesión inactiva')
+            ->assertDontSeeText(__('app.therapist_public.presentation_video_button'))
             ->assertSee(route('book.store.therapist'), false);
+    }
+
+    public function test_public_profile_shows_presentation_video_button_and_modal_when_video_exists(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'Marina Video',
+            'role' => Role::THERAPIST,
+        ]);
+        $therapist = Therapist::factory()->for($user)->create([
+            'presentation_video_url' => '/storage/therapists/presentation-videos/presentation.mp4',
+            'google_meet_link' => 'https://meet.google.com/abc-defg-hij',
+            'is_active' => true,
+            'is_approved' => true,
+        ]);
+
+        $this
+            ->get(route('therapists.show', $therapist->slug))
+            ->assertOk()
+            ->assertSeeText(__('app.therapist_public.presentation_video_button'))
+            ->assertSeeText(__('app.therapist_public.presentation_video_title', ['name' => 'Marina Video']))
+            ->assertSee('/storage/therapists/presentation-videos/presentation.mp4', false);
     }
 
     public function test_unavailable_therapist_profile_returns_friendly_404(): void

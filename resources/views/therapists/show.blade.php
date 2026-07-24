@@ -3,7 +3,7 @@
 @section('title', __('app.therapist_public.meta_title', ['name' => $therapist->user->name]))
 
 @section('content')
-    <div class="bg-white">
+    <div class="bg-white" x-data="{ presentationVideoOpen: false }">
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
             <a href="{{ route('book.index') }}" class="inline-flex items-center text-sm font-semibold text-umbralia-title hover:text-umbralia-title">
                 <span aria-hidden="true" class="mr-2">&larr;</span>
@@ -41,6 +41,19 @@
                                             {{ __('app.therapist_public.timezone', ['timezone' => $therapist->timezone]) }}
                                         </span>
                                     </div>
+
+                                    @if ($therapist->presentation_video_url)
+                                        <button
+                                            type="button"
+                                            class="mt-5 inline-flex items-center justify-center gap-2 rounded-lg bg-umbralia-title px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2"
+                                            @click="presentationVideoOpen = true; $nextTick(() => $refs.presentationVideo.play())"
+                                        >
+                                            <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M8 5v14l11-7z"></path>
+                                            </svg>
+                                            {{ __('app.therapist_public.presentation_video_button') }}
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -135,5 +148,49 @@
                 </aside>
             </div>
         </section>
+
+        @if ($therapist->presentation_video_url)
+            <div
+                x-cloak
+                x-show="presentationVideoOpen"
+                x-transition.opacity
+                class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/82 px-4 py-8"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="presentation-video-title"
+                @keydown.escape.window="presentationVideoOpen = false; $refs.presentationVideo.pause()"
+            >
+                <div class="absolute inset-0" @click="presentationVideoOpen = false; $refs.presentationVideo.pause()"></div>
+
+                <div class="relative flex max-h-[calc(100svh-4rem)] w-fit max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-lg bg-black shadow-2xl ring-1 ring-white/20">
+                    <div class="flex items-center justify-between gap-4 bg-white px-4 py-3">
+                        <h2 id="presentation-video-title" class="text-base font-semibold text-umbralia-title">
+                            {{ __('app.therapist_public.presentation_video_title', ['name' => $therapist->user->name]) }}
+                        </h2>
+                        <button
+                            type="button"
+                            class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30"
+                            @click="presentationVideoOpen = false; $refs.presentationVideo.pause()"
+                            title="{{ __('app.therapist_public.presentation_video_close') }}"
+                            aria-label="{{ __('app.therapist_public.presentation_video_close') }}"
+                        >
+                            <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <video
+                        x-ref="presentationVideo"
+                        class="max-h-[calc(100svh-8rem)] w-auto max-w-full bg-black"
+                        src="{{ $therapist->presentation_video_url }}"
+                        controls
+                        playsinline
+                    >
+                        {{ __('app.therapist_public.presentation_video_fallback') }}
+                    </video>
+                </div>
+            </div>
+        @endif
     </div>
 @endsection

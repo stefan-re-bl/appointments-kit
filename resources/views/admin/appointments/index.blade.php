@@ -5,25 +5,27 @@
 
 @section('content')
     <div
-        x-data="{
-            refreshTimer: null,
-            submitTimer: null,
-            submitFilters() {
-                clearTimeout(this.submitTimer);
-                this.submitTimer = setTimeout(() => this.$refs.filters.submit(), 300);
-            },
-            resetFilters() {
-                window.location.href = '{{ route('admin.appointments.index') }}';
-            },
-            init() {
-                this.refreshTimer = setInterval(() => {
-                    if (! document.hidden) {
-                        window.location.reload();
-                    }
-                }, 60000);
-            }
-        }"
-        x-init="init()"
+        x-data="adminAppointmentsCalendar(@js([
+            'buttonText' => [
+                'day' => __('app.admin.appointments.calendar.day'),
+                'month' => __('app.admin.appointments.calendar.month'),
+                'today' => __('app.admin.appointments.calendar.today'),
+                'week' => __('app.admin.appointments.calendar.week'),
+            ],
+            'dayUrl' => route('admin.appointments.day'),
+            'eventsUrl' => route('admin.appointments.events'),
+            'labels' => [
+                'close' => __('app.admin.appointments.day_modal.close'),
+                'dayTitle' => __('app.admin.appointments.day_modal.title'),
+                'empty' => __('app.admin.appointments.day_modal.empty'),
+                'loadError' => __('app.admin.appointments.calendar.load_error'),
+                'loading' => __('app.admin.appointments.day_modal.loading'),
+                'patientTimezone' => __('app.admin.appointments.patient_timezone'),
+                'price' => __('app.admin.appointments.day_modal.price'),
+            ],
+            'locale' => app()->getLocale(),
+            'timezone' => $timezone,
+        ]))"
         class="space-y-6"
     >
         <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -49,8 +51,8 @@
         </section>
 
         <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <form x-ref="filters" method="GET" action="{{ route('admin.appointments.index') }}">
-                <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            <div>
+                <div class="grid gap-4 md:grid-cols-3">
                     <div>
                         <label for="therapist_id" class="mb-1 block text-sm font-medium text-slate-700">
                             {{ __('app.admin.appointments.filters.therapist') }}
@@ -58,8 +60,9 @@
                         <select
                             id="therapist_id"
                             name="therapist_id"
+                            x-ref="therapistFilter"
                             class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
-                            @change="submitFilters()"
+                            @change="filterChanged()"
                         >
                             <option value="">{{ __('app.admin.appointments.filters.all_therapists') }}</option>
                             @foreach ($therapists as $therapist)
@@ -80,8 +83,9 @@
                         <select
                             id="status"
                             name="status"
+                            x-ref="statusFilter"
                             class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
-                            @change="submitFilters()"
+                            @change="filterChanged()"
                         >
                             <option value="">{{ __('app.admin.appointments.filters.all_statuses') }}</option>
                             @foreach ($appointmentStatuses as $status)
@@ -102,8 +106,9 @@
                         <select
                             id="payment_status"
                             name="payment_status"
+                            x-ref="paymentFilter"
                             class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
-                            @change="submitFilters()"
+                            @change="filterChanged()"
                         >
                             <option value="">{{ __('app.admin.appointments.filters.all_payment_statuses') }}</option>
                             @foreach ($paymentStatuses as $paymentStatus)
@@ -116,44 +121,9 @@
                             @endforeach
                         </select>
                     </div>
-
-                    <div>
-                        <label for="date_from" class="mb-1 block text-sm font-medium text-slate-700">
-                            {{ __('app.admin.appointments.filters.date_from') }}
-                        </label>
-                        <input
-                            id="date_from"
-                            name="date_from"
-                            type="date"
-                            value="{{ $filters['date_from'] ?? '' }}"
-                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
-                            @change="submitFilters()"
-                        >
-                    </div>
-
-                    <div>
-                        <label for="date_to" class="mb-1 block text-sm font-medium text-slate-700">
-                            {{ __('app.admin.appointments.filters.date_to') }}
-                        </label>
-                        <input
-                            id="date_to"
-                            name="date_to"
-                            type="date"
-                            value="{{ $filters['date_to'] ?? '' }}"
-                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
-                            @change="submitFilters()"
-                        >
-                    </div>
                 </div>
 
                 <div class="mt-4 flex flex-wrap items-center gap-3">
-                    <button
-                        type="submit"
-                        class="rounded-xl bg-umbralia-title px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90"
-                    >
-                        {{ __('app.admin.appointments.filters.apply') }}
-                    </button>
-
                     <button
                         type="button"
                         class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
@@ -163,73 +133,115 @@
                     </button>
 
                     <p class="text-xs text-slate-500">
+                        {{ __('app.admin.appointments.calendar.filter_help') }}
+                    </p>
+
+                    <p class="text-xs text-slate-500">
                         {{ __('app.admin.appointments.auto_refresh') }}
                     </p>
                 </div>
-            </form>
+            </div>
         </section>
 
         <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div class="border-b border-slate-200 px-5 py-4">
                 <h2 class="text-base font-semibold text-umbralia-title">
-                    {{ __('app.admin.appointments.list_title') }}
+                    {{ __('app.admin.appointments.calendar.title') }}
                 </h2>
+                <p class="mt-1 text-sm text-slate-600">
+                    {{ __('app.admin.appointments.calendar.help') }}
+                </p>
             </div>
 
-            <div class="divide-y divide-slate-200">
-                @forelse ($appointments as $appointment)
-                    <article class="grid gap-4 px-5 py-5 lg:grid-cols-[1.3fr_1fr_1fr_auto] lg:items-center">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-950">
-                                {{ $appointment->patient_name }}
-                            </p>
-                            <p class="mt-1 text-sm text-slate-500">
-                                {{ $appointment->patient_email }}
-                            </p>
-                            <p class="mt-2 text-xs text-slate-500">
-                                {{ __('app.admin.appointments.patient_timezone') }}:
-                                {{ $appointment->patient_timezone }}
-                            </p>
-                        </div>
+            <div class="admin-appointments-calendar p-4 sm:p-5">
+                <div x-ref="calendar"></div>
+            </div>
+        </section>
 
-                        <div>
-                            <p class="text-sm font-medium text-slate-950">
-                                {{ $appointment->therapist->user->name }}
-                            </p>
-                            <p class="mt-1 text-sm text-slate-500">
-                                {{ $appointment->sessionType->name }}
-                            </p>
-                        </div>
+        <div
+            x-cloak
+            x-show="dayModalOpen"
+            x-transition.opacity
+            class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/70 px-4 py-8"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="appointments-day-title"
+            @keydown.escape.window="closeDay()"
+        >
+            <div class="absolute inset-0" @click="closeDay()"></div>
 
-                        <div>
-                            <p class="text-sm font-semibold text-slate-950">
-                                {{ $timezoneService->formatForDisplay($appointment->starts_at, 'd/m/Y H:i') }}
-                            </p>
-                            <p class="mt-1 text-sm text-slate-500">
-                                {{ __('app.admin.appointments.ends_at') }}:
-                                {{ $timezoneService->formatForDisplay($appointment->ends_at, 'H:i') }}
-                            </p>
-                        </div>
-
-                        <div class="flex flex-wrap gap-2 lg:justify-end">
-                            <x-appointment-status-badge :status="$appointment->status" />
-                            <x-payment-status-badge :status="$appointment->payment_status" />
-                        </div>
-                    </article>
-                @empty
-                    <div class="px-5 py-12 text-center">
-                        <p class="text-sm font-medium text-slate-700">
-                            {{ __('app.admin.appointments.empty') }}
+            <section class="relative flex max-h-[calc(100svh-4rem)] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-slate-900/10">
+                <header class="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
+                    <div>
+                        <h2 id="appointments-day-title" class="text-base font-semibold text-umbralia-title" x-text="dayTitle"></h2>
+                        <p class="mt-1 text-sm text-slate-600">
+                            {{ __('app.admin.appointments.day_modal.subtitle') }}
                         </p>
                     </div>
-                @endforelse
-            </div>
 
-            @if ($appointments->hasPages())
-                <div class="border-t border-slate-200 px-5 py-4">
-                    {{ $appointments->links() }}
+                    <button
+                        type="button"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30"
+                        @click="closeDay()"
+                        title="{{ __('app.admin.appointments.day_modal.close') }}"
+                        aria-label="{{ __('app.admin.appointments.day_modal.close') }}"
+                    >
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </header>
+
+                <div class="overflow-y-auto px-5 py-5">
+                    <p x-show="dayLoading" class="text-sm text-slate-600">
+                        {{ __('app.admin.appointments.day_modal.loading') }}
+                    </p>
+
+                    <p x-show="dayError" x-text="dayError" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></p>
+
+                    <template x-if="! dayLoading && ! dayError && dayAppointments.length === 0">
+                        <p class="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-600">
+                            {{ __('app.admin.appointments.day_modal.empty') }}
+                        </p>
+                    </template>
+
+                    <div x-show="! dayLoading && ! dayError && dayAppointments.length > 0" class="space-y-3">
+                        <template x-for="appointment in dayAppointments" :key="appointment.id">
+                            <article class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                                <div class="grid gap-4 lg:grid-cols-[9rem_minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-start">
+                                    <p class="text-sm font-semibold text-slate-950" x-text="appointment.time_range"></p>
+
+                                    <div class="min-w-0">
+                                        <p class="truncate text-sm font-semibold text-slate-950" x-text="appointment.patient_name"></p>
+                                        <p class="mt-1 truncate text-sm text-slate-500" x-text="appointment.patient_email"></p>
+                                        <p class="mt-2 text-xs text-slate-500">
+                                            {{ __('app.admin.appointments.patient_timezone') }}:
+                                            <span x-text="appointment.patient_timezone"></span>
+                                        </p>
+                                    </div>
+
+                                    <div class="min-w-0">
+                                        <p class="truncate text-sm font-medium text-slate-950" x-text="appointment.therapist_name"></p>
+                                        <p class="mt-1 truncate text-sm text-slate-500" x-text="appointment.session_type"></p>
+                                        <p class="mt-2 text-xs font-semibold text-slate-700" x-text="appointment.price"></p>
+                                    </div>
+
+                                    <div class="flex flex-wrap gap-2 lg:justify-end">
+                                        <span
+                                            class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1"
+                                            :class="statusBadgeClass(appointment.status)"
+                                            x-text="appointment.status_label"
+                                        ></span>
+                                        <span
+                                            class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1"
+                                            :class="paymentBadgeClass(appointment.payment_status)"
+                                            x-text="appointment.payment_status_label"
+                                        ></span>
+                                    </div>
+                                </div>
+                            </article>
+                        </template>
+                    </div>
                 </div>
-            @endif
-        </section>
+            </section>
+        </div>
     </div>
 @endsection
