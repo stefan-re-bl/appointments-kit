@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Enums\AppointmentStatus;
 use App\Jobs\SendAppointmentReminderEmail;
 use App\Models\Appointment;
+use App\Services\Notifications\WhatsAppDeliveryDispatcher;
 use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
 use Throwable;
@@ -17,7 +18,7 @@ final class SendAppointmentReminders extends Command
 
     protected $description = 'Queue appointment reminder emails one hour before confirmed sessions.';
 
-    public function handle(): int
+    public function handle(WhatsAppDeliveryDispatcher $whatsAppDeliveryDispatcher): int
     {
         $now = CarbonImmutable::now('UTC');
         $dueUntil = $now->addHour();
@@ -70,6 +71,7 @@ final class SendAppointmentReminders extends Command
 
             try {
                 SendAppointmentReminderEmail::dispatch($appointment->getKey());
+                $whatsAppDeliveryDispatcher->dispatchReminder($appointment);
                 $queued++;
             } catch (Throwable $exception) {
                 Appointment::query()

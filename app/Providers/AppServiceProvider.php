@@ -9,6 +9,8 @@ use App\Notifications\QueueBusyNotification;
 use App\Notifications\QueueJobFailedNotification;
 use App\Observers\AppointmentObserver;
 use App\Services\BookingService;
+use App\Services\Notifications\MetaCloudWhatsAppGateway;
+use App\Services\Notifications\WhatsAppGateway;
 use App\Services\TimezoneService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -29,11 +31,12 @@ final class AppServiceProvider extends ServiceProvider
     {
         // Registramos el servicio de zonas horarias como Singleton
         $this->app->singleton(TimezoneService::class, function (): TimezoneService {
-            return new TimezoneService();
+            return new TimezoneService;
         });
 
         // Servicio de reservas con prevención de race conditions (Ticket #9)
         $this->app->singleton(BookingService::class);
+        $this->app->singleton(WhatsAppGateway::class, MetaCloudWhatsAppGateway::class);
     }
 
     public function boot(): void
@@ -42,14 +45,14 @@ final class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('booking', function (Request $request): array {
             $limits = [
-                Limit::perMinute(30)->by('booking:ip:' . $request->ip()),
+                Limit::perMinute(30)->by('booking:ip:'.$request->ip()),
             ];
 
             $patientEmail = $request->input('patient_email');
 
             if (is_string($patientEmail) && $patientEmail !== '') {
                 $limits[] = Limit::perHour(10)->by(
-                    'booking:email:' . Str::lower($patientEmail) . '|ip:' . $request->ip()
+                    'booking:email:'.Str::lower($patientEmail).'|ip:'.$request->ip()
                 );
             }
 

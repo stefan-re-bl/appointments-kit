@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
+use App\Enums\SupportedLocale;
 use App\Models\Appointment;
 use App\Models\Therapist;
 use Illuminate\Support\Facades\DB;
@@ -22,8 +23,11 @@ final class BookingService
      *     session_type_id: int,
      *     patient_name: string,
      *     patient_email: string,
+     *     patient_phone?: string|null,
      *     patient_timezone: string,
+     *     patient_locale?: string,
      *     terms_accepted_at: mixed,
+     *     patient_whatsapp_opt_in_at?: mixed,
      *     starts_at: mixed,
      *     ends_at: mixed,
      *     price: mixed,
@@ -69,8 +73,11 @@ final class BookingService
                 'session_type_id' => $data['session_type_id'],
                 'patient_name' => $data['patient_name'],
                 'patient_email' => $data['patient_email'],
+                'patient_phone' => $data['patient_phone'] ?? null,
                 'patient_timezone' => $data['patient_timezone'],
+                'patient_locale' => SupportedLocale::normalize($data['patient_locale'] ?? null),
                 'terms_accepted_at' => $data['terms_accepted_at'],
+                'patient_whatsapp_opt_in_at' => $data['patient_whatsapp_opt_in_at'] ?? null,
                 'starts_at' => $data['starts_at'],
                 'ends_at' => $data['ends_at'],
                 'price' => $data['price'],

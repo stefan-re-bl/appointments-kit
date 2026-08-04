@@ -35,4 +35,30 @@ return [
         ],
     ],
 
+    'meta_whatsapp' => [
+        'enabled' => env('WHATSAPP_ENABLED', false),
+        'graph_version' => env('META_WHATSAPP_GRAPH_VERSION', 'v23.0'),
+        'phone_number_id' => env('META_WHATSAPP_PHONE_NUMBER_ID'),
+        'business_account_id' => env('META_WHATSAPP_BUSINESS_ACCOUNT_ID'),
+        'access_token' => env('META_WHATSAPP_ACCESS_TOKEN'),
+        'webhook_verify_token' => env('META_WHATSAPP_WEBHOOK_VERIFY_TOKEN'),
+        'app_secret' => env('META_APP_SECRET'),
+        'timeout' => env('META_WHATSAPP_TIMEOUT', 10),
+        'connect_timeout' => env('META_WHATSAPP_CONNECT_TIMEOUT', 5),
+        'language_codes' => [
+            'es' => env('META_WHATSAPP_LANGUAGE_ES', 'es'),
+            'en' => env('META_WHATSAPP_LANGUAGE_EN', 'en_US'),
+        ],
+        'templates' => [
+            'patient_confirmation_es' => env('META_WHATSAPP_TEMPLATE_PATIENT_CONFIRMATION_ES'),
+            'patient_confirmation_en' => env('META_WHATSAPP_TEMPLATE_PATIENT_CONFIRMATION_EN'),
+            'therapist_confirmation_es' => env('META_WHATSAPP_TEMPLATE_THERAPIST_CONFIRMATION_ES'),
+            'therapist_confirmation_en' => env('META_WHATSAPP_TEMPLATE_THERAPIST_CONFIRMATION_EN'),
+            'patient_reminder_es' => env('META_WHATSAPP_TEMPLATE_PATIENT_REMINDER_ES'),
+            'patient_reminder_en' => env('META_WHATSAPP_TEMPLATE_PATIENT_REMINDER_EN'),
+            'therapist_reminder_es' => env('META_WHATSAPP_TEMPLATE_THERAPIST_REMINDER_ES'),
+            'therapist_reminder_en' => env('META_WHATSAPP_TEMPLATE_THERAPIST_REMINDER_EN'),
+        ],
+    ],
+
 ];

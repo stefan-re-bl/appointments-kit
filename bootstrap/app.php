@@ -26,6 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
             SetTimezone::class,
             SetLocale::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/meta/whatsapp',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

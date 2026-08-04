@@ -18,6 +18,7 @@ use App\Http\Controllers\PublicTherapistProfileController;
 use App\Http\Controllers\SessionTypeController;
 use App\Http\Controllers\Therapist\AppointmentIndexController;
 use App\Http\Controllers\Therapist\AppointmentPaymentController;
+use App\Http\Controllers\Webhooks\MetaWhatsAppWebhookController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +54,14 @@ Route::get('/contact', [ContactMessageController::class, 'create'])
 Route::post('/contact', [ContactMessageController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('contact.store');
+
+Route::get('/webhooks/meta/whatsapp', [MetaWhatsAppWebhookController::class, 'verify'])
+    ->middleware('throttle:60,1')
+    ->name('webhooks.meta-whatsapp.verify');
+
+Route::post('/webhooks/meta/whatsapp', [MetaWhatsAppWebhookController::class, 'receive'])
+    ->middleware('throttle:60,1')
+    ->name('webhooks.meta-whatsapp.receive');
 
 Route::get('/therapists/{slug}', PublicTherapistProfileController::class)
     ->name('therapists.show');

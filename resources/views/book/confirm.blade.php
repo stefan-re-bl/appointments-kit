@@ -99,6 +99,23 @@
                 @enderror
             </div>
 
+            <div>
+                <label for="patient_phone" class="mb-1 block text-sm font-medium text-slate-800">{{ __('app.whatsapp.patient_phone') }}</label>
+                <input
+                    type="tel"
+                    name="patient_phone"
+                    id="patient_phone"
+                    value="{{ old('patient_phone') }}"
+                    placeholder="{{ __('app.whatsapp.phone_placeholder') }}"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30 @error('patient_phone') border-rose-400 @enderror"
+                >
+                <p class="mt-1 text-sm text-slate-600">{{ __('app.whatsapp.patient_phone_help') }}</p>
+
+                @error('patient_phone')
+                    <p class="mt-1 text-sm text-rose-700">{{ $message }}</p>
+                @enderror
+            </div>
+
         </div>
 
         <div class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4">
@@ -163,6 +180,20 @@
                 <span>{{ __('legal.booking.accept_email_communications') }}</span>
             </label>
             @error('accepted_email_communications')
+                <p class="text-sm text-rose-700">{{ $message }}</p>
+            @enderror
+
+            <label class="flex gap-3 text-sm text-slate-600">
+                <input
+                    type="checkbox"
+                    name="accepted_whatsapp_communications"
+                    value="1"
+                    @checked(old('accepted_whatsapp_communications'))
+                    class="mt-1 rounded border-umbralia-accent text-slate-600 focus:ring-umbralia-accent/30"
+                >
+                <span>{{ __('app.whatsapp.patient_opt_in') }}</span>
+            </label>
+            @error('accepted_whatsapp_communications')
                 <p class="text-sm text-rose-700">{{ $message }}</p>
             @enderror
         </div>

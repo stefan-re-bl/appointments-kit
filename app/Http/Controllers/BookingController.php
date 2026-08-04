@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\SupportedLocale;
 use App\Jobs\SendBookingConfirmedEmails;
 use App\Models\SessionType;
 use App\Models\Therapist;
@@ -11,6 +12,8 @@ use App\Rules\ValidTimezone;
 use App\Services\AvailableSlotResolver;
 use App\Services\BookingService;
 use App\Services\CountryTimezoneService;
+use App\Services\Notifications\PhoneNumberNormalizer;
+use App\Services\Notifications\WhatsAppDeliveryDispatcher;
 use App\Services\SlotGenerationService;
 use App\Services\TimezoneService;
 use Carbon\Carbon;
@@ -362,6 +365,8 @@ final class BookingController extends Controller implements HasMiddleware
         Request $request,
         BookingService $bookingService,
         AvailableSlotResolver $availableSlotResolver,
+        PhoneNumberNormalizer $phoneNumberNormalizer,
+        WhatsAppDeliveryDispatcher $whatsAppDeliveryDispatcher,
     ): RedirectResponse {
         $therapist = $this->activeTherapistFromSession();
 
@@ -378,14 +383,29 @@ final class BookingController extends Controller implements HasMiddleware
         $validated = $request->validate([
             'patient_name' => ['required', 'string', 'max:255'],
             'patient_email' => ['required', 'email', 'max:255'],
+            'patient_phone' => ['nullable', 'string', 'max:32'],
+            'accepted_whatsapp_communications' => ['sometimes', 'accepted'],
             'accepted_terms' => ['accepted'],
             'accepted_email_communications' => ['accepted'],
         ]);
 
         $patientTimezone = ValidTimezone::normalize(session('booking.patient_timezone'));
+        $patientPhone = $phoneNumberNormalizer->normalize($validated['patient_phone'] ?? null);
 
         if ($patientTimezone === null) {
             return Redirect::route('book.index');
+        }
+
+        if (filled($validated['patient_phone'] ?? null) && $patientPhone === null) {
+            throw ValidationException::withMessages([
+                'patient_phone' => __('app.whatsapp.validation_phone'),
+            ]);
+        }
+
+        if ($request->boolean('accepted_whatsapp_communications') && $patientPhone === null) {
+            throw ValidationException::withMessages([
+                'patient_phone' => __('app.whatsapp.validation_phone'),
+            ]);
         }
 
         $sessionType = SessionType::where('therapist_id', $therapist->id)
@@ -414,8 +434,11 @@ final class BookingController extends Controller implements HasMiddleware
             'session_type_id' => $sessionType->id,
             'patient_name' => $validated['patient_name'],
             'patient_email' => $validated['patient_email'],
+            'patient_phone' => $patientPhone,
             'patient_timezone' => $patientTimezone,
+            'patient_locale' => SupportedLocale::normalize(app()->getLocale()),
             'terms_accepted_at' => now('UTC'),
+            'patient_whatsapp_opt_in_at' => $request->boolean('accepted_whatsapp_communications') ? now('UTC') : null,
             'price' => $sessionType->price,
             'currency' => $sessionType->currency,
             'starts_at' => $startUtc->toDateTimeString(),
@@ -434,6 +457,7 @@ final class BookingController extends Controller implements HasMiddleware
             $appointment->loadMissing(['therapist.user', 'sessionType']);
 
             SendBookingConfirmedEmails::dispatch($appointment->id);
+            $whatsAppDeliveryDispatcher->dispatchBookingConfirmed($appointment);
 
             session()->put('booking.appointment_token', $appointment->token);
 

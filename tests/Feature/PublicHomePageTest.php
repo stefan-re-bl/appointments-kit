@@ -21,7 +21,7 @@ final class PublicHomePageTest extends TestCase
             ->assertSeeText(__('app.home.faq.title'))
             ->assertSeeText(__('app.home.emergency.title'))
             ->assertSee(route('book.index'), false)
-            ->assertSee('images/umbralia-home-hero-indigo.png', false);
+            ->assertSee('images/umbralia-home-hero-cover.jpeg', false);
     }
 
     public function test_public_home_can_be_rendered_in_english(): void
@@ -32,6 +32,6 @@ final class PublicHomePageTest extends TestCase
             ->assertOk()
             ->assertSeeText('A professional space to talk, understand and move forward.')
             ->assertSeeText('Umbralia is not an emergency service.')
-            ->assertSeeText('Book a session');
+            ->assertSeeText('View therapists');
     }
 }

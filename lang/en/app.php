@@ -94,6 +94,13 @@ return [
         'payment_instructions_help' => 'Add methods, aliases, terms or payment steps the patient will see after booking.',
         'google_meet_link' => 'Online meeting link',
         'google_meet_link_help' => 'This link is required to appear publicly and receive bookings.',
+        'whatsapp_phone' => 'WhatsApp phone',
+        'whatsapp_phone_help' => 'Optional. Used only for operational confirmations and reminders, and not shown on your public profile.',
+        'whatsapp_notifications_enabled' => 'Receive operational WhatsApp notifications.',
+        'whatsapp_confirmations_enabled' => 'Receive new booking confirmations.',
+        'whatsapp_reminders_enabled' => 'Receive reminders one hour before.',
+        'preferred_locale' => 'Preferred notification language',
+        'preferred_locale_help' => 'Applies to confirmations and reminders sent in the background.',
         'timezone_country' => 'Country of residence',
         'timezone_help' => 'We use this timezone to show and generate your working hours.',
         'timezone_region' => 'Time region',
@@ -218,6 +225,13 @@ return [
     'payment_coordination_title' => 'Payment Note',
     'payment_coordination_text' => 'Payment is coordinated directly with the therapist. By confirming, you are holding the spot, but the payment status will remain pending until the agreed transaction is completed.',
     'error_booking_slot' => 'The selected time is no longer available. Please choose another.',
+    'whatsapp' => [
+        'patient_phone' => 'International WhatsApp phone',
+        'phone_placeholder' => '+14155552671',
+        'patient_phone_help' => 'Optional. Enter it with country code if you want to receive operational WhatsApp messages.',
+        'patient_opt_in' => 'I agree to receive this appointment confirmation and a reminder one hour before by WhatsApp. I can book without accepting this option.',
+        'validation_phone' => 'Enter a valid phone number in international format.',
+    ],
 
     // Mails
     'mail_patient_subject' => 'Your Appointment Confirmation - Umbralia',

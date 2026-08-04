@@ -6,6 +6,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\User;
 use App\Rules\ValidTimezone;
 use App\Services\CountryTimezoneService;
+use App\Services\Notifications\PhoneNumberNormalizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,8 +47,11 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request, CountryTimezoneService $countryTimezoneService): RedirectResponse
-    {
+    public function update(
+        ProfileUpdateRequest $request,
+        CountryTimezoneService $countryTimezoneService,
+        PhoneNumberNormalizer $phoneNumberNormalizer,
+    ): RedirectResponse {
         $validated = $request->validated();
 
         $request->user()->fill([
@@ -89,6 +93,11 @@ class ProfileController extends Controller
                 'therapeutic_approach' => $validated['therapeutic_approach'] ?? null,
                 'payment_instructions' => $validated['payment_instructions'] ?? null,
                 'google_meet_link' => $validated['google_meet_link'] ?? null,
+                'whatsapp_phone' => $phoneNumberNormalizer->normalize($validated['whatsapp_phone'] ?? null),
+                'whatsapp_notifications_enabled' => $request->boolean('whatsapp_notifications_enabled'),
+                'whatsapp_confirmations_enabled' => $request->boolean('whatsapp_confirmations_enabled'),
+                'whatsapp_reminders_enabled' => $request->boolean('whatsapp_reminders_enabled'),
+                'preferred_locale' => $validated['preferred_locale'],
                 'avatar_url' => $avatarUrl,
                 'presentation_video_url' => $presentationVideoUrl,
                 'timezone' => $therapistTimezone,

@@ -146,6 +146,52 @@ final class CriticalBookingFlowTest extends TestCase
         ]);
     }
 
+    public function test_public_booking_in_spanish_persists_patient_locale(): void
+    {
+        Bus::fake();
+
+        [$therapist, $sessionType] = $this->makeBookableTherapist();
+
+        $this
+            ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00') + [
+                'locale' => 'es',
+            ])
+            ->post(route('book.store'), [
+                'patient_name' => 'Paciente Español',
+                'patient_email' => 'spanish@example.test',
+            ] + $this->legalAcceptance())
+            ->assertRedirect(route('book.success'));
+
+        $this->assertDatabaseHas('appointments', [
+            'patient_email' => 'spanish@example.test',
+            'patient_locale' => 'es',
+            'patient_timezone' => 'America/Argentina/Buenos_Aires',
+        ]);
+    }
+
+    public function test_public_booking_in_english_persists_patient_locale_without_using_country_or_timezone(): void
+    {
+        Bus::fake();
+
+        [$therapist, $sessionType] = $this->makeBookableTherapist();
+
+        $this
+            ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00') + [
+                'locale' => 'en',
+            ])
+            ->post(route('book.store'), [
+                'patient_name' => 'English Patient',
+                'patient_email' => 'english@example.test',
+            ] + $this->legalAcceptance())
+            ->assertRedirect(route('book.success'));
+
+        $this->assertDatabaseHas('appointments', [
+            'patient_email' => 'english@example.test',
+            'patient_locale' => 'en',
+            'patient_timezone' => 'America/Argentina/Buenos_Aires',
+        ]);
+    }
+
     public function test_date_step_exposes_editable_country_selector_and_detection_fallback(): void
     {
         [$therapist, $sessionType] = $this->makeBookableTherapist();

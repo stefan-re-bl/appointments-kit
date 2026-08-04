@@ -197,6 +197,62 @@
                 <x-input-error class="mt-2" :messages="$errors->get('payment_instructions')" />
             </div>
 
+            <div class="space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                <div>
+                    <x-input-label for="whatsapp_phone" :value="__('app.profile.whatsapp_phone')" />
+                    <x-text-input id="whatsapp_phone" name="whatsapp_phone" type="tel" class="mt-1 block w-full" :value="old('whatsapp_phone', $user->therapist->whatsapp_phone)" placeholder="{{ __('app.whatsapp.phone_placeholder') }}" />
+                    <p class="mt-1 text-sm text-slate-700">{{ __('app.profile.whatsapp_phone_help') }}</p>
+                    <x-input-error class="mt-2" :messages="$errors->get('whatsapp_phone')" />
+                </div>
+
+                <label class="flex gap-3 text-sm text-slate-700">
+                    <input
+                        type="checkbox"
+                        name="whatsapp_notifications_enabled"
+                        value="1"
+                        @checked(old('whatsapp_notifications_enabled', $user->therapist->whatsapp_notifications_enabled))
+                        class="mt-1 rounded border-umbralia-accent text-slate-600 focus:ring-umbralia-accent/30"
+                    >
+                    <span>{{ __('app.profile.whatsapp_notifications_enabled') }}</span>
+                </label>
+
+                <label class="flex gap-3 text-sm text-slate-700">
+                    <input
+                        type="checkbox"
+                        name="whatsapp_confirmations_enabled"
+                        value="1"
+                        @checked(old('whatsapp_confirmations_enabled', $user->therapist->whatsapp_confirmations_enabled))
+                        class="mt-1 rounded border-umbralia-accent text-slate-600 focus:ring-umbralia-accent/30"
+                    >
+                    <span>{{ __('app.profile.whatsapp_confirmations_enabled') }}</span>
+                </label>
+
+                <label class="flex gap-3 text-sm text-slate-700">
+                    <input
+                        type="checkbox"
+                        name="whatsapp_reminders_enabled"
+                        value="1"
+                        @checked(old('whatsapp_reminders_enabled', $user->therapist->whatsapp_reminders_enabled))
+                        class="mt-1 rounded border-umbralia-accent text-slate-600 focus:ring-umbralia-accent/30"
+                    >
+                    <span>{{ __('app.profile.whatsapp_reminders_enabled') }}</span>
+                </label>
+
+                <div>
+                    <x-input-label for="preferred_locale" :value="__('app.profile.preferred_locale')" />
+                    <select
+                        id="preferred_locale"
+                        name="preferred_locale"
+                        class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                    >
+                        <option value="es" @selected(old('preferred_locale', $user->therapist->preferred_locale ?? 'es') === 'es')>{{ __('app.spanish') }}</option>
+                        <option value="en" @selected(old('preferred_locale', $user->therapist->preferred_locale ?? 'es') === 'en')>{{ __('app.english') }}</option>
+                    </select>
+                    <p class="mt-1 text-sm text-slate-700">{{ __('app.profile.preferred_locale_help') }}</p>
+                    <x-input-error class="mt-2" :messages="$errors->get('preferred_locale')" />
+                </div>
+            </div>
+
             <div
                 x-data="{
                     countryTimezones: @js($countryTimezones),

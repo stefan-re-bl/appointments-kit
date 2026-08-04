@@ -94,6 +94,13 @@ return [
         'payment_instructions_help' => 'Agregá métodos, alias, condiciones o pasos de pago que verá el paciente luego de reservar.',
         'google_meet_link' => 'Link de reunión online',
         'google_meet_link_help' => 'Este link es necesario para aparecer públicamente y recibir reservas.',
+        'whatsapp_phone' => 'Teléfono para WhatsApp',
+        'whatsapp_phone_help' => 'Opcional. Se usa solo para confirmaciones y recordatorios operativos, y no se muestra en tu perfil público.',
+        'whatsapp_notifications_enabled' => 'Recibir notificaciones operativas por WhatsApp.',
+        'whatsapp_confirmations_enabled' => 'Recibir confirmaciones de nuevas reservas.',
+        'whatsapp_reminders_enabled' => 'Recibir recordatorios una hora antes.',
+        'preferred_locale' => 'Idioma preferido para notificaciones',
+        'preferred_locale_help' => 'Se aplica a confirmaciones y recordatorios enviados en segundo plano.',
         'timezone_country' => 'País de residencia',
         'timezone_help' => 'Usamos esta zona horaria para mostrar y generar tus horarios de atención.',
         'timezone_region' => 'Región horaria',
@@ -217,6 +224,13 @@ return [
     'payment_coordination_title' => 'Nota sobre el pago',
     'payment_coordination_text' => 'El pago se coordina directamente con el terapeuta. Al confirmar, reservarás el cupo, pero el estado del pago permanecerá pendiente hasta que se realice la transacción acordada.',
     'error_booking_slot' => 'El horario seleccionado ya no está disponible. Por favor, elige otro.',
+    'whatsapp' => [
+        'patient_phone' => 'Teléfono internacional para WhatsApp',
+        'phone_placeholder' => '+5491123456789',
+        'patient_phone_help' => 'Opcional. Ingresalo con código de país si querés recibir mensajes operativos por WhatsApp.',
+        'patient_opt_in' => 'Acepto recibir por WhatsApp la confirmación de esta cita y un recordatorio una hora antes. Puedo reservar sin aceptar esta opción.',
+        'validation_phone' => 'Ingresá un teléfono válido en formato internacional.',
+    ],
 
     // Mails
     'mail_patient_subject' => 'Confirmación de tu Cita - Umbralia',

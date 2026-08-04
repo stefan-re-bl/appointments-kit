@@ -24,8 +24,12 @@ class AppointmentFactory extends Factory
             'session_type_id' => SessionType::factory(),
             'patient_name' => fake()->name(),
             'patient_email' => fake()->unique()->safeEmail(),
+            'patient_phone' => null,
             'patient_timezone' => fake()->timezone,
+            'patient_locale' => 'es',
             'terms_accepted_at' => Carbon::now('UTC'),
+            'patient_whatsapp_opt_in_at' => null,
+            'patient_whatsapp_opt_out_at' => null,
             'starts_at' => $startsAt,
             'ends_at' => $startsAt->copy()->addHour(), // Duración de 1 hora por defecto
             'status' => AppointmentStatus::PENDING,

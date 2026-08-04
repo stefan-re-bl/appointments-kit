@@ -22,6 +22,11 @@ final class TherapistFactory extends Factory
         return [
             'timezone' => $timezones[array_rand($timezones)],
             'google_meet_link' => 'https://meet.google.com/'.fake()->regexify('[a-z]{3}-[a-z]{4}-[a-z]{3}'),
+            'whatsapp_phone' => null,
+            'whatsapp_notifications_enabled' => false,
+            'whatsapp_confirmations_enabled' => true,
+            'whatsapp_reminders_enabled' => true,
+            'preferred_locale' => 'es',
             'bio' => fake()->paragraphs(3, true),
             'specialties' => fake()->sentence(),
             'therapeutic_approach' => fake()->paragraph(),

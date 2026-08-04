@@ -170,6 +170,65 @@ final class ProfileTest extends TestCase
         $this->assertSame('Transferencia a alias UMBRALIA.TEST antes de la sesión.', $therapist->payment_instructions);
     }
 
+    public function test_therapist_can_update_and_keep_whatsapp_preferences_and_preferred_locale(): void
+    {
+        $user = $this->createTherapistUser();
+        $therapist = Therapist::factory()->for($user)->create([
+            'timezone' => 'America/Argentina/Buenos_Aires',
+            'preferred_locale' => 'es',
+            'whatsapp_notifications_enabled' => false,
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'bio' => $therapist->bio,
+                'specialties' => $therapist->specialties,
+                'therapeutic_approach' => $therapist->therapeutic_approach,
+                'payment_instructions' => $therapist->payment_instructions,
+                'google_meet_link' => $therapist->google_meet_link,
+                'avatar_url' => $therapist->avatar_url,
+                'therapist_country' => 'AR',
+                'whatsapp_phone' => '+54 9 11 2345 6789',
+                'whatsapp_notifications_enabled' => '1',
+                'whatsapp_confirmations_enabled' => '1',
+                'whatsapp_reminders_enabled' => '1',
+                'preferred_locale' => 'en',
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $therapist->refresh();
+
+        $this->assertSame('+5491123456789', $therapist->whatsapp_phone);
+        $this->assertTrue($therapist->whatsapp_notifications_enabled);
+        $this->assertTrue($therapist->whatsapp_confirmations_enabled);
+        $this->assertTrue($therapist->whatsapp_reminders_enabled);
+        $this->assertSame('en', $therapist->preferred_locale);
+
+        $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'bio' => 'Nueva bio',
+                'google_meet_link' => $therapist->google_meet_link,
+                'avatar_url' => $therapist->avatar_url,
+                'therapist_country' => 'AR',
+                'whatsapp_phone' => $therapist->whatsapp_phone,
+                'whatsapp_notifications_enabled' => '1',
+                'whatsapp_confirmations_enabled' => '1',
+                'whatsapp_reminders_enabled' => '1',
+                'preferred_locale' => 'en',
+            ])
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $this->assertSame('en', $therapist->refresh()->preferred_locale);
+    }
+
     public function test_therapist_timezone_change_redirects_to_availability_review(): void
     {
         $user = $this->createTherapistUser();

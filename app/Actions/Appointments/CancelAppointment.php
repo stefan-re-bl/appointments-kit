@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Actions\Appointments;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\NotificationEvent;
 use App\Models\Appointment;
 use App\Services\CancellationPolicyService;
+use App\Services\Notifications\WhatsAppDeliveryDispatcher;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 
@@ -44,6 +46,10 @@ class CancelAppointment
 
         if ($shouldQueueEmails) {
             app(QueueAppointmentCancelledEmails::class)->execute($cancelledAppointment);
+            app(WhatsAppDeliveryDispatcher::class)->skipPendingForAppointment(
+                $cancelledAppointment,
+                NotificationEvent::APPOINTMENT_REMINDER,
+            );
         }
 
         return $cancelledAppointment;

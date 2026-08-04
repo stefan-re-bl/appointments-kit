@@ -87,6 +87,14 @@ return [
                     'title' => 'Communications',
                     'description' => 'By booking you agree to receive emails related to your appointment, such as confirmations, reminders and management links.',
                 ],
+                [
+                    'title' => 'Operational WhatsApp',
+                    'description' => 'The WhatsApp phone number is optional and is used only if you give specific consent to receive operational confirmations and reminders through Meta. Messages do not include diagnoses, consultation reasons or clinical content, and you can withdraw consent through the contact channels.',
+                ],
+                [
+                    'title' => 'Communication language',
+                    'description' => 'We use the language selected in the interface or the therapist saved preference for operational communications. Language is not used to infer nationality, country, timezone or other personal attributes.',
+                ],
             ],
         ],
         'emergency' => [

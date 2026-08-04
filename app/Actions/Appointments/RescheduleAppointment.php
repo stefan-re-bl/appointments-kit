@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Actions\Appointments;
 
 use App\Enums\AppointmentStatus;
+use App\Enums\NotificationEvent;
 use App\Models\Appointment;
 use App\Services\CancellationPolicyService;
+use App\Services\Notifications\WhatsAppDeliveryDispatcher;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
@@ -89,6 +91,11 @@ class RescheduleAppointment
             appointment: $rescheduledAppointment,
             previousStartsAt: $previousStartsAt,
             previousEndsAt: $previousEndsAt,
+        );
+
+        app(WhatsAppDeliveryDispatcher::class)->skipPendingForAppointment(
+            $rescheduledAppointment,
+            NotificationEvent::APPOINTMENT_REMINDER,
         );
 
         return $rescheduledAppointment;

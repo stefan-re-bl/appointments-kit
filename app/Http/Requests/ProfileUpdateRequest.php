@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\SupportedLocale;
 use App\Models\User;
 use App\Services\CountryTimezoneService;
+use App\Services\Notifications\PhoneNumberNormalizer;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -20,6 +22,7 @@ class ProfileUpdateRequest extends FormRequest
             'therapist_timezone' => is_string($therapistTimezone) && trim($therapistTimezone) !== ''
                 ? trim($therapistTimezone)
                 : null,
+            'preferred_locale' => SupportedLocale::normalize($this->input('preferred_locale')),
         ]);
     }
 
@@ -56,6 +59,29 @@ class ProfileUpdateRequest extends FormRequest
             'therapeutic_approach' => ['nullable', 'string', 'max:3000'],
             'payment_instructions' => ['nullable', 'string', 'max:3000'],
             'google_meet_link' => ['nullable', 'url', 'max:2048'],
+            'whatsapp_phone' => [
+                'nullable',
+                'string',
+                'max:32',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if ($value === null || $value === '') {
+                        return;
+                    }
+
+                    if (app(PhoneNumberNormalizer::class)->normalize((string) $value) === null) {
+                        $fail(__('app.whatsapp.validation_phone'));
+                    }
+                },
+            ],
+            'whatsapp_notifications_enabled' => ['nullable', 'boolean'],
+            'whatsapp_confirmations_enabled' => ['nullable', 'boolean'],
+            'whatsapp_reminders_enabled' => ['nullable', 'boolean'],
+            'preferred_locale' => [
+                Rule::requiredIf($hasTherapistProfile),
+                'nullable',
+                'string',
+                Rule::in(SupportedLocale::values()),
+            ],
             'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'presentation_video' => [
                 'nullable',

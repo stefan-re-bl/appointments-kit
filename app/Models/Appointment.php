@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 #[Fillable([
@@ -22,8 +23,12 @@ use Illuminate\Support\Str;
     'session_type_id',
     'patient_name',
     'patient_email',
+    'patient_phone',
     'patient_timezone',
+    'patient_locale',
     'terms_accepted_at',
+    'patient_whatsapp_opt_in_at',
+    'patient_whatsapp_opt_out_at',
     'starts_at',
     'ends_at',
     'price',
@@ -46,6 +51,8 @@ class Appointment extends Model
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
             'terms_accepted_at' => 'datetime',
+            'patient_whatsapp_opt_in_at' => 'datetime',
+            'patient_whatsapp_opt_out_at' => 'datetime',
             'paid_at' => 'datetime',
             'reminder_sent_at' => 'datetime',
             'reminder_queued_at' => 'datetime',
@@ -75,6 +82,11 @@ class Appointment extends Model
     public function sessionType(): BelongsTo
     {
         return $this->belongsTo(SessionType::class);
+    }
+
+    public function notificationDeliveries(): HasMany
+    {
+        return $this->hasMany(NotificationDelivery::class);
     }
 
     public function scopePending(Builder $query): Builder

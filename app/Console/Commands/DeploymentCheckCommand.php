@@ -41,6 +41,7 @@ final class DeploymentCheckCommand extends Command
         if ($profile === 'redis') {
             $this->checkRedis();
         }
+        $this->checkWhatsApp();
         $this->checkPublicEndpoints($baseUrl, $timeout);
 
         $this->table(['Check', 'Status', 'Detail'], $this->results);
@@ -48,6 +49,38 @@ final class DeploymentCheckCommand extends Command
         return collect($this->results)->contains('status', 'FAIL')
             ? self::FAILURE
             : self::SUCCESS;
+    }
+
+    private function checkWhatsApp(): void
+    {
+        if (! (bool) config('services.meta_whatsapp.enabled', false)) {
+            $this->record('WhatsApp Cloud API', true, 'disabled');
+
+            return;
+        }
+
+        $required = [
+            'Graph version' => config('services.meta_whatsapp.graph_version'),
+            'Phone number ID' => config('services.meta_whatsapp.phone_number_id'),
+            'Business account ID' => config('services.meta_whatsapp.business_account_id'),
+            'Access token' => config('services.meta_whatsapp.access_token'),
+            'Webhook verify token' => config('services.meta_whatsapp.webhook_verify_token'),
+            'App secret' => config('services.meta_whatsapp.app_secret'),
+            'Language ES' => config('services.meta_whatsapp.language_codes.es'),
+            'Language EN' => config('services.meta_whatsapp.language_codes.en'),
+        ];
+
+        foreach (config('services.meta_whatsapp.templates', []) as $key => $value) {
+            $required["Template {$key}"] = $value;
+        }
+
+        foreach ($required as $label => $value) {
+            $this->record(
+                "WhatsApp {$label}",
+                is_string($value) && trim($value) !== '',
+                is_string($value) && trim($value) !== '' ? 'configured' : 'missing',
+            );
+        }
     }
 
     private function baseUrl(): string

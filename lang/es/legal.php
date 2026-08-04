@@ -87,6 +87,14 @@ return [
                     'title' => 'Comunicaciones',
                     'description' => 'Al reservar aceptás recibir emails relacionados con tu cita, como confirmaciones, recordatorios y enlaces de gestión.',
                 ],
+                [
+                    'title' => 'WhatsApp operativo',
+                    'description' => 'El teléfono para WhatsApp es opcional y se usa solo si das consentimiento específico para recibir confirmaciones y recordatorios operativos mediante Meta. Los mensajes no incluyen diagnósticos, motivos de consulta ni contenido clínico, y podés retirar el consentimiento solicitándolo por los canales de contacto.',
+                ],
+                [
+                    'title' => 'Idioma de comunicaciones',
+                    'description' => 'Usamos el idioma seleccionado en la interfaz o la preferencia guardada de la terapeuta para comunicaciones operativas. El idioma no se usa para inferir nacionalidad, país, zona horaria ni otros atributos personales.',
+                ],
             ],
         ],
         'emergency' => [

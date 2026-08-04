@@ -20,6 +20,11 @@ use InvalidArgumentException;
     'slug',
     'timezone',
     'google_meet_link',
+    'whatsapp_phone',
+    'whatsapp_notifications_enabled',
+    'whatsapp_confirmations_enabled',
+    'whatsapp_reminders_enabled',
+    'preferred_locale',
     'bio',
     'specialties',
     'therapeutic_approach',
@@ -43,6 +48,9 @@ class Therapist extends Model
         return [
             'is_active' => 'boolean',
             'is_approved' => 'boolean',
+            'whatsapp_notifications_enabled' => 'boolean',
+            'whatsapp_confirmations_enabled' => 'boolean',
+            'whatsapp_reminders_enabled' => 'boolean',
         ];
     }
 
