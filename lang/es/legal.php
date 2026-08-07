@@ -71,29 +71,70 @@ return [
         ],
         'privacy' => [
             'meta_title' => 'Política de privacidad | Umbralia',
-            'meta_description' => 'Información sobre datos personales usados para orientación, derivación y gestión operativa en Umbralia.',
+            'meta_description' => 'Política de privacidad de Umbralia para orientación, derivación, reservas, comunicaciones operativas y notificaciones por WhatsApp.',
             'title' => 'Política de privacidad',
-            'intro' => 'Usamos los datos necesarios para coordinar orientación, derivación y comunicaciones operativas.',
+            'intro' => 'Esta política explica qué datos tratamos, para qué los usamos y cómo podés ejercer tus derechos al usar Umbralia.',
             'sections' => [
                 [
-                    'title' => 'Datos usados',
-                    'description' => 'Para orientar y derivar pueden solicitarse datos de contacto, disponibilidad horaria y datos operativos necesarios.',
+                    'title' => 'Responsable y contacto',
+                    'description' => 'Umbralia administra esta plataforma para facilitar orientación, derivación profesional, reservas y comunicaciones operativas. Para consultas sobre privacidad podés usar el formulario de contacto disponible en el sitio.',
+                    'items' => [
+                        'Canal de contacto: formulario público de Umbralia.',
+                        'La plataforma no debe usarse para emergencias ni para enviar información clínica urgente.',
+                    ],
                 ],
                 [
-                    'title' => 'Finalidad',
-                    'description' => 'Los datos se usan para coordinar orientación, registrar turnos operativos, enviar comunicaciones y facilitar la continuidad del acompañamiento.',
+                    'title' => 'Datos que podemos tratar',
+                    'description' => 'Tratamos solo los datos necesarios para operar el servicio y responder solicitudes relacionadas con orientación, derivación y reservas.',
+                    'items' => [
+                        'Datos de identificación y contacto, como nombre, email y teléfono cuando los proporcionás.',
+                        'Datos operativos de reservas, como terapeuta, tipo de sesión, fecha, horario, zona horaria, estado de la cita y comunicaciones relacionadas.',
+                        'Preferencias necesarias para comunicaciones, como idioma elegido y consentimiento para notificaciones por WhatsApp.',
+                        'Datos técnicos mínimos generados por el uso de la plataforma, como registros de operación, seguridad y errores.',
+                    ],
                 ],
                 [
-                    'title' => 'Comunicaciones',
-                    'description' => 'Al coordinar una cita aceptás recibir emails relacionados con la gestión operativa, como confirmaciones, recordatorios y enlaces necesarios.',
+                    'title' => 'Finalidades',
+                    'description' => 'Usamos los datos para prestar el servicio, coordinar comunicaciones y mantener la seguridad de la plataforma.',
+                    'items' => [
+                        'Gestionar orientación, derivación, reservas, confirmaciones, recordatorios y cambios de citas.',
+                        'Enviar emails operativos y, si diste consentimiento específico, notificaciones por WhatsApp.',
+                        'Permitir que terapeutas y administración consulten información necesaria para coordinar la atención programada.',
+                        'Mantener registros operativos, prevenir abuso, resolver errores y cumplir obligaciones aplicables.',
+                    ],
                 ],
                 [
                     'title' => 'WhatsApp operativo',
-                    'description' => 'El teléfono para WhatsApp es opcional y se usa solo si das consentimiento específico para recibir confirmaciones y recordatorios operativos mediante Meta. Los mensajes no incluyen diagnósticos, motivos de consulta ni contenido clínico, y podés retirar el consentimiento solicitándolo por los canales de contacto.',
+                    'description' => 'El teléfono para WhatsApp es opcional y se usa solo si das consentimiento específico para recibir confirmaciones y recordatorios operativos mediante WhatsApp Business Platform de Meta.',
+                    'items' => [
+                        'Los mensajes no incluyen diagnósticos, motivos de consulta ni contenido clínico.',
+                        'Meta puede tratar datos técnicos y de mensajería de acuerdo con sus propias condiciones y políticas.',
+                        'Podés retirar el consentimiento para WhatsApp solicitándolo por los canales de contacto o dejando de aceptar ese canal en futuros procesos.',
+                    ],
                 ],
                 [
-                    'title' => 'Idioma de comunicaciones',
-                    'description' => 'Usamos el idioma seleccionado en la interfaz o la preferencia guardada de la terapeuta para comunicaciones operativas. El idioma no se usa para inferir nacionalidad, país, zona horaria ni otros atributos personales.',
+                    'title' => 'Base de uso y consentimiento',
+                    'description' => 'Tratamos datos para ejecutar las solicitudes que realizás, sostener comunicaciones operativas, cumplir obligaciones aplicables y, cuando corresponde, con tu consentimiento específico.',
+                    'items' => [
+                        'El consentimiento para WhatsApp es opcional y separado de la reserva.',
+                        'Podés no aceptar WhatsApp y recibir comunicaciones operativas por email cuando el flujo lo permita.',
+                    ],
+                ],
+                [
+                    'title' => 'Conservación y seguridad',
+                    'description' => 'Conservamos la información durante el tiempo necesario para operar el servicio, mantener registros razonables y atender obligaciones o reclamos. Aplicamos medidas técnicas y organizativas para proteger la información, aunque ningún sistema conectado a internet puede garantizar seguridad absoluta.',
+                ],
+                [
+                    'title' => 'Acceso de terceros',
+                    'description' => 'Podemos usar proveedores técnicos para hosting, correo, base de datos, monitoreo y WhatsApp Business Platform. Estos proveedores tratan datos solo en la medida necesaria para prestar sus servicios.',
+                ],
+                [
+                    'title' => 'Derechos y solicitudes',
+                    'description' => 'Podés solicitar acceso, actualización, corrección o eliminación de tus datos cuando corresponda. También podés pedir información sobre el tratamiento o retirar consentimientos otorgados.',
+                ],
+                [
+                    'title' => 'Cambios de esta política',
+                    'description' => 'Podemos actualizar esta política para reflejar cambios legales, técnicos u operativos. La versión vigente estará siempre publicada en esta página.',
                 ],
             ],
         ],
