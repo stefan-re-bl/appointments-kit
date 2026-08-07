@@ -84,15 +84,6 @@
 
                             <div>
                                     <dt class="text-sm font-medium text-slate-500">
-                                    {{ __('app.appointment_public.fields.session_type') }}
-                                </dt>
-                                <dd class="mt-1 text-sm text-slate-950">
-                                    {{ $appointment->sessionType?->name ?? __('app.appointment_public.unavailable') }}
-                                </dd>
-                            </div>
-
-                            <div>
-                                    <dt class="text-sm font-medium text-slate-500">
                                     {{ __('app.appointment_public.fields.starts_at') }}
                                 </dt>
                                 <dd class="mt-1 text-sm text-slate-950">

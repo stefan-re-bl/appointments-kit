@@ -6,8 +6,6 @@
 <x-mail::panel>
 **{{ __('reminders.appointment.therapist') }}:** {{ $appointment->therapist->user->name }}
 
-**{{ __('reminders.appointment.session_type') }}:** {{ $appointment->sessionType->name }}
-
 **{{ __('reminders.appointment.starts_at') }}:** {{ $startsAt }}
 
 **{{ __('reminders.appointment.ends_at') }}:** {{ $endsAt }}

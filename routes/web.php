@@ -100,7 +100,7 @@ Route::middleware('auth')->group(function (): void {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('session-types', SessionTypeController::class);
+    Route::resource('session-types', SessionTypeController::class)->except('show');
     Route::resource('availabilities', AvailabilityController::class)->except(['show', 'edit', 'update']);
 });
 
@@ -161,7 +161,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         ->name('therapist.appointments.payment.update');
 });
 
-// --- Rutas Públicas de Reserva (Ticket #10) ---
+// --- Carga interna de turnos por terapeutas ---
 Route::prefix('book')->name('book.')->group(function (): void {
     Route::get('/', [BookingController::class, 'index'])->name('index');
 
@@ -196,9 +196,9 @@ Route::prefix('book')->name('book.')->group(function (): void {
     Route::get('/success', [BookingController::class, 'success'])->name('success');
 });
 
-// Ruta API interna para Alpine.js
-// Mapeada a BookingController para centralizar la lógica del flujo público.
-// Se mantiene en 'web' para compartir sesión y protecciones del flujo público.
+// Ruta API interna para Alpine.js.
+// Mapeada a BookingController para centralizar la lógica de carga interna de turnos.
+// Se mantiene en 'web' para compartir sesión y protecciones del flujo autenticado.
 Route::get('/api/slots', [BookingController::class, 'getSlotsApi'])
     ->middleware('throttle:booking')
     ->name('api.slots.index');

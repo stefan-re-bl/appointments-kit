@@ -346,6 +346,10 @@ final class CriticalBookingFlowTest extends TestCase
         $this
             ->get(route('book.index'))
             ->assertRedirect(route('home'));
+
+        $this
+            ->get(route('book.success'))
+            ->assertRedirect(route('home'));
     }
 
     public function test_public_booking_cannot_create_appointment_after_approval_is_revoked(): void

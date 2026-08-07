@@ -12,7 +12,6 @@
 <x-mail::panel>
 <strong>{{ __('app.emails.booking_confirmed.patient') }}:</strong> {{ $patientName }}<br>
 <strong>{{ __('app.emails.booking_confirmed.therapist') }}:</strong> {{ $therapistName }}<br>
-<strong>{{ __('app.emails.booking_confirmed.session_type') }}:</strong> {{ $sessionTypeName }}<br>
 <strong>{{ __('app.emails.booking_confirmed.starts_at') }}:</strong> {{ $startsAt }}<br>
 <strong>{{ __('app.emails.booking_confirmed.ends_at') }}:</strong> {{ $endsAt }}<br>
 <strong>{{ __('app.emails.booking_confirmed.timezone') }}:</strong> {{ $displayTimezone }}

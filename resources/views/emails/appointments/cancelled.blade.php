@@ -10,8 +10,6 @@
 
 **{{ __('appointment_emails.common.therapist') }}:** {{ $therapistName }}
 
-**{{ __('appointment_emails.common.session_type') }}:** {{ $sessionTypeName }}
-
 **{{ __('appointment_emails.cancelled.appointment_time') }}:** {{ $appointmentRange }}
 
 **{{ __('appointment_emails.common.timezone') }}:** {{ $recipientTimezone }}

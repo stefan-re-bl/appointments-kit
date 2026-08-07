@@ -10,8 +10,6 @@
 
 **{{ __('appointment_emails.common.therapist') }}:** {{ $therapistName }}
 
-**{{ __('appointment_emails.common.session_type') }}:** {{ $sessionTypeName }}
-
 **{{ __('appointment_emails.rescheduled.previous_time') }}:** {{ $previousRange }}
 
 **{{ __('appointment_emails.rescheduled.new_time') }}:** {{ $newRange }}

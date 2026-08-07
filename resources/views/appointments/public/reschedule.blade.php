@@ -54,15 +54,6 @@
 
                     <div>
                         <dt class="font-medium text-slate-500">
-                            {{ __('appointment_reschedule.session_type') }}
-                        </dt>
-                        <dd class="mt-1 text-slate-950">
-                            {{ $appointment->sessionType->name }}
-                        </dd>
-                    </div>
-
-                    <div>
-                        <dt class="font-medium text-slate-500">
                             {{ __('appointment_reschedule.current_time') }}
                         </dt>
                         <dd class="mt-1 text-slate-950">

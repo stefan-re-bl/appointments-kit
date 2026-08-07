@@ -76,10 +76,6 @@
                                 {{ trans_choice('app.admin.therapists.appointments_count', $therapist->appointments_count, ['count' => $therapist->appointments_count]) }}
                             </span>
 
-                            <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700">
-                                {{ trans_choice('app.admin.therapists.session_types_count', $therapist->session_types_count, ['count' => $therapist->session_types_count]) }}
-                            </span>
-
                             @if (! $therapist->is_active)
                                 <span class="rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-medium text-rose-800">
                                     {{ __('app.admin.therapists.inactive') }}

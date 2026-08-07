@@ -408,8 +408,14 @@ final class BookingController extends Controller implements HasMiddleware
         }
     }
 
-    public function success(): View
+    public function success(Request $request): View|RedirectResponse
     {
+        $context = $this->bookingContext($request);
+
+        if ($context instanceof RedirectResponse) {
+            return $context;
+        }
+
         return view('book.success');
     }
 

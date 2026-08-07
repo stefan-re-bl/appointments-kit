@@ -42,7 +42,7 @@ final class TherapistController extends Controller implements HasMiddleware
 
         $therapists = Therapist::query()
             ->with('user')
-            ->withCount(['appointments', 'sessionTypes'])
+            ->withCount('appointments')
             ->when($approvalStatus === 'pending', function (Builder $query): void {
                 $query->where('is_approved', false)->where('is_active', true);
             })
