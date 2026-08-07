@@ -137,7 +137,7 @@
             <p class="mt-4 text-lg leading-8 text-slate-600">{{ __('app.home.how.description') }}</p>
         </div>
 
-        <ol class="mt-12 grid gap-8 md:grid-cols-3">
+        <ol class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             @foreach (__('app.home.how.steps') as $index => $step)
                 <li class="border-t-2 border-umbralia-accent pt-6">
                     <span class="text-sm font-bold text-umbralia-accent-dark">0{{ $index + 1 }}</span>
@@ -178,7 +178,7 @@
             <h2 class="mt-3 text-3xl font-bold text-umbralia-accent sm:text-4xl">{{ __('app.home.therapists.title') }}</h2>
             <p class="mt-4 text-lg leading-8 text-slate-100">{{ __('app.home.therapists.description') }}</p>
         </div>
-        <a href="{{ route('book.index') }}" class="rounded-lg bg-white px-6 py-3.5 text-center font-semibold text-slate-950 hover:bg-slate-50">
+        <a href="{{ route('therapists.index') }}" class="rounded-lg bg-white px-6 py-3.5 text-center font-semibold text-slate-950 hover:bg-slate-50">
             {{ __('app.home.therapists.cta') }}
         </a>
     </div>

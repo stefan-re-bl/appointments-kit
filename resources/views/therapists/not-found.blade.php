@@ -14,7 +14,7 @@
             <p class="mt-4 text-sm leading-6 text-gray-600">
                 {{ __('app.therapist_public.not_found.message') }}
             </p>
-            <a href="{{ route('book.index') }}" class="mt-6 inline-flex rounded-lg bg-umbralia-title px-4 py-2 text-sm font-semibold text-white hover:bg-umbralia-title">
+            <a href="{{ route('therapists.index') }}" class="mt-6 inline-flex rounded-lg bg-umbralia-title px-4 py-2 text-sm font-semibold text-white hover:bg-umbralia-title">
                 {{ __('app.therapist_public.not_found.cta') }}
             </a>
         </div>

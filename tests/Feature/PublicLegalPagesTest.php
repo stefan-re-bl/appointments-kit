@@ -30,6 +30,8 @@ final class PublicLegalPagesTest extends TestCase
                 ->assertOk()
                 ->assertSeeText($heading)
                 ->assertSeeText('Umbralia no atiende emergencias')
+                ->assertSeeText('0800-999-0091')
+                ->assertSeeText('0800-333-1665')
                 ->assertSeeText('no procesa pagos');
         }
 
@@ -41,11 +43,12 @@ final class PublicLegalPagesTest extends TestCase
             ->assertSee(route('legal.emergency-notice'), false);
     }
 
-    public function test_booking_confirmation_shows_required_legal_acceptance_and_emergency_notice(): void
+    public function test_internal_booking_confirmation_does_not_show_public_legal_acceptance(): void
     {
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $this
+            ->actingAs($therapist->user)
             ->withSession([
                 'booking.therapist_id' => $therapist->id,
                 'booking.session_type_id' => $sessionType->id,
@@ -55,12 +58,10 @@ final class PublicLegalPagesTest extends TestCase
             ])
             ->get(route('book.confirm'))
             ->assertOk()
-            ->assertSee('name="accepted_terms"', false)
-            ->assertSee('name="accepted_email_communications"', false)
-            ->assertSee(route('legal.terms'), false)
-            ->assertSee(route('legal.privacy'), false)
-            ->assertSee(route('legal.emergency-notice'), false)
-            ->assertSeeText(__('legal.booking.emergency_title'));
+            ->assertSeeText(__('app.booking_internal.patient_details'))
+            ->assertDontSee('name="accepted_terms"', false)
+            ->assertDontSee('name="accepted_email_communications"', false)
+            ->assertDontSeeText(__('legal.booking.emergency_title'));
     }
 
     /**

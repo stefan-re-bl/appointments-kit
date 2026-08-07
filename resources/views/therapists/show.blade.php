@@ -5,14 +5,14 @@
 @section('content')
     <div class="bg-white" x-data="{ presentationVideoOpen: false }">
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-            <a href="{{ route('book.index') }}" class="inline-flex items-center text-sm font-semibold text-umbralia-title hover:text-umbralia-title">
+            <a href="{{ route('therapists.index') }}" class="inline-flex items-center text-sm font-semibold text-umbralia-title hover:text-umbralia-title">
                 <span aria-hidden="true" class="mr-2">&larr;</span>
                 <span>
-                    {{ __('app.therapist_public.back_to_booking') }}
+                    {{ __('app.therapist_public.back_to_directory') }}
                 </span>
             </a>
 
-            <div class="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+            <div class="mt-6 grid gap-8 lg:items-start">
                 <div class="space-y-6">
                     <section class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
                         <div @class([
@@ -95,57 +95,8 @@
                             @endif
                         </div>
                     @endif
-
-                    <section class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-7">
-                        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                            <h2 class="text-xl font-semibold text-umbralia-title">
-                                {{ __('app.therapist_public.sessions_title') }}
-                            </h2>
-                        </div>
-
-                        <div class="mt-5 grid gap-4 md:grid-cols-2">
-                            @forelse ($therapist->sessionTypes as $sessionType)
-                                <article class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                                    <h3 class="font-semibold text-umbralia-title">{{ $sessionType->name }}</h3>
-                                    <div class="mt-4 flex items-end justify-between gap-4">
-                                        <p class="text-sm text-slate-600">
-                                            {{ __('app.therapist_public.session_duration', ['minutes' => $sessionType->duration_minutes]) }}
-                                        </p>
-                                        <p class="text-lg font-semibold text-slate-950">
-                                            {{ $sessionType->currency }} {{ number_format((float) $sessionType->price, 2) }}
-                                        </p>
-                                    </div>
-                                </article>
-                            @empty
-                                <p class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5 text-sm leading-6 text-slate-600 md:col-span-2">
-                                    {{ __('app.therapist_public.no_sessions') }}
-                                </p>
-                            @endforelse
-                        </div>
-                    </section>
                 </div>
 
-                <aside class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200 lg:sticky lg:top-24 lg:p-6">
-                    <h2 class="text-lg font-semibold text-umbralia-title">
-                        {{ __('app.therapist_public.booking_card_title') }}
-                    </h2>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">
-                        {{ __('app.therapist_public.booking_card_text') }}
-                    </p>
-
-                    <form method="POST" action="{{ route('book.store.therapist') }}" class="mt-6">
-                        @csrf
-                        <input type="hidden" name="therapist_id" value="{{ $therapist->id }}">
-
-                        <button type="submit" class="w-full rounded-lg bg-umbralia-title px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2">
-                            {{ __('app.therapist_public.book_cta') }}
-                        </button>
-                    </form>
-
-                    <p class="mt-4 border-t border-slate-200 pt-4 text-xs leading-5 text-slate-500">
-                        {{ __('app.therapist_public.payment_note') }}
-                    </p>
-                </aside>
             </div>
         </section>
 

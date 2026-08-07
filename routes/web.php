@@ -14,6 +14,7 @@ use App\Http\Controllers\PublicAppointmentCancellationController;
 use App\Http\Controllers\PublicAppointmentController;
 use App\Http\Controllers\PublicAppointmentRescheduleController;
 use App\Http\Controllers\PublicAppointmentRescheduleStoreController;
+use App\Http\Controllers\PublicTherapistDirectoryController;
 use App\Http\Controllers\PublicTherapistProfileController;
 use App\Http\Controllers\SessionTypeController;
 use App\Http\Controllers\Therapist\AppointmentIndexController;
@@ -63,6 +64,9 @@ Route::post('/webhooks/meta/whatsapp', [MetaWhatsAppWebhookController::class, 'r
     ->middleware('throttle:60,1')
     ->name('webhooks.meta-whatsapp.receive');
 
+Route::get('/therapists', PublicTherapistDirectoryController::class)
+    ->name('therapists.index');
+
 Route::get('/therapists/{slug}', PublicTherapistProfileController::class)
     ->name('therapists.show');
 
@@ -74,6 +78,10 @@ Route::get('/appointment/{token}', PublicAppointmentController::class)
 Route::get('/appointment/{token}/reschedule', PublicAppointmentRescheduleController::class)
     ->middleware(['signed', 'throttle:booking'])
     ->name('appointments.public.reschedule');
+
+Route::get('/appointment/{token}/reschedule/slots', [PublicAppointmentRescheduleController::class, 'slots'])
+    ->middleware(['signed', 'throttle:booking'])
+    ->name('appointments.public.reschedule.slots');
 
 // --- Confirmación de reprogramación pública (Ticket #19) ---
 Route::post('/appointment/{token}/reschedule', PublicAppointmentRescheduleStoreController::class)
@@ -142,6 +150,12 @@ Route::middleware(['auth', 'verified', 'admin'])
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('/therapist/appointments', AppointmentIndexController::class)
         ->name('therapist.appointments.index');
+
+    Route::get('/therapist/appointments/events', [AppointmentIndexController::class, 'events'])
+        ->name('therapist.appointments.events');
+
+    Route::get('/therapist/appointments/day', [AppointmentIndexController::class, 'day'])
+        ->name('therapist.appointments.day');
 
     Route::patch('/therapist/appointments/{appointment}/payment', AppointmentPaymentController::class)
         ->name('therapist.appointments.payment.update');

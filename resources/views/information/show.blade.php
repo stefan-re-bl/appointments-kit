@@ -1,5 +1,6 @@
 @php
     $content = __('information.pages.' . $page);
+    $orientationSessionUrl = 'https://wa.me/5491150501775?text=' . urlencode(__('app.home.orientation_whatsapp_message'));
 @endphp
 
 @extends('layouts.public')
@@ -87,7 +88,7 @@
                 <h2 class="text-xl font-semibold text-umbralia-title">{{ $content['cta']['title'] }}</h2>
                 <p class="mt-2 text-sm leading-6 text-slate-600">{{ $content['cta']['description'] }}</p>
             </div>
-            <a href="{{ route('book.index') }}" class="w-full flex-none rounded-lg bg-umbralia-title px-6 py-3 text-center font-semibold text-white hover:bg-umbralia-title/90 sm:w-auto">{{ $content['cta']['label'] }}</a>
+            <a href="{{ $orientationSessionUrl }}" target="_blank" rel="noopener" class="w-full flex-none rounded-lg bg-umbralia-title px-6 py-3 text-center font-semibold text-white hover:bg-umbralia-title/90 sm:w-auto">{{ $content['cta']['label'] }}</a>
         </div>
     </div>
 </section>

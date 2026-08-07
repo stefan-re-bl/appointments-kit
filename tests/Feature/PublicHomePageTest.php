@@ -20,7 +20,9 @@ final class PublicHomePageTest extends TestCase
             ->assertSeeText(__('app.home.benefits.title'))
             ->assertSeeText(__('app.home.faq.title'))
             ->assertSeeText(__('app.home.emergency.title'))
-            ->assertSee(route('book.index'), false)
+            ->assertSeeText('0800-999-0091')
+            ->assertSeeText('0800-333-1665')
+            ->assertSee('https://wa.me/5491150501775', false)
             ->assertSee('images/umbralia-home-hero-cover.jpeg', false);
     }
 
@@ -32,6 +34,8 @@ final class PublicHomePageTest extends TestCase
             ->assertOk()
             ->assertSeeText('A professional space to talk, understand and move forward.')
             ->assertSeeText('Umbralia is not an emergency service.')
-            ->assertSeeText('View therapists');
+            ->assertSeeText('0800-999-0091')
+            ->assertSeeText('0800-333-1665')
+            ->assertSeeText('Request orientation');
     }
 }

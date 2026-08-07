@@ -15,6 +15,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-white font-sans text-slate-950 antialiased">
+    @php
+        $orientationSessionUrl = 'https://wa.me/5491150501775?text=' . urlencode(__('app.home.orientation_whatsapp_message'));
+    @endphp
+
     <header
         x-data="{ mobileOpen: false }"
         class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur"
@@ -77,7 +81,9 @@
                 @endauth
 
                 <a
-                    href="{{ route('book.index') }}"
+                    href="{{ $orientationSessionUrl }}"
+                    target="_blank"
+                    rel="noopener"
                     class="rounded-lg bg-umbralia-title px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2"
                 >
                     {{ __('app.home.nav.book') }}
@@ -132,7 +138,7 @@
                     <a href="{{ request()->fullUrlWithQuery(['lang' => app()->getLocale() === 'es' ? 'en' : 'es']) }}" class="font-semibold text-slate-700">
                         {{ app()->getLocale() === 'es' ? 'English' : 'Español' }}
                     </a>
-                    <a href="{{ route('book.index') }}" class="rounded-lg bg-umbralia-title px-4 py-2.5 font-semibold text-white">
+                    <a href="{{ $orientationSessionUrl }}" target="_blank" rel="noopener" class="rounded-lg bg-umbralia-title px-4 py-2.5 font-semibold text-white">
                         {{ __('app.home.nav.book') }}
                     </a>
                 </div>
@@ -166,7 +172,7 @@
             <div>
                 <p class="text-sm font-semibold text-white">{{ __('app.home.footer.access') }}</p>
                 <div class="mt-4 flex flex-col gap-3 text-sm">
-                    <a href="{{ route('book.index') }}" class="hover:text-white">{{ __('app.home.nav.book') }}</a>
+                    <a href="{{ $orientationSessionUrl }}" target="_blank" rel="noopener" class="hover:text-white">{{ __('app.home.nav.book') }}</a>
                     <a href="{{ route('login') }}" class="hover:text-white">{{ __('app.home.nav.login') }}</a>
                     <a href="{{ route('contact.create') }}" class="hover:text-white">{{ __('app.home.footer.contact') }}</a>
                 </div>
