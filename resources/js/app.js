@@ -147,9 +147,18 @@ window.adminAppointmentsCalendar = function (config) {
         },
 
         resetFilters() {
-            this.$refs.therapistFilter.value = '';
-            this.$refs.statusFilter.value = '';
-            this.$refs.paymentFilter.value = '';
+            if (this.$refs.therapistFilter) {
+                this.$refs.therapistFilter.value = '';
+            }
+
+            if (this.$refs.statusFilter) {
+                this.$refs.statusFilter.value = '';
+            }
+
+            if (this.$refs.paymentFilter) {
+                this.$refs.paymentFilter.value = '';
+            }
+
             this.filterChanged();
         },
 

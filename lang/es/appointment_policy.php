@@ -22,11 +22,11 @@ return [
     ],
 
     'messages' => [
-        'refund_available' => 'La cita puede cancelarse porque faltan al menos :refund_hours horas. Como el pago figura registrado, la devolución debe coordinarse manualmente con la terapeuta.',
-        'cancel_without_refund' => 'La cita puede cancelarse porque faltan al menos :refund_hours horas. No figura un pago registrado, por lo que no hay devolución pendiente desde el sistema.',
-        'reschedule_only' => 'La cita ya no está dentro del plazo de devolución, pero todavía puede solicitarse reprogramación porque faltan al menos :reschedule_hours horas.',
-        'reschedule_limit_reached' => 'Esta cita ya alcanzó el límite de :max_reschedules reprogramaciones. Para cualquier cambio adicional, coordiná directamente con la terapeuta.',
-        'too_late' => 'La cita está fuera del plazo de autoservicio. Para cambios o cancelaciones, coordiná directamente con la terapeuta.',
+        'refund_available' => 'La cancelación con derecho a reembolso puede solicitarse hasta :refund_hours horas antes del horario acordado. Como el pago figura registrado, la devolución debe coordinarse manualmente con la terapeuta.',
+        'cancel_without_refund' => 'La cita puede cancelarse, pero ya no está dentro del plazo de reembolso de :refund_hours horas o no figura un pago registrado. La modificación de fecha u horario puede solicitarse hasta :reschedule_hours horas antes del turno.',
+        'reschedule_only' => 'La cita ya no está dentro del plazo de reembolso, pero la modificación de fecha u horario todavía puede solicitarse porque faltan al menos :reschedule_hours horas.',
+        'reschedule_limit_reached' => 'Esta cita ya alcanzó el límite de :max_reschedules reprogramaciones. Cualquier excepción quedará sujeta al acuerdo previo entre paciente y terapeuta.',
+        'too_late' => 'La cita está fuera del plazo de modificación. Pasado ese plazo, solo se admitirán cambios por razones de fuerza mayor debidamente justificadas y bajo acuerdo previo con la terapeuta.',
         'not_actionable' => 'Esta cita ya no admite acciones de autoservicio por su estado actual.',
     ],
 
@@ -40,7 +40,7 @@ return [
     ],
 
     'flash' => [
-        'cancelled' => 'La cita fue cancelada correctamente. Si corresponde devolución, debe coordinarse manualmente con la terapeuta.',
+        'cancelled' => 'La cita fue cancelada correctamente. Si corresponde reembolso por haber sido solicitada hasta 24 horas antes del horario acordado, debe coordinarse manualmente con la terapeuta.',
         'cancel_not_allowed' => 'La cita no puede cancelarse desde esta página porque está fuera del plazo permitido.',
     ],
 

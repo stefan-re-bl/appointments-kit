@@ -16,7 +16,45 @@ final class CancellationPolicyServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_paid_appointment_can_be_cancelled_and_refunded_at_least_48_hours_before_start(): void
+    public function test_paid_appointment_can_be_cancelled_and_refunded_at_least_24_hours_before_start(): void
+    {
+        $now = CarbonImmutable::parse('2026-06-19 12:00:00', 'UTC');
+
+        $appointment = Appointment::factory()->create([
+            'starts_at' => $now->addHours(24),
+            'ends_at' => $now->addHours(25),
+            'status' => AppointmentStatus::CONFIRMED,
+            'payment_status' => PaymentStatus::PAID,
+            'reschedule_count' => 0,
+        ]);
+
+        $service = app(CancellationPolicyService::class);
+
+        $this->assertTrue($service->canCancel($appointment, $now));
+        $this->assertTrue($service->canRefund($appointment, $now));
+        $this->assertFalse($service->canReschedule($appointment, $now));
+    }
+
+    public function test_appointment_between_24_and_48_hours_can_be_cancelled_and_refunded_but_not_rescheduled(): void
+    {
+        $now = CarbonImmutable::parse('2026-06-19 12:00:00', 'UTC');
+
+        $appointment = Appointment::factory()->create([
+            'starts_at' => $now->addHours(30),
+            'ends_at' => $now->addHours(31),
+            'status' => AppointmentStatus::CONFIRMED,
+            'payment_status' => PaymentStatus::PAID,
+            'reschedule_count' => 0,
+        ]);
+
+        $service = app(CancellationPolicyService::class);
+
+        $this->assertTrue($service->canCancel($appointment, $now));
+        $this->assertTrue($service->canRefund($appointment, $now));
+        $this->assertFalse($service->canReschedule($appointment, $now));
+    }
+
+    public function test_appointment_at_least_48_hours_before_start_can_be_rescheduled(): void
     {
         $now = CarbonImmutable::parse('2026-06-19 12:00:00', 'UTC');
 
@@ -32,25 +70,6 @@ final class CancellationPolicyServiceTest extends TestCase
 
         $this->assertTrue($service->canCancel($appointment, $now));
         $this->assertTrue($service->canRefund($appointment, $now));
-        $this->assertTrue($service->canReschedule($appointment, $now));
-    }
-
-    public function test_appointment_between_24_and_48_hours_can_only_be_rescheduled(): void
-    {
-        $now = CarbonImmutable::parse('2026-06-19 12:00:00', 'UTC');
-
-        $appointment = Appointment::factory()->create([
-            'starts_at' => $now->addHours(30),
-            'ends_at' => $now->addHours(31),
-            'status' => AppointmentStatus::CONFIRMED,
-            'payment_status' => PaymentStatus::PAID,
-            'reschedule_count' => 0,
-        ]);
-
-        $service = app(CancellationPolicyService::class);
-
-        $this->assertFalse($service->canCancel($appointment, $now));
-        $this->assertFalse($service->canRefund($appointment, $now));
         $this->assertTrue($service->canReschedule($appointment, $now));
     }
 

@@ -85,8 +85,121 @@ class TherapistAppointmentPaymentTest extends TestCase
         $response->assertSee(__('app.payments.status.paid'));
     }
 
+    public function test_therapist_appointments_page_renders_calendar_configuration(): void
+    {
+        [$user] = $this->createAppointmentForTherapist();
+
+        $this
+            ->actingAs($user)
+            ->get(route('therapist.appointments.index'))
+            ->assertOk()
+            ->assertSeeText(__('app.appointments.management.calendar.title'))
+            ->assertSee('adminAppointmentsCalendar', false)
+            ->assertSee('eventsUrl', false)
+            ->assertSee('dayUrl', false)
+            ->assertSee('Buenos_Aires', false);
+    }
+
+    public function test_therapist_calendar_events_endpoint_returns_only_own_events(): void
+    {
+        [$user, $appointment] = $this->createAppointmentForTherapist([
+            'patient_name' => 'Paciente Propio',
+            'starts_at' => CarbonImmutable::parse('2026-07-24 13:00:00', 'UTC'),
+            'ends_at' => CarbonImmutable::parse('2026-07-24 14:00:00', 'UTC'),
+            'status' => AppointmentStatus::CONFIRMED,
+            'payment_status' => PaymentStatus::PENDING,
+        ]);
+        [, $otherAppointment] = $this->createAppointmentForTherapist([
+            'patient_name' => 'Paciente Ajeno',
+            'starts_at' => CarbonImmutable::parse('2026-07-24 15:00:00', 'UTC'),
+            'ends_at' => CarbonImmutable::parse('2026-07-24 16:00:00', 'UTC'),
+            'status' => AppointmentStatus::CONFIRMED,
+            'payment_status' => PaymentStatus::PENDING,
+        ]);
+
+        Appointment::factory()
+            ->for($appointment->therapist)
+            ->for($appointment->sessionType, 'sessionType')
+            ->create([
+                'patient_name' => 'Paciente Pendiente',
+                'starts_at' => CarbonImmutable::parse('2026-07-24 17:00:00', 'UTC'),
+                'ends_at' => CarbonImmutable::parse('2026-07-24 18:00:00', 'UTC'),
+                'status' => AppointmentStatus::PENDING,
+                'payment_status' => PaymentStatus::PENDING,
+            ]);
+
+        $this
+            ->actingAs($user)
+            ->getJson(route('therapist.appointments.events', [
+                'start' => '2026-07-01',
+                'end' => '2026-08-01',
+                'status' => AppointmentStatus::CONFIRMED->value,
+            ]))
+            ->assertOk()
+            ->assertJsonCount(1)
+            ->assertJsonPath('0.id', (string) $appointment->id)
+            ->assertJsonPath('0.title', 'Paciente Propio')
+            ->assertJsonPath('0.extendedProps.local_date', '2026-07-24')
+            ->assertJsonMissing([
+                'id' => (string) $otherAppointment->id,
+            ]);
+    }
+
+    public function test_therapist_day_endpoint_returns_only_own_appointments_for_local_day(): void
+    {
+        [$user, $appointment] = $this->createAppointmentForTherapist([
+            'patient_name' => 'Paciente Mañana',
+            'patient_email' => 'manana@example.test',
+            'patient_timezone' => 'America/Santiago',
+            'starts_at' => CarbonImmutable::parse('2026-07-24 13:00:00', 'UTC'),
+            'ends_at' => CarbonImmutable::parse('2026-07-24 14:00:00', 'UTC'),
+            'status' => AppointmentStatus::CONFIRMED,
+            'payment_status' => PaymentStatus::PAID,
+            'price' => 25000,
+            'currency' => 'ARS',
+        ]);
+        [, $otherAppointment] = $this->createAppointmentForTherapist([
+            'patient_name' => 'Paciente Ajeno',
+            'starts_at' => CarbonImmutable::parse('2026-07-24 15:00:00', 'UTC'),
+            'ends_at' => CarbonImmutable::parse('2026-07-24 16:00:00', 'UTC'),
+        ]);
+        $previousLocalDay = Appointment::factory()
+            ->for($appointment->therapist)
+            ->for($appointment->sessionType, 'sessionType')
+            ->create([
+                'patient_name' => 'Paciente Día Anterior',
+                'starts_at' => CarbonImmutable::parse('2026-07-24 02:30:00', 'UTC'),
+                'ends_at' => CarbonImmutable::parse('2026-07-24 03:00:00', 'UTC'),
+                'status' => AppointmentStatus::CONFIRMED,
+            ]);
+
+        $this
+            ->actingAs($user)
+            ->getJson(route('therapist.appointments.day', [
+                'date' => '2026-07-24',
+            ]))
+            ->assertOk()
+            ->assertJsonPath('date', '24/07/2026')
+            ->assertJsonCount(1, 'appointments')
+            ->assertJsonPath('appointments.0.id', $appointment->id)
+            ->assertJsonPath('appointments.0.patient_name', 'Paciente Mañana')
+            ->assertJsonPath('appointments.0.patient_email', 'manana@example.test')
+            ->assertJsonPath('appointments.0.patient_timezone', 'America/Santiago')
+            ->assertJsonPath('appointments.0.time_range', '10:00 - 11:00')
+            ->assertJsonPath('appointments.0.status_label', __('app.appointment_status.confirmed'))
+            ->assertJsonPath('appointments.0.payment_status_label', __('app.payment_status.paid'))
+            ->assertJsonMissingPath('appointments.0.session_type')
+            ->assertJsonMissingPath('appointments.0.price')
+            ->assertJsonMissing([
+                'id' => $otherAppointment->id,
+            ])
+            ->assertJsonMissing([
+                'id' => $previousLocalDay->id,
+            ]);
+    }
+
     /**
-     * @param array<string, mixed> $appointmentOverrides
+     * @param  array<string, mixed>  $appointmentOverrides
      * @return array{0: User, 1: Appointment}
      */
     private function createAppointmentForTherapist(array $appointmentOverrides = []): array

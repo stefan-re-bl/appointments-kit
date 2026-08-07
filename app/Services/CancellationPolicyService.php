@@ -12,15 +12,20 @@ use Carbon\CarbonInterface;
 
 final class CancellationPolicyService
 {
-    private const REFUND_DEADLINE_HOURS = 48;
+    private const CANCEL_DEADLINE_HOURS = 24;
 
-    private const RESCHEDULE_DEADLINE_HOURS = 24;
+    private const REFUND_DEADLINE_HOURS = 24;
+
+    private const RESCHEDULE_DEADLINE_HOURS = 48;
 
     private const MAX_RESCHEDULES = 2;
 
     public function canRefund(Appointment $appointment, ?CarbonInterface $now = null): bool
     {
-        return $this->canCancel($appointment, $now)
+        return $this->isActionable($appointment, $now)
+            && $this->startsAtUtc($appointment)->greaterThanOrEqualTo(
+                $this->nowUtc($now)->addHours(self::REFUND_DEADLINE_HOURS)
+            )
             && $this->paymentStatusValue($appointment) === PaymentStatus::PAID->value;
     }
 
@@ -28,7 +33,7 @@ final class CancellationPolicyService
     {
         return $this->isActionable($appointment, $now)
             && $this->startsAtUtc($appointment)->greaterThanOrEqualTo(
-                $this->nowUtc($now)->addHours(self::REFUND_DEADLINE_HOURS)
+                $this->nowUtc($now)->addHours(self::CANCEL_DEADLINE_HOURS)
             );
     }
 

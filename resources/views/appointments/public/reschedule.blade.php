@@ -100,9 +100,6 @@
                     action="{{ $formAction }}"
                     x-data="rescheduleForm({
                         endpoint: @js($slotsEndpoint),
-                        therapistId: @js($appointment->therapist_id),
-                        sessionTypeId: @js($appointment->session_type_id),
-                        durationMinutes: @js((int) $appointment->sessionType->duration_minutes),
                         initialDate: @js(old('date', $initialDate)),
                         initialStartUtc: @js(old('start_utc', '')),
                         patientTimezone: @js($patientTimezone),
@@ -275,10 +272,6 @@
                     try {
                         const url = new URL(config.endpoint, window.location.origin);
 
-                        url.searchParams.set('therapist_id', config.therapistId);
-                        url.searchParams.set('session_type_id', config.sessionTypeId);
-                        url.searchParams.set('duration', config.durationMinutes);
-                        url.searchParams.set('duration_minutes', config.durationMinutes);
                         url.searchParams.set('date', this.date);
                         url.searchParams.set('timezone', config.patientTimezone);
                         const response = await fetch(url.toString(), {

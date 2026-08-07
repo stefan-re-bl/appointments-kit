@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Rules\ValidTimezone;
 use App\Services\CancellationPolicyService;
+use App\Services\SlotGenerationService;
 use App\Services\TimezoneService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Validation\ValidationException;
 
 final class PublicAppointmentRescheduleController extends Controller implements HasMiddleware
 {
@@ -54,6 +59,13 @@ final class PublicAppointmentRescheduleController extends Controller implements 
         $initialDate = $currentAppointmentDate >= $minimumDate
             ? $currentAppointmentDate
             : $minimumDate;
+        $slotsEndpoint = $request->has('expires')
+            ? URL::temporarySignedRoute(
+                'appointments.public.reschedule.slots',
+                Carbon::createFromTimestampUTC((int) $request->query('expires')),
+                ['token' => $appointment->token],
+            )
+            : URL::signedRoute('appointments.public.reschedule.slots', ['token' => $appointment->token]);
 
         return view('appointments.public.reschedule', [
             'appointment' => $appointment,
@@ -64,7 +76,52 @@ final class PublicAppointmentRescheduleController extends Controller implements 
             'initialDate' => $initialDate,
             'minimumDate' => $minimumDate,
             'patientTimezone' => $patientTimezone,
-            'slotsEndpoint' => route('api.slots.index'),
+            'slotsEndpoint' => $slotsEndpoint,
         ]);
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function slots(
+        Request $request,
+        string $token,
+        CancellationPolicyService $cancellationPolicyService,
+        SlotGenerationService $slotGenerationService,
+    ): JsonResponse|Response {
+        $validated = $request->validate([
+            'date' => ['required', 'date_format:Y-m-d'],
+            'timezone' => ['required', 'string', new ValidTimezone],
+        ]);
+
+        $appointment = Appointment::query()
+            ->with(['therapist.user', 'sessionType'])
+            ->where('token', $token)
+            ->first();
+
+        if (! $appointment instanceof Appointment) {
+            return response()->view('appointments.public-not-found', status: 404);
+        }
+
+        if (! $cancellationPolicyService->canReschedule($appointment)) {
+            abort(403);
+        }
+
+        $timezone = ValidTimezone::normalize($validated['timezone']);
+
+        if ($timezone === null) {
+            throw ValidationException::withMessages([
+                'timezone' => __('booking_timezone.invalid'),
+            ]);
+        }
+
+        $slots = $slotGenerationService->generate(
+            $appointment->therapist,
+            $validated['date'],
+            (int) $appointment->sessionType->duration_minutes,
+            $timezone,
+        );
+
+        return response()->json($slots);
     }
 }

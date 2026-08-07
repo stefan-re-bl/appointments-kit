@@ -11,7 +11,7 @@ return [
     'session_type' => 'Session type',
     'current_time' => 'Current time',
     'timezone' => 'Timezone',
-    'policy_blocked' => 'This appointment can no longer be rescheduled from this link. If you need help, please contact the therapist directly.',
+    'policy_blocked' => 'This appointment can no longer be changed from this link. Within 48 hours of the appointment, changes will only be admitted for duly justified force majeure reasons and by prior agreement with the therapist.',
     'back_to_appointment' => 'Back to My Appointment',
     'date_label' => 'New date',
     'slots_label' => 'Available times',

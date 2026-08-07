@@ -11,7 +11,7 @@ return [
     'session_type' => 'Tipo de sesión',
     'current_time' => 'Horario actual',
     'timezone' => 'Zona horaria',
-    'policy_blocked' => 'Esta cita ya no puede reprogramarse desde este enlace. Si necesitás ayuda, contactá directamente a la terapeuta.',
+    'policy_blocked' => 'Esta cita ya no puede modificarse desde este enlace. Pasadas las 48 horas previas al turno, solo se admitirán cambios por razones de fuerza mayor debidamente justificadas y bajo acuerdo previo con la terapeuta.',
     'back_to_appointment' => 'Volver a Mi Cita',
     'date_label' => 'Nueva fecha',
     'slots_label' => 'Horarios disponibles',
