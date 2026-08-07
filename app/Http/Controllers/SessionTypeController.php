@@ -46,54 +46,31 @@ final class SessionTypeController implements HasMiddleware
 
     public function index(): View
     {
-        /** @var User $user */
-        $user = Auth::user();
-
-        $sessionTypes = $user->therapist->sessionTypes()->latest()->get();
-
-        return view('session-types.index', compact('sessionTypes'));
+        abort(404);
     }
 
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
-        return view('session-types.create');
+        return redirect()->route('dashboard');
     }
 
     public function store(StoreSessionTypeRequest $request): RedirectResponse
     {
-        /** @var User $user */
-        $user = Auth::user();
-
-        $validated = $request->validated();
-        $validated['is_active'] = $request->boolean('is_active');
-
-        $user->therapist->sessionTypes()->create($validated);
-
-        return redirect()->route('session-types.index')
-            ->with('success', __('app.session_type_management.created'));
+        return redirect()->route('dashboard');
     }
 
-    public function edit(SessionType $sessionType): View
+    public function edit(SessionType $sessionType): View|RedirectResponse
     {
-        return view('session-types.edit', compact('sessionType'));
+        return redirect()->route('dashboard');
     }
 
     public function update(UpdateSessionTypeRequest $request, SessionType $sessionType): RedirectResponse
     {
-        $validated = $request->validated();
-        $validated['is_active'] = $request->boolean('is_active');
-
-        $sessionType->update($validated);
-
-        return redirect()->route('session-types.index')
-            ->with('success', __('app.session_type_management.updated'));
+        return redirect()->route('dashboard');
     }
 
     public function destroy(SessionType $sessionType): RedirectResponse
     {
-        $sessionType->delete();
-
-        return redirect()->route('session-types.index')
-            ->with('success', __('app.session_type_management.deleted'));
+        return redirect()->route('dashboard');
     }
 }

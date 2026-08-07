@@ -36,7 +36,6 @@ final class DashboardController extends Controller implements HasMiddleware
 
         $therapist = $user->therapist()
             ->withCount([
-                'sessionTypes as active_session_types_count' => fn (Builder $query) => $query->where('is_active', true),
                 'availabilities as active_availabilities_count' => fn (Builder $query) => $query->where('is_active', true),
             ])
             ->first();

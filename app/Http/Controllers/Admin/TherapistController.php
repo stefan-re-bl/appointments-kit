@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateTherapistRequest;
+use App\Models\SessionType;
 use App\Models\Therapist;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -77,9 +78,11 @@ final class TherapistController extends Controller implements HasMiddleware
     public function edit(Therapist $therapist): View
     {
         $therapist->load('user');
+        $defaultSessionType = $this->defaultSessionType($therapist);
 
         return view('admin.therapists.edit', [
             'therapist' => $therapist,
+            'defaultSessionType' => $defaultSessionType,
         ]);
     }
 
@@ -103,6 +106,12 @@ final class TherapistController extends Controller implements HasMiddleware
                 'is_active' => $request->boolean('is_active'),
                 'is_approved' => $request->boolean('is_approved'),
             ]);
+
+            $this->updateDefaultSessionType(
+                $therapist,
+                (float) $data['session_price'],
+                (string) $data['session_currency'],
+            );
         });
 
         return redirect()
@@ -126,5 +135,48 @@ final class TherapistController extends Controller implements HasMiddleware
         ])->save();
 
         return back()->with('success', __('app.admin.therapists.approval_revoked'));
+    }
+
+    private function defaultSessionType(Therapist $therapist): ?SessionType
+    {
+        return SessionType::query()
+            ->where('therapist_id', $therapist->id)
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->first()
+            ?? SessionType::query()
+                ->where('therapist_id', $therapist->id)
+                ->orderBy('id')
+                ->first();
+    }
+
+    private function updateDefaultSessionType(Therapist $therapist, float $price, string $currency): void
+    {
+        $sessionType = $this->defaultSessionType($therapist);
+
+        if (! $sessionType) {
+            $therapist->sessionTypes()->create([
+                'name' => 'Sesión estándar',
+                'duration_minutes' => 60,
+                'price' => $price,
+                'currency' => $currency,
+                'is_active' => true,
+            ]);
+
+            return;
+        }
+
+        $sessionType->update([
+            'name' => 'Sesión estándar',
+            'price' => $price,
+            'currency' => $currency,
+            'is_active' => true,
+        ]);
+
+        SessionType::query()
+            ->where('therapist_id', $therapist->id)
+            ->where('id', '<>', $sessionType->id)
+            ->where('is_active', true)
+            ->update(['is_active' => false]);
     }
 }

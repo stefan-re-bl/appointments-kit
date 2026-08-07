@@ -33,12 +33,12 @@ final class TherapistOnboardingTest extends TestCase
             ->assertOk()
             ->assertSeeText(__('app.dashboard_onboarding.status.pending'))
             ->assertSeeText(__('app.dashboard_onboarding.flow_steps.0.title'))
-            ->assertSeeText(__('app.dashboard_onboarding.flow_steps.8.title'))
+            ->assertSeeText(__('app.dashboard_onboarding.flow_steps.7.title'))
             ->assertSeeText(__('app.dashboard_onboarding.checklist.profile'))
             ->assertSee(route('profile.edit'), false)
-            ->assertSee(route('session-types.index'), false)
             ->assertSee(route('availabilities.index'), false)
-            ->assertSee(route('therapist.appointments.index'), false);
+            ->assertSee(route('therapist.appointments.index'), false)
+            ->assertSee(route('book.index'), false);
     }
 
     public function test_dashboard_marks_completed_setup_items(): void
@@ -104,32 +104,10 @@ final class TherapistOnboardingTest extends TestCase
         ]);
     }
 
-    public function test_therapist_without_meeting_link_is_not_publicly_bookable(): void
+    public function test_guest_is_redirected_from_booking(): void
     {
-        $visibleUser = User::factory()->create([
-            'name' => 'Terapeuta Con Link',
-            'role' => Role::THERAPIST,
-        ]);
-        $hiddenUser = User::factory()->create([
-            'name' => 'Terapeuta Sin Link',
-            'role' => Role::THERAPIST,
-        ]);
-
-        Therapist::factory()->for($visibleUser)->create([
-            'google_meet_link' => 'https://meet.google.com/abc-defg-hij',
-            'is_active' => true,
-            'is_approved' => true,
-        ]);
-        Therapist::factory()->for($hiddenUser)->create([
-            'google_meet_link' => null,
-            'is_active' => true,
-            'is_approved' => true,
-        ]);
-
         $this
             ->get(route('book.index'))
-            ->assertOk()
-            ->assertSeeText('Terapeuta Con Link')
-            ->assertDontSeeText('Terapeuta Sin Link');
+            ->assertRedirect(route('home'));
     }
 }

@@ -8,6 +8,7 @@ use App\Enums\SupportedLocale;
 use App\Jobs\SendBookingConfirmedEmails;
 use App\Models\SessionType;
 use App\Models\Therapist;
+use App\Models\User;
 use App\Rules\ValidTimezone;
 use App\Services\AvailableSlotResolver;
 use App\Services\BookingService;
@@ -35,88 +36,42 @@ final class BookingController extends Controller implements HasMiddleware
         return [];
     }
 
-    /**
-     * Paso 1: Lista de Terapeutas
-     */
-    public function index(): View
+    public function index(Request $request): RedirectResponse
     {
         session()->forget('booking');
 
-        $therapists = Therapist::with('user')
-            ->publiclyBookable()
-            ->get();
+        $context = $this->bookingContext($request);
 
-        return view('book.index', compact('therapists'));
+        if ($context instanceof RedirectResponse) {
+            return $context;
+        }
+
+        return Redirect::route('book.date');
     }
 
-    /**
-     * Procesar Paso 1: Guardar Terapeuta
-     */
     public function storeTherapist(Request $request): RedirectResponse
     {
-        $request->validate([
-            'therapist_id' => [
-                'required',
-                'integer',
-                Rule::exists('therapists', 'id')
-                    ->where('is_active', true)
-                    ->where('is_approved', true),
-            ],
-        ]);
-
-        $therapist = Therapist::query()
-            ->publiclyBookable()
-            ->find((int) $request->therapist_id);
-
-        if (! $therapist) {
-            throw ValidationException::withMessages([
-                'therapist_id' => __('app.error_booking_slot'),
-            ]);
-        }
-
-        session()->put('booking.therapist_id', $therapist->id);
-
-        return Redirect::route('book.session');
+        return $this->index($request);
     }
 
-    /**
-     * Paso 2: Tipos de Sesión
-     */
-    public function session(): View|RedirectResponse
+    public function session(Request $request): RedirectResponse
     {
-        $therapist = $this->activeTherapistFromSession();
+        $context = $this->bookingContext($request);
 
-        if (! $therapist) {
-            return Redirect::route('book.index');
+        if ($context instanceof RedirectResponse) {
+            return $context;
         }
 
-        $sessions = SessionType::where('therapist_id', $therapist->id)
-            ->where('is_active', true)
-            ->get();
-
-        return view('book.session', compact('sessions'));
+        return Redirect::route('book.date');
     }
 
-    /**
-     * Procesar Paso 2: Guardar Sesión
-     */
     public function storeSession(Request $request): RedirectResponse
     {
-        $therapist = $this->activeTherapistFromSession();
+        $context = $this->bookingContext($request);
 
-        if (! $therapist) {
-            return Redirect::route('book.index');
+        if ($context instanceof RedirectResponse) {
+            return $context;
         }
-
-        $request->validate([
-            'session_type_id' => ['required', 'integer', 'exists:session_types,id'],
-        ]);
-
-        $sessionType = SessionType::where('therapist_id', $therapist->id)
-            ->where('is_active', true)
-            ->findOrFail((int) $request->session_type_id);
-
-        session()->put('booking.session_type_id', $sessionType->id);
 
         return Redirect::route('book.date');
     }
@@ -126,45 +81,34 @@ final class BookingController extends Controller implements HasMiddleware
      */
     public function date(Request $request, CountryTimezoneService $countryTimezoneService): View|RedirectResponse
     {
-        $therapist = $this->activeTherapistFromSession();
+        $context = $this->bookingContext($request);
 
-        if (! $therapist || ! session('booking.session_type_id')) {
-            return Redirect::route('book.index');
-        }
-
-        $sessionTypeExists = SessionType::where('therapist_id', $therapist->id)
-            ->where('is_active', true)
-            ->whereKey((int) session('booking.session_type_id'))
-            ->exists();
-
-        if (! $sessionTypeExists) {
-            session()->forget(['booking.session_type_id', 'booking.date', 'booking.starts_at_utc']);
-
-            return Redirect::route('book.session');
+        if ($context instanceof RedirectResponse) {
+            return $context;
         }
 
         $countries = $countryTimezoneService->countries();
         $countryTimezones = $countryTimezoneService->countryTimezones();
-        $timezoneCountries = $countryTimezoneService->timezoneCountries();
         $sessionTimezone = ValidTimezone::normalize(session('booking.patient_timezone'));
-        $cookieTimezone = ValidTimezone::normalize($request->cookie('user_timezone'));
         $sessionCountry = session('booking.patient_country');
         $patientCountry = $countryTimezoneService->isSupportedCountry($sessionCountry)
             ? strtoupper((string) $sessionCountry)
-            : $countryTimezoneService->countryForTimezone($sessionTimezone ?? $cookieTimezone);
-        $patientCountry ??= 'AR';
-        $defaultTimezone = ValidTimezone::normalize($countryTimezoneService->timezoneForCountry($patientCountry)) ?? 'UTC';
-        $minDate = now($sessionTimezone ?? $cookieTimezone ?? $defaultTimezone)->toDateString();
+            : $countryTimezoneService->countryForTimezone($sessionTimezone);
+        $defaultTimezone = $patientCountry
+            ? ValidTimezone::normalize($countryTimezoneService->timezoneForCountry($patientCountry)) ?? 'UTC'
+            : 'UTC';
+        $minDate = now($sessionTimezone ?? $defaultTimezone)->toDateString();
         $selectedDate = (string) ($request->old('date') ?: session('booking.date', $minDate));
-        $timezoneOptions = $countryTimezoneService->timezoneOptionsForCountryOnDate($patientCountry, $selectedDate);
-        $patientTimezone = $sessionTimezone ?? $cookieTimezone;
+        $timezoneOptions = $patientCountry
+            ? $countryTimezoneService->timezoneOptionsForCountryOnDate($patientCountry, $selectedDate)
+            : [];
+        $patientTimezone = $sessionTimezone;
 
-        if ($patientTimezone === null || ! array_key_exists($patientTimezone, $timezoneOptions)) {
+        if ($patientTimezone !== null && ! array_key_exists($patientTimezone, $timezoneOptions)) {
             $patientTimezone = array_key_first($timezoneOptions) ?? $defaultTimezone;
         }
 
-        $timezoneWasConfirmed = $countryTimezoneService->isSupportedCountry($sessionCountry);
-        $minDate = now($patientTimezone)->toDateString();
+        $minDate = now($patientTimezone ?? $defaultTimezone)->toDateString();
 
         return view('book.date', compact(
             'countries',
@@ -173,9 +117,7 @@ final class BookingController extends Controller implements HasMiddleware
             'patientCountry',
             'patientTimezone',
             'selectedDate',
-            'timezoneCountries',
             'timezoneOptions',
-            'timezoneWasConfirmed',
         ));
     }
 
@@ -184,21 +126,10 @@ final class BookingController extends Controller implements HasMiddleware
      */
     public function storeDate(Request $request, CountryTimezoneService $countryTimezoneService): RedirectResponse
     {
-        $therapist = $this->activeTherapistFromSession();
+        $context = $this->bookingContext($request);
 
-        if (! $therapist || ! session('booking.session_type_id')) {
-            return Redirect::route('book.index');
-        }
-
-        $sessionTypeExists = SessionType::where('therapist_id', $therapist->id)
-            ->where('is_active', true)
-            ->whereKey((int) session('booking.session_type_id'))
-            ->exists();
-
-        if (! $sessionTypeExists) {
-            session()->forget(['booking.session_type_id', 'booking.date', 'booking.starts_at_utc']);
-
-            return Redirect::route('book.session');
+        if ($context instanceof RedirectResponse) {
+            return $context;
         }
 
         $countries = $countryTimezoneService->countries();
@@ -244,24 +175,24 @@ final class BookingController extends Controller implements HasMiddleware
     /**
      * Paso 4: Selección de Hora (Alpine + API)
      */
-    public function time(CountryTimezoneService $countryTimezoneService): View|RedirectResponse
+    public function time(Request $request, CountryTimezoneService $countryTimezoneService): View|RedirectResponse
     {
-        $therapist = $this->activeTherapistFromSession();
+        $context = $this->bookingContext($request);
 
+        if ($context instanceof RedirectResponse) {
+            return $context;
+        }
+
+        /** @var Therapist $therapist */
+        $therapist = $context['therapist'];
         $patientTimezone = ValidTimezone::normalize(session('booking.patient_timezone'));
 
         if (
-            ! $therapist ||
-            ! session('booking.session_type_id') ||
             ! session('booking.date') ||
             $patientTimezone === null
         ) {
             return Redirect::route('book.index');
         }
-
-        $sessionType = SessionType::where('therapist_id', $therapist->id)
-            ->where('is_active', true)
-            ->findOrFail((int) session('booking.session_type_id'));
 
         $date = session('booking.date');
         $patientCountry = $countryTimezoneService->isSupportedCountry(session('booking.patient_country'))
@@ -271,9 +202,7 @@ final class BookingController extends Controller implements HasMiddleware
         $patientTimezoneLabel = $timezoneOptions[$patientTimezone]['label'] ?? null;
 
         return view('book.time', [
-            'sessionType' => $sessionType,
             'date' => $date,
-            'therapistId' => $therapist->id,
             'patientCountry' => $patientCountry,
             'patientTimezoneLabel' => count($timezoneOptions) > 1 ? $patientTimezoneLabel : null,
             'patientTimezone' => $patientTimezone,
@@ -285,26 +214,17 @@ final class BookingController extends Controller implements HasMiddleware
      */
     public function storeTime(Request $request): RedirectResponse
     {
-        $therapist = $this->activeTherapistFromSession();
+        $context = $this->bookingContext($request);
+
+        if ($context instanceof RedirectResponse) {
+            return $context;
+        }
 
         if (
-            ! $therapist ||
-            ! session('booking.session_type_id') ||
             ! session('booking.date') ||
             ! ValidTimezone::isValid(session('booking.patient_timezone'))
         ) {
             return Redirect::route('book.index');
-        }
-
-        $sessionTypeExists = SessionType::where('therapist_id', $therapist->id)
-            ->where('is_active', true)
-            ->whereKey((int) session('booking.session_type_id'))
-            ->exists();
-
-        if (! $sessionTypeExists) {
-            session()->forget(['booking.session_type_id', 'booking.date', 'booking.starts_at_utc']);
-
-            return Redirect::route('book.session');
         }
 
         $request->validate([
@@ -320,24 +240,27 @@ final class BookingController extends Controller implements HasMiddleware
      * Paso 5: Confirmación y Datos del Paciente
      */
     public function confirm(
+        Request $request,
         TimezoneService $timezoneService,
         CountryTimezoneService $countryTimezoneService,
     ): View|RedirectResponse {
-        $therapist = $this->activeTherapistFromSession();
-        $sessionTypeId = session('booking.session_type_id');
+        $context = $this->bookingContext($request);
+
+        if ($context instanceof RedirectResponse) {
+            return $context;
+        }
+
+        /** @var Therapist $therapist */
+        $therapist = $context['therapist'];
         $dateLocal = session('booking.date');
         $startsAtUtc = session('booking.starts_at_utc');
         $patientTimezone = ValidTimezone::normalize(session('booking.patient_timezone'));
 
-        if (! $therapist || ! $sessionTypeId || ! $dateLocal || ! $startsAtUtc || $patientTimezone === null) {
+        if (! $dateLocal || ! $startsAtUtc || $patientTimezone === null) {
             return Redirect::route('book.index');
         }
 
         $therapist->load('user');
-
-        $sessionType = SessionType::where('therapist_id', $therapist->id)
-            ->where('is_active', true)
-            ->findOrFail((int) $sessionTypeId);
 
         $localTime = $timezoneService->formatForDisplay($startsAtUtc, 'H:i', $patientTimezone);
         $patientCountry = $countryTimezoneService->isSupportedCountry(session('booking.patient_country'))
@@ -349,7 +272,6 @@ final class BookingController extends Controller implements HasMiddleware
 
         return view('book.confirm', compact(
             'therapist',
-            'sessionType',
             'dateLocal',
             'localTime',
             'patientCountry',
@@ -368,11 +290,18 @@ final class BookingController extends Controller implements HasMiddleware
         PhoneNumberNormalizer $phoneNumberNormalizer,
         WhatsAppDeliveryDispatcher $whatsAppDeliveryDispatcher,
     ): RedirectResponse {
-        $therapist = $this->activeTherapistFromSession();
+        $context = $this->bookingContext($request);
+
+        if ($context instanceof RedirectResponse) {
+            return $context;
+        }
+
+        /** @var Therapist $therapist */
+        $therapist = $context['therapist'];
+        /** @var SessionType $sessionType */
+        $sessionType = $context['sessionType'];
 
         if (
-            ! $therapist ||
-            ! session('booking.session_type_id') ||
             ! session('booking.date') ||
             ! session('booking.starts_at_utc') ||
             ! ValidTimezone::isValid(session('booking.patient_timezone'))
@@ -385,8 +314,6 @@ final class BookingController extends Controller implements HasMiddleware
             'patient_email' => ['required', 'email', 'max:255'],
             'patient_phone' => ['nullable', 'string', 'max:32'],
             'accepted_whatsapp_communications' => ['sometimes', 'accepted'],
-            'accepted_terms' => ['accepted'],
-            'accepted_email_communications' => ['accepted'],
         ]);
 
         $patientTimezone = ValidTimezone::normalize(session('booking.patient_timezone'));
@@ -407,10 +334,6 @@ final class BookingController extends Controller implements HasMiddleware
                 'patient_phone' => __('app.whatsapp.validation_phone'),
             ]);
         }
-
-        $sessionType = SessionType::where('therapist_id', $therapist->id)
-            ->where('is_active', true)
-            ->findOrFail((int) session('booking.session_type_id'));
 
         $selectedSlot = $availableSlotResolver->resolve(
             $therapist,
@@ -496,17 +419,20 @@ final class BookingController extends Controller implements HasMiddleware
     public function getSlotsApi(Request $request, SlotGenerationService $slotGenerationService): JsonResponse
     {
         $validated = $request->validate([
-            'therapist_id' => [
-                'required',
-                'integer',
-                Rule::exists('therapists', 'id')
-                    ->where('is_active', true)
-                    ->where('is_approved', true),
-            ],
             'date' => ['required', 'date_format:Y-m-d'],
-            'duration' => ['required', 'integer'],
             'timezone' => ['required', 'string', new ValidTimezone],
         ]);
+
+        $context = $this->bookingContext($request);
+
+        if ($context instanceof RedirectResponse) {
+            abort(403);
+        }
+
+        /** @var Therapist $therapist */
+        $therapist = $context['therapist'];
+        /** @var SessionType $sessionType */
+        $sessionType = $context['sessionType'];
 
         $timezone = ValidTimezone::normalize($validated['timezone']);
 
@@ -516,31 +442,67 @@ final class BookingController extends Controller implements HasMiddleware
             ]);
         }
 
-        $therapist = Therapist::query()
-            ->publiclyBookable()
-            ->findOrFail((int) $request->therapist_id);
-
         $slots = $slotGenerationService->generate(
             $therapist,
             $validated['date'],
-            (int) $validated['duration'],
+            (int) $sessionType->duration_minutes,
             $timezone,
         );
 
         return response()->json($slots);
     }
 
-    private function activeTherapistFromSession(): ?Therapist
+    /**
+     * @return array{therapist: Therapist, sessionType: SessionType}|RedirectResponse
+     */
+    private function bookingContext(Request $request): array|RedirectResponse
     {
-        $therapistId = session('booking.therapist_id');
+        /** @var User|null $user */
+        $user = $request->user();
 
-        if (! $therapistId) {
-            return null;
+        if ($user === null) {
+            return Redirect::route('home');
         }
 
-        return Therapist::query()
+        if ($user->therapist === null) {
+            abort(403);
+        }
+
+        $therapist = Therapist::query()
             ->with('user')
             ->publiclyBookable()
-            ->find((int) $therapistId);
+            ->whereKey($user->therapist->id)
+            ->first();
+
+        if (! $therapist) {
+            return Redirect::route('dashboard')
+                ->with('warning', __('app.booking.unavailable_therapist'));
+        }
+
+        $sessionType = $this->defaultSessionType($therapist);
+
+        if (! $sessionType) {
+            return Redirect::route('dashboard')
+                ->with('warning', __('app.booking.missing_internal_price'));
+        }
+
+        session()->put([
+            'booking.therapist_id' => $therapist->id,
+            'booking.session_type_id' => $sessionType->id,
+        ]);
+
+        return [
+            'therapist' => $therapist,
+            'sessionType' => $sessionType,
+        ];
+    }
+
+    private function defaultSessionType(Therapist $therapist): ?SessionType
+    {
+        return SessionType::query()
+            ->where('therapist_id', $therapist->id)
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->first();
     }
 }

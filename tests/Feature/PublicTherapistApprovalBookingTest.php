@@ -34,31 +34,11 @@ final class PublicTherapistApprovalBookingTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_public_booking_excludes_unapproved_therapists(): void
+    public function test_guest_is_redirected_from_booking_to_home(): void
     {
-        $approvedUser = User::factory()->create([
-            'name' => 'Terapeuta Aprobada',
-            'role' => Role::THERAPIST,
-        ]);
-        $pendingUser = User::factory()->create([
-            'name' => 'Terapeuta Pendiente',
-            'role' => Role::THERAPIST,
-        ]);
-
-        Therapist::factory()->for($approvedUser)->create([
-            'is_active' => true,
-            'is_approved' => true,
-        ]);
-        Therapist::factory()->for($pendingUser)->create([
-            'is_active' => true,
-            'is_approved' => false,
-        ]);
-
         $this
             ->get(route('book.index'))
-            ->assertOk()
-            ->assertSeeText('Terapeuta Aprobada')
-            ->assertDontSeeText('Terapeuta Pendiente');
+            ->assertRedirect(route('home'));
     }
 
     public function test_public_booking_cannot_create_appointment_after_approval_is_revoked(): void
@@ -72,6 +52,7 @@ final class PublicTherapistApprovalBookingTest extends TestCase
         ])->save();
 
         $response = $this
+            ->actingAs($therapist->user)
             ->withSession([
                 'booking.therapist_id' => $therapist->id,
                 'booking.session_type_id' => $sessionType->id,
@@ -82,11 +63,9 @@ final class PublicTherapistApprovalBookingTest extends TestCase
             ->post(route('book.store'), [
                 'patient_name' => 'Paciente Pendiente',
                 'patient_email' => 'pending@example.test',
-                'accepted_terms' => '1',
-                'accepted_email_communications' => '1',
             ]);
 
-        $response->assertRedirect(route('book.index'));
+        $response->assertRedirect(route('dashboard'));
 
         $this->assertDatabaseCount('appointments', 0);
         Bus::assertNotDispatched(SendBookingConfirmedEmails::class);

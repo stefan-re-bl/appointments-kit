@@ -44,18 +44,20 @@ final class BookingRateLimitTest extends TestCase
         ]);
 
         $query = [
-            'therapist_id' => $therapist->id,
             'date' => $date->toDateString(),
-            'duration' => 30,
             'timezone' => 'UTC',
         ];
 
         for ($i = 0; $i < 30; $i++) {
-            $this->get(route('api.slots.index', $query))
+            $this
+                ->actingAs($therapist->user)
+                ->get(route('api.slots.index', $query))
                 ->assertStatus(200);
         }
 
-        $this->get(route('api.slots.index', $query))
+        $this
+            ->actingAs($therapist->user)
+            ->get(route('api.slots.index', $query))
             ->assertStatus(429);
     }
 }

@@ -62,6 +62,62 @@
         <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="mb-6">
                 <h2 class="text-base font-semibold text-umbralia-title">
+                    {{ __('app.admin.therapists.internal_price_section') }}
+                </h2>
+                <p class="mt-1 text-sm text-slate-500">
+                    {{ __('app.admin.therapists.internal_price_section_help') }}
+                </p>
+            </div>
+
+            <div class="grid gap-5 sm:grid-cols-2">
+                <div>
+                    <label for="session_price" class="mb-1 block text-sm font-medium text-slate-700">
+                        {{ __('app.admin.therapists.session_price') }}
+                    </label>
+                    <input
+                        id="session_price"
+                        name="session_price"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value="{{ old('session_price', $defaultSessionType?->price ?? '0.00') }}"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                        required
+                    >
+                    @error('session_price')
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="session_currency" class="mb-1 block text-sm font-medium text-slate-700">
+                        {{ __('app.admin.therapists.session_currency') }}
+                    </label>
+                    <select
+                        id="session_currency"
+                        name="session_currency"
+                        class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                        required
+                    >
+                        @foreach (__('app.session_type_management.currency_options') as $currency => $label)
+                            <option
+                                value="{{ $currency }}"
+                                @selected(old('session_currency', $defaultSessionType?->currency ?? 'ARS') === $currency)
+                            >
+                                {{ $label }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('session_currency')
+                        <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+        </section>
+
+        <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="mb-6">
+                <h2 class="text-base font-semibold text-umbralia-title">
                     {{ __('app.admin.therapists.profile_section') }}
                 </h2>
                 <p class="mt-1 text-sm text-slate-500">

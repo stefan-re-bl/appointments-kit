@@ -2,9 +2,9 @@
 
 @section('content')
 <div class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-    <a href="{{ route('book.session') }}" class="mb-6 inline-flex items-center text-sm font-semibold text-umbralia-title hover:text-umbralia-title">&larr; {{ __('app.back') }}</a>
+    <a href="{{ route('dashboard') }}" class="mb-6 inline-flex items-center text-sm font-semibold text-umbralia-title hover:text-umbralia-title">&larr; {{ __('app.back') }}</a>
 
-    @include('book.partials.stepper', ['currentStep' => 3])
+    @include('book.partials.stepper', ['currentStep' => 1])
 
     <div class="my-8 h-1 rounded-full bg-umbralia-accent"></div>
     
@@ -14,14 +14,10 @@
         action="{{ route('book.store.date') }}"
         method="POST"
         x-data="{
-            detected: false,
-            detectionFailed: false,
             countryTimezones: @js($countryTimezones),
-            selectedCountry: @js(old('patient_country', $patientCountry)),
+            selectedCountry: @js(old('patient_country', $patientCountry ?? '')),
             selectedDate: @js(old('date', $selectedDate)),
-            selectedTimezone: @js(old('patient_timezone', $patientTimezone)),
-            timezoneCountries: @js($timezoneCountries),
-            timezoneConfirmed: @js($timezoneWasConfirmed),
+            selectedTimezone: @js(old('patient_timezone', $patientTimezone ?? '')),
             effectiveTimezoneOptions() {
                 const groups = {};
 
@@ -61,33 +57,7 @@
                     return;
                 }
 
-                this.selectedTimezone = options[0]?.timezone ?? '';
-            },
-            detectTimezone() {
-                if (this.timezoneConfirmed) {
-                    return;
-                }
-
-                try {
-                    const detectedTimezone = window.Intl
-                        ? Intl.DateTimeFormat().resolvedOptions().timeZone
-                        : null;
-                    const detectedCountry = detectedTimezone
-                        ? this.timezoneCountries[detectedTimezone]?.country
-                        : null;
-
-                    if (! detectedCountry) {
-                        this.detectionFailed = true;
-                        return;
-                    }
-
-                    this.selectedCountry = detectedCountry;
-                    this.selectedTimezone = detectedTimezone;
-                    this.syncTimezone();
-                    this.detected = true;
-                } catch (error) {
-                    this.detectionFailed = true;
-                }
+                this.selectedTimezone = '';
             },
             offsetForTimezone(timezone) {
                 const date = this.selectedDate || @js($minDate);
@@ -134,7 +104,7 @@
                 return samples.join(', ');
             },
         }"
-        x-init="detectTimezone(); syncTimezone()"
+        x-init="syncTimezone()"
     >
         @csrf
         <div class="space-y-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
@@ -151,6 +121,7 @@
                     required
                     class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-umbralia-accent focus:ring-2 focus:ring-umbralia-accent/30 @error('patient_country') border-rose-300 @enderror"
                 >
+                    <option value="">{{ __('booking_timezone.country_placeholder') }}</option>
                     @foreach ($countries as $countryCode => $timezone)
                         <option value="{{ $countryCode }}" @selected(old('patient_country', $patientCountry) === $countryCode)>
                             {{ __('booking_timezone.countries.'.$countryCode) }}
@@ -158,10 +129,7 @@
                     @endforeach
                 </select>
 
-                <p class="mt-2 text-sm text-slate-600">{{ __('booking_timezone.country_help') }}</p>
-                <p x-show="detected" x-cloak class="mt-2 text-sm text-emerald-800">
-                    {{ __('booking_timezone.country_detected') }}
-                </p>
+                <p class="mt-2 text-sm text-slate-600">{{ __('booking_timezone.patient_country_help') }}</p>
 
                 @error('patient_country')
                     <p class="mt-2 text-sm text-rose-700">{{ $message }}</p>

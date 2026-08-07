@@ -60,22 +60,6 @@
                 </a>
 
                 <a
-                    href="{{ route('session-types.index') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('session-types.*') ? 'bg-umbralia-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-umbralia-title/90 hover:text-white' }} transition-colors duration-200"
-                >
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        ></path>
-                    </svg>
-
-                    <span class="mx-3">{{ __('app.session_types') }}</span>
-                </a>
-
-                <a
                     href="{{ route('availabilities.index') }}"
                     class="flex items-center px-6 py-3 {{ request()->routeIs('availabilities.*') ? 'bg-umbralia-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-umbralia-title/90 hover:text-white' }} transition-colors duration-200"
                 >

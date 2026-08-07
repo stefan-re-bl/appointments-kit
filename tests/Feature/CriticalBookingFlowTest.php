@@ -78,11 +78,12 @@ final class CriticalBookingFlowTest extends TestCase
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $response = $this
+            ->actingAs($therapist->user)
             ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00'))
             ->post(route('book.store'), [
                 'patient_name' => 'Paciente Crítico',
                 'patient_email' => 'patient@example.test',
-            ] + $this->legalAcceptance());
+            ]);
 
         $response->assertRedirect(route('book.success'));
 
@@ -117,6 +118,7 @@ final class CriticalBookingFlowTest extends TestCase
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $this
+            ->actingAs($therapist->user)
             ->withSession([
                 'booking.therapist_id' => $therapist->id,
                 'booking.session_type_id' => $sessionType->id,
@@ -130,13 +132,14 @@ final class CriticalBookingFlowTest extends TestCase
             ->assertSessionHas('booking.patient_timezone', 'America/Argentina/Buenos_Aires');
 
         $response = $this
+            ->actingAs($therapist->user)
             ->withSession([
                 'booking.starts_at_utc' => '2026-07-06T12:00:00+00:00',
             ])
             ->post(route('book.store'), [
                 'patient_name' => 'Paciente sin cookie',
                 'patient_email' => 'no-cookie@example.test',
-            ] + $this->legalAcceptance());
+            ]);
 
         $response->assertRedirect(route('book.success'));
 
@@ -153,13 +156,14 @@ final class CriticalBookingFlowTest extends TestCase
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $this
+            ->actingAs($therapist->user)
             ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00') + [
                 'locale' => 'es',
             ])
             ->post(route('book.store'), [
                 'patient_name' => 'Paciente Español',
                 'patient_email' => 'spanish@example.test',
-            ] + $this->legalAcceptance())
+            ])
             ->assertRedirect(route('book.success'));
 
         $this->assertDatabaseHas('appointments', [
@@ -176,13 +180,14 @@ final class CriticalBookingFlowTest extends TestCase
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $this
+            ->actingAs($therapist->user)
             ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00') + [
                 'locale' => 'en',
             ])
             ->post(route('book.store'), [
                 'patient_name' => 'English Patient',
                 'patient_email' => 'english@example.test',
-            ] + $this->legalAcceptance())
+            ])
             ->assertRedirect(route('book.success'));
 
         $this->assertDatabaseHas('appointments', [
@@ -192,11 +197,12 @@ final class CriticalBookingFlowTest extends TestCase
         ]);
     }
 
-    public function test_date_step_exposes_editable_country_selector_and_detection_fallback(): void
+    public function test_date_step_requires_explicit_patient_country_selection(): void
     {
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $this
+            ->actingAs($therapist->user)
             ->withSession([
                 'booking.therapist_id' => $therapist->id,
                 'booking.session_type_id' => $sessionType->id,
@@ -205,10 +211,13 @@ final class CriticalBookingFlowTest extends TestCase
             ->assertOk()
             ->assertSee('name="patient_country"', false)
             ->assertSee('name="patient_timezone"', false)
+            ->assertSeeText(__('booking_timezone.country_placeholder'))
             ->assertSeeText(__('booking_timezone.countries.AR'))
             ->assertSeeText(__('booking_timezone.region_label'))
             ->assertSeeText(__('booking_timezone.region_placeholder'))
-            ->assertSeeText(__('booking_timezone.country_help'))
+            ->assertSeeText(__('booking_timezone.patient_country_help'))
+            ->assertDontSee('selectedCountry: \'AR\'', false)
+            ->assertDontSeeText(__('booking_timezone.country_detected'))
             ->assertDontSeeText(__('booking_timezone.country_detection_failed'));
     }
 
@@ -217,6 +226,7 @@ final class CriticalBookingFlowTest extends TestCase
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $this
+            ->actingAs($therapist->user)
             ->withSession([
                 'booking.therapist_id' => $therapist->id,
                 'booking.session_type_id' => $sessionType->id,
@@ -235,6 +245,7 @@ final class CriticalBookingFlowTest extends TestCase
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $this
+            ->actingAs($therapist->user)
             ->withSession([
                 'booking.therapist_id' => $therapist->id,
                 'booking.session_type_id' => $sessionType->id,
@@ -254,6 +265,7 @@ final class CriticalBookingFlowTest extends TestCase
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $this
+            ->actingAs($therapist->user)
             ->from(route('book.date'))
             ->withSession([
                 'booking.therapist_id' => $therapist->id,
@@ -273,6 +285,7 @@ final class CriticalBookingFlowTest extends TestCase
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $this
+            ->actingAs($therapist->user)
             ->from(route('book.date'))
             ->withSession([
                 'booking.therapist_id' => $therapist->id,
@@ -294,12 +307,13 @@ final class CriticalBookingFlowTest extends TestCase
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $response = $this
+            ->actingAs($therapist->user)
             ->from(route('book.confirm'))
             ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T18:00:00+00:00'))
             ->post(route('book.store'), [
                 'patient_name' => 'Paciente Crítico',
                 'patient_email' => 'patient@example.test',
-            ] + $this->legalAcceptance());
+            ]);
 
         $response->assertRedirect(route('book.confirm'));
         $response->assertSessionHasErrors('general');
@@ -308,52 +322,30 @@ final class CriticalBookingFlowTest extends TestCase
         Bus::assertNotDispatched(SendBookingConfirmedEmails::class);
     }
 
-    public function test_public_booking_requires_terms_and_email_communication_acceptance(): void
+    public function test_internal_booking_requires_patient_name_and_email(): void
     {
         Bus::fake();
 
         [$therapist, $sessionType] = $this->makeBookableTherapist();
 
         $response = $this
+            ->actingAs($therapist->user)
             ->from(route('book.confirm'))
             ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00'))
-            ->post(route('book.store'), [
-                'patient_name' => 'Paciente Legal',
-                'patient_email' => 'legal@example.test',
-            ]);
+            ->post(route('book.store'), []);
 
         $response->assertRedirect(route('book.confirm'));
-        $response->assertSessionHasErrors(['accepted_terms', 'accepted_email_communications']);
+        $response->assertSessionHasErrors(['patient_name', 'patient_email']);
 
         $this->assertDatabaseCount('appointments', 0);
         Bus::assertNotDispatched(SendBookingConfirmedEmails::class);
     }
 
-    public function test_public_booking_excludes_unapproved_therapists(): void
+    public function test_guest_is_redirected_from_booking_to_home(): void
     {
-        $approvedUser = User::factory()->create([
-            'name' => 'Terapeuta Aprobada',
-            'role' => Role::THERAPIST,
-        ]);
-        $pendingUser = User::factory()->create([
-            'name' => 'Terapeuta Pendiente',
-            'role' => Role::THERAPIST,
-        ]);
-
-        Therapist::factory()->for($approvedUser)->create([
-            'is_active' => true,
-            'is_approved' => true,
-        ]);
-        Therapist::factory()->for($pendingUser)->create([
-            'is_active' => true,
-            'is_approved' => false,
-        ]);
-
         $this
             ->get(route('book.index'))
-            ->assertOk()
-            ->assertSeeText('Terapeuta Aprobada')
-            ->assertDontSeeText('Terapeuta Pendiente');
+            ->assertRedirect(route('home'));
     }
 
     public function test_public_booking_cannot_create_appointment_after_approval_is_revoked(): void
@@ -367,13 +359,14 @@ final class CriticalBookingFlowTest extends TestCase
         ])->save();
 
         $response = $this
+            ->actingAs($therapist->user)
             ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00'))
             ->post(route('book.store'), [
                 'patient_name' => 'Paciente Pendiente',
                 'patient_email' => 'pending@example.test',
-            ] + $this->legalAcceptance());
+            ]);
 
-        $response->assertRedirect(route('book.index'));
+        $response->assertRedirect(route('dashboard'));
 
         $this->assertDatabaseCount('appointments', 0);
         Bus::assertNotDispatched(SendBookingConfirmedEmails::class);
@@ -476,17 +469,6 @@ final class CriticalBookingFlowTest extends TestCase
             'booking.date' => '2026-07-06',
             'booking.starts_at_utc' => $startsAtUtc,
             'booking.patient_timezone' => 'America/Argentina/Buenos_Aires',
-        ];
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function legalAcceptance(): array
-    {
-        return [
-            'accepted_terms' => '1',
-            'accepted_email_communications' => '1',
         ];
     }
 }

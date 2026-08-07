@@ -1,7 +1,5 @@
 @php
     $steps = [
-        __('app.select_therapist'),
-        __('app.select_session_type'),
         __('app.select_date'),
         __('app.select_time'),
         __('app.confirm_booking'),
@@ -11,7 +9,7 @@
 @endphp
 
 <nav aria-label="{{ __('app.booking_title') }}" class="mb-8">
-    <ol class="grid grid-cols-5 gap-2">
+    <ol class="grid grid-cols-4 gap-2">
         @foreach ($steps as $index => $label)
             @php
                 $stepNumber = $index + 1;

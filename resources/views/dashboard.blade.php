@@ -17,7 +17,6 @@
         $checklist = $therapist ? [
             'profile' => filled($therapist->bio),
             'meet_link' => filled($therapist->google_meet_link),
-            'session_type' => (int) $therapist->active_session_types_count > 0,
             'availability' => (int) $therapist->active_availabilities_count > 0,
             'approval' => $therapist->is_approved,
         ] : [];
@@ -25,6 +24,12 @@
 
     <div class="py-10">
         <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
+            @if (session('warning'))
+                <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
             @if (! $therapist)
                 <section class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
                     <p class="text-sm text-gray-700">{{ __('app.dashboard_onboarding.no_therapist') }}</p>
@@ -52,6 +57,15 @@
                         ])>
                             {{ __('app.dashboard_onboarding.status.' . $approvalKey) }}
                         </span>
+                    </div>
+
+                    <div class="mt-6">
+                        <a
+                            href="{{ route('book.index') }}"
+                            class="inline-flex items-center justify-center rounded-lg bg-umbralia-title px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2"
+                        >
+                            {{ __('app.dashboard_onboarding.add_appointment') }}
+                        </a>
                     </div>
 
                     @if (! $therapist->is_approved)
@@ -107,12 +121,9 @@
                         {{ __('app.dashboard_onboarding.quick_links_title') }}
                     </h3>
 
-                    <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         <a href="{{ route('profile.edit') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-umbralia-accent hover:bg-umbralia-accent-soft">
                             {{ __('app.dashboard_onboarding.quick_links.profile') }}
-                        </a>
-                        <a href="{{ route('session-types.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-umbralia-accent hover:bg-umbralia-accent-soft">
-                            {{ __('app.dashboard_onboarding.quick_links.session_types') }}
                         </a>
                         <a href="{{ route('availabilities.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-umbralia-accent hover:bg-umbralia-accent-soft">
                             {{ __('app.dashboard_onboarding.quick_links.availability') }}

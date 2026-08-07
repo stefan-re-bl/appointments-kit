@@ -5,13 +5,11 @@
     slots: [], 
     loading: true, 
     selectedStart: null,
-    therapistId: '{{ $therapistId }}',
     bookingDate: '{{ $date }}',
-    duration: '{{ $sessionType->duration_minutes }}',
     patientTimezone: @js($patientTimezone),
     
     fetchSlots() {
-        const url = `/api/slots?therapist_id=${this.therapistId}&date=${this.bookingDate}&duration=${this.duration}&timezone=${encodeURIComponent(this.patientTimezone)}`;
+        const url = `/api/slots?date=${this.bookingDate}&timezone=${encodeURIComponent(this.patientTimezone)}`;
         
         fetch(url)
             .then(response => response.json())
@@ -27,7 +25,7 @@
 }" x-init="fetchSlots()" class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
     <a href="{{ route('book.date') }}" class="mb-6 inline-flex items-center text-sm font-semibold text-umbralia-title hover:text-umbralia-title">&larr; {{ __('app.change_date') }}</a>
 
-    @include('book.partials.stepper', ['currentStep' => 4])
+    @include('book.partials.stepper', ['currentStep' => 2])
 
     <div class="my-8 h-1 rounded-full bg-umbralia-accent"></div>
     
