@@ -93,7 +93,7 @@ return [
         'whatsapp_phone_help' => 'Optional. Used only for operational confirmations and reminders, and not shown on your public profile.',
         'whatsapp_notifications_enabled' => 'Receive operational WhatsApp notifications.',
         'whatsapp_confirmations_enabled' => 'Receive new appointment confirmations.',
-        'whatsapp_reminders_enabled' => 'Receive reminders one hour before.',
+        'whatsapp_reminders_enabled' => 'Receive reminders 24 hours before.',
         'preferred_locale' => 'Preferred notification language',
         'preferred_locale_help' => 'Applies to confirmations and reminders sent in the background.',
         'timezone_country' => 'Country of residence',
@@ -224,7 +224,7 @@ return [
         'patient_phone' => 'International WhatsApp phone',
         'phone_placeholder' => '+14155552671',
         'patient_phone_help' => 'Optional. Enter it with country code if you want to receive operational WhatsApp messages.',
-        'patient_opt_in' => 'I agree to receive this appointment confirmation and a reminder one hour before by WhatsApp. I can book without accepting this option.',
+        'patient_opt_in' => 'I agree to receive this appointment confirmation and a reminder 24 hours before by WhatsApp. I can book without accepting this option.',
         'validation_phone' => 'Enter a valid phone number in international format.',
     ],
 

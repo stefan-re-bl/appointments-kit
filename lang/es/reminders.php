@@ -6,7 +6,7 @@ return [
     'appointment' => [
         'subject' => 'Recordatorio de tu sesión',
         'greeting' => 'Hola :name,',
-        'intro' => 'Te recordamos que tu sesión comienza en aproximadamente 1 hora.',
+        'intro' => 'Te recordamos que tu sesión comienza en aproximadamente 24 horas.',
         'therapist' => 'Terapeuta',
         'session_type' => 'Tipo de sesión',
         'starts_at' => 'Inicio',

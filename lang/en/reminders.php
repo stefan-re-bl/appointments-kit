@@ -6,7 +6,7 @@ return [
     'appointment' => [
         'subject' => 'Your session reminder',
         'greeting' => 'Hi :name,',
-        'intro' => 'This is a reminder that your session starts in approximately 1 hour.',
+        'intro' => 'This is a reminder that your session starts in approximately 24 hours.',
         'therapist' => 'Therapist',
         'session_type' => 'Session type',
         'starts_at' => 'Starts at',

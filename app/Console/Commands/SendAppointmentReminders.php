@@ -16,12 +16,12 @@ final class SendAppointmentReminders extends Command
 {
     protected $signature = 'appointments:send-reminders {--dry-run : Count due reminders without sending emails}';
 
-    protected $description = 'Queue appointment reminder emails one hour before confirmed sessions.';
+    protected $description = 'Queue appointment reminder emails 24 hours before confirmed sessions.';
 
     public function handle(WhatsAppDeliveryDispatcher $whatsAppDeliveryDispatcher): int
     {
         $now = CarbonImmutable::now('UTC');
-        $dueUntil = $now->addHour();
+        $dueUntil = $now->addDay();
         $staleQueuedAt = $now->subMinutes(15);
 
         $appointments = Appointment::query()

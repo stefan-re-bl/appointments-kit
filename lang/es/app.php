@@ -93,7 +93,7 @@ return [
         'whatsapp_phone_help' => 'Opcional. Se usa solo para confirmaciones y recordatorios operativos, y no se muestra en tu perfil público.',
         'whatsapp_notifications_enabled' => 'Recibir notificaciones operativas por WhatsApp.',
         'whatsapp_confirmations_enabled' => 'Recibir confirmaciones de nuevos turnos.',
-        'whatsapp_reminders_enabled' => 'Recibir recordatorios una hora antes.',
+        'whatsapp_reminders_enabled' => 'Recibir recordatorios 24 horas antes.',
         'preferred_locale' => 'Idioma preferido para notificaciones',
         'preferred_locale_help' => 'Se aplica a confirmaciones y recordatorios enviados en segundo plano.',
         'timezone_country' => 'País de residencia',
@@ -223,7 +223,7 @@ return [
         'patient_phone' => 'Teléfono internacional para WhatsApp',
         'phone_placeholder' => '+5491123456789',
         'patient_phone_help' => 'Opcional. Ingresalo con código de país si querés recibir mensajes operativos por WhatsApp.',
-        'patient_opt_in' => 'Acepto recibir por WhatsApp la confirmación de esta cita y un recordatorio una hora antes. Puedo reservar sin aceptar esta opción.',
+        'patient_opt_in' => 'Acepto recibir por WhatsApp la confirmación de esta cita y un recordatorio 24 horas antes. Puedo reservar sin aceptar esta opción.',
         'validation_phone' => 'Ingresá un teléfono válido en formato internacional.',
     ],
 

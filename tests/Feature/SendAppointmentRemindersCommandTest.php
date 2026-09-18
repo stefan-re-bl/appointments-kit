@@ -42,7 +42,7 @@ final class SendAppointmentRemindersCommandTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_it_queues_reminder_for_confirmed_appointment_starting_within_next_hour(): void
+    public function test_it_queues_reminder_for_confirmed_appointment_starting_within_next_24_hours(): void
     {
         Mail::fake();
         Queue::fake();
@@ -105,14 +105,14 @@ final class SendAppointmentRemindersCommandTest extends TestCase
         $this->assertNull($appointment->refresh()->reminder_sent_at);
     }
 
-    public function test_it_does_not_send_reminder_for_appointment_outside_one_hour_window(): void
+    public function test_it_does_not_send_reminder_for_appointment_outside_24_hour_window(): void
     {
         Mail::fake();
         Queue::fake();
 
         $appointment = $this->makeAppointment([
-            'starts_at' => $this->now->addMinutes(61)->toDateTimeString(),
-            'ends_at' => $this->now->addMinutes(121)->toDateTimeString(),
+            'starts_at' => $this->now->addDay()->addMinute()->toDateTimeString(),
+            'ends_at' => $this->now->addDay()->addMinutes(61)->toDateTimeString(),
         ]);
 
         $this->artisan('appointments:send-reminders')
@@ -149,8 +149,8 @@ final class SendAppointmentRemindersCommandTest extends TestCase
 
         try {
             $appointment = $this->makeAppointment([
-                'starts_at' => $this->now->addMinutes(59)->toDateTimeString(),
-                'ends_at' => $this->now->addMinutes(119)->toDateTimeString(),
+                'starts_at' => $this->now->addDay()->subMinute()->toDateTimeString(),
+                'ends_at' => $this->now->addDay()->addMinutes(59)->toDateTimeString(),
             ]);
 
             $this->artisan('appointments:send-reminders')
@@ -245,8 +245,8 @@ final class SendAppointmentRemindersCommandTest extends TestCase
                 'patient_name' => 'Patient Test',
                 'patient_email' => 'patient@example.test',
                 'patient_timezone' => 'America/Argentina/Buenos_Aires',
-                'starts_at' => $this->now->addMinutes(59)->toDateTimeString(),
-                'ends_at' => $this->now->addMinutes(119)->toDateTimeString(),
+                'starts_at' => $this->now->addDay()->subMinute()->toDateTimeString(),
+                'ends_at' => $this->now->addDay()->addMinutes(59)->toDateTimeString(),
                 'status' => AppointmentStatus::CONFIRMED->value,
                 'payment_status' => PaymentStatus::PENDING->value,
                 'paid_at' => null,
