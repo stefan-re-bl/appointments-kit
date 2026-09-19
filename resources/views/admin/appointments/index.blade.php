@@ -54,23 +54,23 @@
             <div>
                 <div class="grid gap-4 md:grid-cols-3">
                     <div>
-                        <label for="therapist_id" class="mb-1 block text-sm font-medium text-slate-700">
-                            {{ __('app.admin.appointments.filters.therapist') }}
+                        <label for="professional_id" class="mb-1 block text-sm font-medium text-slate-700">
+                            {{ __('app.admin.appointments.filters.professional') }}
                         </label>
                         <select
-                            id="therapist_id"
-                            name="therapist_id"
-                            x-ref="therapistFilter"
-                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                            id="professional_id"
+                            name="professional_id"
+                            x-ref="professionalFilter"
+                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                             @change="filterChanged()"
                         >
-                            <option value="">{{ __('app.admin.appointments.filters.all_therapists') }}</option>
-                            @foreach ($therapists as $therapist)
+                            <option value="">{{ __('app.admin.appointments.filters.all_professionals') }}</option>
+                            @foreach ($professionals as $professional)
                                 <option
-                                    value="{{ $therapist->id }}"
-                                    @selected((string) ($filters['therapist_id'] ?? '') === (string) $therapist->id)
+                                    value="{{ $professional->id }}"
+                                    @selected((string) ($filters['professional_id'] ?? '') === (string) $professional->id)
                                 >
-                                    {{ $therapist->user->name }}
+                                    {{ $professional->user->name }}
                                 </option>
                             @endforeach
                         </select>
@@ -84,7 +84,7 @@
                             id="status"
                             name="status"
                             x-ref="statusFilter"
-                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                             @change="filterChanged()"
                         >
                             <option value="">{{ __('app.admin.appointments.filters.all_statuses') }}</option>
@@ -107,7 +107,7 @@
                             id="payment_status"
                             name="payment_status"
                             x-ref="paymentFilter"
-                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                            class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                             @change="filterChanged()"
                         >
                             <option value="">{{ __('app.admin.appointments.filters.all_payment_statuses') }}</option>
@@ -145,7 +145,7 @@
 
         <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div class="border-b border-slate-200 px-5 py-4">
-                <h2 class="text-base font-semibold text-umbralia-title">
+                <h2 class="text-base font-semibold text-brand-title">
                     {{ __('app.admin.appointments.calendar.title') }}
                 </h2>
                 <p class="mt-1 text-sm text-slate-600">
@@ -173,7 +173,7 @@
             <section class="relative flex max-h-[calc(100svh-4rem)] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl ring-1 ring-slate-900/10">
                 <header class="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
                     <div>
-                        <h2 id="appointments-day-title" class="text-base font-semibold text-umbralia-title" x-text="dayTitle"></h2>
+                        <h2 id="appointments-day-title" class="text-base font-semibold text-brand-title" x-text="dayTitle"></h2>
                         <p class="mt-1 text-sm text-slate-600">
                             {{ __('app.admin.appointments.day_modal.subtitle') }}
                         </p>
@@ -181,7 +181,7 @@
 
                     <button
                         type="button"
-                        class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-accent/30"
                         @click="closeDay()"
                         title="{{ __('app.admin.appointments.day_modal.close') }}"
                         aria-label="{{ __('app.admin.appointments.day_modal.close') }}"
@@ -219,7 +219,7 @@
                                     </div>
 
                                     <div class="min-w-0">
-                                        <p class="truncate text-sm font-medium text-slate-950" x-text="appointment.therapist_name"></p>
+                                        <p class="truncate text-sm font-medium text-slate-950" x-text="appointment.professional_name"></p>
                                         <p class="mt-1 truncate text-sm text-slate-500" x-text="appointment.session_type"></p>
                                         <p class="mt-2 text-xs font-semibold text-slate-700" x-text="appointment.price"></p>
                                     </div>

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +17,7 @@ final class SessionTypeFactory extends Factory
 
     public function configure(): static
     {
-        return $this->for(Therapist::factory());
+        return $this->for(Professional::factory());
     }
 
     /**

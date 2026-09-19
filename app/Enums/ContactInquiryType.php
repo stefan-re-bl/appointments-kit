@@ -9,6 +9,6 @@ enum ContactInquiryType: string
     case BOOKING_PROBLEM = 'booking_problem';
     case PAYMENT_PROBLEM = 'payment_problem';
     case GENERAL = 'general';
-    case THERAPIST_APPLICATION = 'therapist_application';
+    case PROFESSIONAL_APPLICATION = 'professional_application';
     case OTHER = 'other';
 }

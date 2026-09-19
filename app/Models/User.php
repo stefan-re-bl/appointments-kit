@@ -19,6 +19,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+
     use Notifiable;
 
     /**
@@ -43,8 +44,8 @@ class User extends Authenticatable
         return $this->role === Role::ADMIN || $this->role === Role::ADMIN->value;
     }
 
-    public function therapist(): HasOne
+    public function professional(): HasOne
     {
-        return $this->hasOne(Therapist::class);
+        return $this->hasOne(Professional::class);
     }
 }

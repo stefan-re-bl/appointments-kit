@@ -7,8 +7,8 @@ namespace Tests\Feature\Security;
 use App\Models\ActivityLog;
 use App\Models\Appointment;
 use App\Models\Availability;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use PHPUnit\Framework\Attributes\Test;
@@ -25,16 +25,16 @@ final class ModelMassAssignmentSecurityTest extends TestCase
             'remember_token',
         ]);
 
-        $this->assertFieldsAreNotFillable(Therapist::class, [
+        $this->assertFieldsAreNotFillable(Professional::class, [
             'user_id',
         ]);
 
         $this->assertFieldsAreNotFillable(SessionType::class, [
-            'therapist_id',
+            'professional_id',
         ]);
 
         $this->assertFieldsAreNotFillable(Availability::class, [
-            'therapist_id',
+            'professional_id',
         ]);
 
         $this->assertFieldsAreNotFillable(Appointment::class, [
@@ -52,12 +52,12 @@ final class ModelMassAssignmentSecurityTest extends TestCase
     }
 
     /**
-     * @param class-string<Model> $modelClass
-     * @param array<int, string> $fields
+     * @param  class-string<Model>  $modelClass
+     * @param  array<int, string>  $fields
      */
     private function assertFieldsAreNotFillable(string $modelClass, array $fields): void
     {
-        $model = new $modelClass();
+        $model = new $modelClass;
 
         foreach ($fields as $field) {
             $this->assertFalse(

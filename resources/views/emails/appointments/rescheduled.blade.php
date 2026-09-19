@@ -8,7 +8,7 @@
 <x-mail::panel>
 **{{ __('appointment_emails.common.patient') }}:** {{ $patientName }}
 
-**{{ __('appointment_emails.common.therapist') }}:** {{ $therapistName }}
+**{{ __('appointment_emails.common.professional') }}:** {{ $professionalName }}
 
 **{{ __('appointment_emails.rescheduled.previous_time') }}:** {{ $previousRange }}
 

@@ -36,7 +36,7 @@ final class SendAppointmentReminderEmail implements ShouldQueue
     public function handle(): void
     {
         $appointment = Appointment::query()
-            ->with(['therapist.user', 'sessionType'])
+            ->with(['professional.user', 'sessionType'])
             ->find($this->appointmentId);
 
         if (! $appointment instanceof Appointment) {

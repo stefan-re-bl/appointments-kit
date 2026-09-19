@@ -20,7 +20,7 @@ class CancelAppointment
 
         $cancelledAppointment = DB::transaction(function () use ($appointment, &$shouldQueueEmails): Appointment {
             $lockedAppointment = Appointment::query()
-                ->with(['therapist.user', 'sessionType'])
+                ->with(['professional.user', 'sessionType'])
                 ->whereKey($appointment->id)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -41,7 +41,7 @@ class CancelAppointment
 
             return $lockedAppointment
                 ->refresh()
-                ->loadMissing(['therapist.user', 'sessionType']);
+                ->loadMissing(['professional.user', 'sessionType']);
         });
 
         if ($shouldQueueEmails) {

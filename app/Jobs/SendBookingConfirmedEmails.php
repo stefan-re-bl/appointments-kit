@@ -16,13 +16,12 @@ final class SendBookingConfirmedEmails implements ShouldQueue
 
     public function __construct(
         private readonly int $appointmentId,
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {
         $appointment = Appointment::query()
-            ->with(['therapist.user', 'sessionType'])
+            ->with(['professional.user', 'sessionType'])
             ->find($this->appointmentId);
 
         if (! $appointment) {
@@ -36,16 +35,16 @@ final class SendBookingConfirmedEmails implements ShouldQueue
             )
         );
 
-        $therapistEmail = $appointment->therapist?->user?->email;
+        $professionalEmail = $appointment->professional?->user?->email;
 
-        if (! is_string($therapistEmail) || $therapistEmail === '') {
+        if (! is_string($professionalEmail) || $professionalEmail === '') {
             return;
         }
 
-        Mail::to($therapistEmail)->send(
+        Mail::to($professionalEmail)->send(
             new BookingConfirmed(
                 appointment: $appointment,
-                recipientType: BookingConfirmed::RECIPIENT_THERAPIST,
+                recipientType: BookingConfirmed::RECIPIENT_PROFESSIONAL,
             )
         );
     }

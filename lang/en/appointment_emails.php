@@ -5,8 +5,8 @@ declare(strict_types=1);
 return [
     'common' => [
         'greeting' => 'Hello :name,',
-        'patient' => 'Patient',
-        'therapist' => 'Therapist',
+        'patient' => 'Customer',
+        'professional' => 'Professional',
         'session_type' => 'Session type',
         'timezone' => 'Timezone',
         'view_appointment' => 'View appointment',

@@ -23,11 +23,11 @@
         <!-- Sidebar -->
         <aside
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-            class="fixed inset-y-0 left-0 z-30 w-64 flex-shrink-0 transform overflow-y-auto bg-umbralia-title transition duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0"
+            class="fixed inset-y-0 left-0 z-30 w-64 flex-shrink-0 transform overflow-y-auto bg-brand-title transition duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0"
         >
             <!-- Logo Area -->
-            <div class="flex h-16 items-center bg-umbralia-title px-6 shadow-md ring-1 ring-white/10">
-                <svg class="h-6 w-6 text-umbralia-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex h-16 items-center bg-brand-title px-6 shadow-md ring-1 ring-white/10">
+                <svg class="h-6 w-6 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                         stroke-linecap="round"
                         stroke-linejoin="round"
@@ -45,7 +45,7 @@
             <nav class="mt-6">
                 <a
                     href="{{ url('/dashboard') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('dashboard') ? 'bg-umbralia-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-umbralia-title/90 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('dashboard') ? 'bg-brand-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-brand-title/90 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -61,7 +61,7 @@
 
                 <a
                     href="{{ route('availabilities.index') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('availabilities.*') ? 'bg-umbralia-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-umbralia-title/90 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('availabilities.*') ? 'bg-brand-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-brand-title/90 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -76,8 +76,8 @@
                 </a>
 
                 <a
-                    href="{{ route('therapist.appointments.index') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('therapist.appointments.*') ? 'bg-umbralia-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-umbralia-title/90 hover:text-white' }} transition-colors duration-200"
+                    href="{{ route('professional.appointments.index') }}"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('professional.appointments.*') ? 'bg-brand-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-brand-title/90 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -93,7 +93,7 @@
 
                 <a
                     href="{{ route('profile.edit') }}"
-                    class="flex items-center px-6 py-3 {{ request()->routeIs('profile.*') ? 'bg-umbralia-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-umbralia-title/90 hover:text-white' }} transition-colors duration-200"
+                    class="flex items-center px-6 py-3 {{ request()->routeIs('profile.*') ? 'bg-brand-title/90 text-white ring-1 ring-white/10' : 'text-slate-200 hover:bg-brand-title/90 hover:text-white' }} transition-colors duration-200"
                 >
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -116,7 +116,7 @@
                 <div class="flex items-center">
                     <button
                         @click="sidebarOpen = !sidebarOpen"
-                        class="rounded-lg p-2 text-slate-600 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 lg:hidden"
+                        class="rounded-lg p-2 text-slate-600 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-accent/30 lg:hidden"
                     >
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path
@@ -181,7 +181,7 @@
                             @click="userMenuOpen = !userMenuOpen"
                             class="relative flex min-w-0 items-center space-x-3 focus:outline-none"
                         >
-                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-umbralia-title text-xs font-bold text-white shadow-sm">
+                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-title text-xs font-bold text-white shadow-sm">
                                 {{ strtoupper(Auth::user()->name[0]) }}
                             </div>
 

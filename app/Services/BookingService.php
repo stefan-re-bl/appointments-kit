@@ -8,7 +8,7 @@ use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\SupportedLocale;
 use App\Models\Appointment;
-use App\Models\Therapist;
+use App\Models\Professional;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -19,7 +19,7 @@ final class BookingService
      * Utiliza SELECT FOR UPDATE (Pessimistic Locking) dentro de una transacción.
      *
      * @param array{
-     *     therapist_id: int,
+     *     professional_id: int,
      *     session_type_id: int,
      *     patient_name: string,
      *     patient_email: string,
@@ -38,29 +38,29 @@ final class BookingService
     public function bookSlot(array $data): Appointment|false
     {
         return DB::transaction(function () use ($data): Appointment|false {
-            $therapistId = (int) $data['therapist_id'];
+            $professionalId = (int) $data['professional_id'];
             $startsAt = $data['starts_at'];
             $endsAt = $data['ends_at'];
 
-            $therapistIsBookable = Therapist::query()
+            $professionalIsBookable = Professional::query()
                 ->publiclyBookable()
-                ->whereKey($therapistId)
+                ->whereKey($professionalId)
                 ->exists();
 
-            if (! $therapistIsBookable) {
-                Log::warning("Booking failed: Therapist {$therapistId} is not approved for public booking.");
+            if (! $professionalIsBookable) {
+                Log::warning("Booking failed: Professional {$professionalId} is not approved for public booking.");
 
                 return false;
             }
 
             // 1. Buscamos citas solapadas y bloqueamos las filas (Pessimistic Locking).
-            $overlappingAppointments = Appointment::overlappingSlot($therapistId, $startsAt, $endsAt)
+            $overlappingAppointments = Appointment::overlappingSlot($professionalId, $startsAt, $endsAt)
                 ->lockForUpdate()
                 ->get();
 
             // 2. Si hay solapamiento, abortamos.
             if ($overlappingAppointments->isNotEmpty()) {
-                Log::warning("Booking failed: Overlapping detected for therapist {$therapistId} at {$startsAt}");
+                Log::warning("Booking failed: Overlapping detected for professional {$professionalId} at {$startsAt}");
 
                 return false;
             }
@@ -69,7 +69,7 @@ final class BookingService
             // Los campos de sistema se asignan explícitamente con forceFill()
             // para no exponerlos mediante mass assignment.
             $appointment = Appointment::query()->create([
-                'therapist_id' => $data['therapist_id'],
+                'professional_id' => $data['professional_id'],
                 'session_type_id' => $data['session_type_id'],
                 'patient_name' => $data['patient_name'],
                 'patient_email' => $data['patient_email'],

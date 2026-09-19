@@ -37,7 +37,7 @@ final class ContactMessageTest extends TestCase
 
         $this
             ->post(route('contact.store'), [
-                'name' => 'Paciente Contacto',
+                'name' => 'Cliente Contacto',
                 'email' => 'paciente@example.com',
                 'inquiry_type' => ContactInquiryType::BOOKING_PROBLEM->value,
                 'message' => 'Necesito ayuda con una reserva confirmada.',
@@ -46,7 +46,7 @@ final class ContactMessageTest extends TestCase
             ->assertSessionHas('success', __('app.contact.success'));
 
         $this->assertDatabaseHas(ContactMessage::class, [
-            'name' => 'Paciente Contacto',
+            'name' => 'Cliente Contacto',
             'email' => 'paciente@example.com',
             'inquiry_type' => ContactInquiryType::BOOKING_PROBLEM->value,
             'status' => ContactMessageStatus::OPEN->value,

@@ -10,32 +10,32 @@ return [
     ],
     'footer' => [
         'title' => 'Legal',
-        'disclaimer' => 'Umbralia does not handle emergencies and does not process payments inside the platform. In Argentina: 0800-999-0091 (Orientación y Apoyo en la Urgencia de Salud Mental) and 0800-333-1665 (Salud Mental Responde).',
+        'disclaimer' => 'Appointments Kit does not process payments inside the platform. Each business defines its support channels.',
     ],
     'booking' => [
-        'emergency_title' => 'Umbralia is not an emergency service',
-        'emergency_text' => 'If you or someone else is at immediate risk, contact your local emergency services. In Argentina, you can also call 0800-999-0091 (Orientación y Apoyo en la Urgencia de Salud Mental) or 0800-333-1665 (Salud Mental Responde). Umbralia only supports orientation, referral and operational communication for online care.',
+        'emergency_title' => 'Use the correct channel for urgent situations',
+        'emergency_text' => 'If a situation requires immediate attention, contact your local emergency services. The platform organizes scheduled appointments and operational communications.',
         'emergency_link' => 'Read emergency notice',
         'accept_terms_prefix' => 'I accept the',
         'accept_terms_and' => 'and the',
         'accept_email_communications' => 'I agree to receive operational emails related to my appointment, such as confirmations, links and reminders.',
     ],
     'email' => [
-        'patient_disclaimer' => 'Reminder: Umbralia does not handle emergencies and does not process payments inside the platform. In Argentina: 0800-999-0091 (Orientación y Apoyo en la Urgencia de Salud Mental) and 0800-333-1665 (Salud Mental Responde). Payment is coordinated directly with the therapist.',
+        'patient_disclaimer' => 'Reminder: Appointments Kit does not process payments inside the platform. Payment is coordinated under business rules.',
     ],
     'pages' => [
         'index' => [
-            'meta_title' => 'Legal | Umbralia',
-            'meta_description' => 'Legal information, privacy and important notices from Umbralia.',
-            'title' => 'Umbralia legal information',
-            'intro' => 'These texts summarize service limits, data use and basic conditions for orientation, referral and online support.',
+            'meta_title' => 'Legal | Appointments Kit',
+            'meta_description' => 'Legal information, privacy and important notices from Appointments Kit.',
+            'title' => 'Appointments Kit legal information',
+            'intro' => 'These texts summarize service limits, data use and basic booking conditions.',
             'sections' => [
                 [
                     'title' => 'Service scope',
-                    'description' => 'Umbralia supports initial orientation, professional referral and operational communication between patients and therapists.',
+                    'description' => 'Appointments Kit supports bookings, calendar management and operational communication between customers and professionals.',
                     'items' => [
-                        'It does not replace emergency services. In Argentina, you can call 0800-999-0091 (Orientación y Apoyo en la Urgencia de Salud Mental) or 0800-333-1665 (Salud Mental Responde).',
-                        'It does not provide immediate crisis care. If there is immediate risk, contact your local emergency services.',
+                        'It does not replace emergency services or urgent support.',
+                        'It does not provide immediate care. If there is immediate risk, contact your local emergency services.',
                         'It does not process payments inside the platform.',
                     ],
                 ],
@@ -46,49 +46,49 @@ return [
             ],
         ],
         'terms' => [
-            'meta_title' => 'Terms and conditions | Umbralia',
-            'meta_description' => 'Umbralia usage conditions for orientation, referral and online support.',
+            'meta_title' => 'Terms and conditions | Appointments Kit',
+            'meta_description' => 'Appointments Kit usage conditions for bookings and operational communications.',
             'title' => 'Terms and conditions',
-            'intro' => 'By requesting orientation you agree to use Umbralia as an initial orientation, referral and operational communication tool.',
+            'intro' => 'By booking an appointment you agree to use Appointments Kit as a scheduling and operational communication tool.',
             'sections' => [
                 [
                     'title' => 'Platform use',
-                    'description' => 'Umbralia lets you request initial orientation by WhatsApp and organize the referral to a suggested professional.',
+                    'description' => 'Appointments Kit lets you book appointments and organize communication between customers and professionals.',
                 ],
                 [
                     'title' => 'Payments',
-                    'description' => 'Umbralia does not process payments. Method, final amount and conditions are coordinated directly with the suggested professional.',
+                    'description' => 'Appointments Kit does not process payments. Method, final amount and conditions follow business rules.',
                 ],
                 [
                     'title' => 'Cancellation and rescheduling',
-                    'description' => 'Cancellation with refund eligibility may be requested up to 24 hours before the agreed time. Date or time changes may be requested up to 48 hours before the appointment. After those windows, any exception is subject to the prior agreement between patient and therapist.',
+                    'description' => 'Cancellation with refund eligibility may be requested up to 24 hours before the agreed time. Rescheduling may be requested up to 48 hours before the appointment. After those windows, any exception depends on the business agreement.',
                 ],
                 [
                     'title' => 'Limits',
-                    'description' => 'The platform is not designed for emergencies, crises or immediate-risk situations. In Argentina, you can also call 0800-999-0091 (Orientación y Apoyo en la Urgencia de Salud Mental) or 0800-333-1665 (Salud Mental Responde).',
+                    'description' => 'The platform is not designed for emergencies or immediate-risk situations.',
                 ],
             ],
         ],
         'privacy' => [
-            'meta_title' => 'Privacy policy | Umbralia',
-            'meta_description' => 'Umbralia privacy policy for orientation, referral, bookings, operational communications and WhatsApp notifications.',
+            'meta_title' => 'Privacy policy | Appointments Kit',
+            'meta_description' => 'Appointments Kit privacy policy for bookings, operational communications and notifications.',
             'title' => 'Privacy policy',
-            'intro' => 'This policy explains what data we process, why we use it and how you can exercise your rights when using Umbralia.',
+            'intro' => 'This policy explains what data we process, why we use it and how you can exercise your rights.',
             'sections' => [
                 [
                     'title' => 'Controller and contact',
-                    'description' => 'Umbralia administers this platform to support orientation, professional referral, bookings and operational communications. For privacy questions, use the contact form available on the website.',
+                    'description' => 'Appointments Kit administers this platform to support bookings and operational communications. For privacy questions, use the contact form.',
                     'items' => [
-                        'Contact channel: Umbralia public contact form.',
-                        'The platform must not be used for emergencies or to send urgent clinical information.',
+                        'Contact channel: public contact form.',
+                        'The platform must not be used for emergencies or urgent information.',
                     ],
                 ],
                 [
                     'title' => 'Data we may process',
-                    'description' => 'We process only the data needed to operate the service and respond to requests related to orientation, referral and bookings.',
+                    'description' => 'We process only the data needed to operate the service and respond to booking requests.',
                     'items' => [
                         'Identification and contact details, such as name, email and phone number when you provide them.',
-                        'Operational booking data, such as therapist, session type, date, time, timezone, appointment status and related communications.',
+                        'Operational booking data, such as professional, service, date, time, timezone, appointment status and related communications.',
                         'Communication preferences needed for operations, such as selected language and consent for WhatsApp notifications.',
                         'Minimum technical data generated by platform use, such as operational, security and error logs.',
                     ],
@@ -97,9 +97,9 @@ return [
                     'title' => 'Purposes',
                     'description' => 'We use data to provide the service, coordinate communications and maintain platform security.',
                     'items' => [
-                        'Manage orientation, referral, bookings, confirmations, reminders and appointment changes.',
+                        'Manage bookings, confirmations, reminders and appointment changes.',
                         'Send operational emails and, if you gave specific consent, WhatsApp notifications.',
-                        'Allow therapists and administration to review information needed to coordinate scheduled care.',
+                        'Allow professionals and administration to review information needed to coordinate scheduled appointments.',
                         'Maintain operational records, prevent abuse, resolve errors and comply with applicable obligations.',
                     ],
                 ],
@@ -107,7 +107,7 @@ return [
                     'title' => 'Operational WhatsApp',
                     'description' => 'The WhatsApp phone number is optional and is used only if you give specific consent to receive operational confirmations and reminders through Meta WhatsApp Business Platform.',
                     'items' => [
-                        'Messages do not include diagnoses, consultation reasons or clinical content.',
+                        'Messages do not include sensitive data, internal notes or unnecessary private information.',
                         'Meta may process technical and messaging data under its own terms and policies.',
                         'You can withdraw WhatsApp consent through the contact channels or by not accepting that channel in future flows.',
                     ],
@@ -139,22 +139,22 @@ return [
             ],
         ],
         'emergency' => [
-            'meta_title' => 'Emergency notice | Umbralia',
-            'meta_description' => 'Important notice: Umbralia does not handle emergencies.',
+            'meta_title' => 'Urgent situations notice | Appointments Kit',
+            'meta_description' => 'Important notice about correct use of Appointments Kit.',
             'title' => 'Emergency notice',
-            'intro' => 'Umbralia is not an emergency service or immediate crisis-care channel.',
+            'intro' => 'Appointments Kit is not an emergency service or immediate-care channel.',
             'sections' => [
                 [
                     'title' => 'Immediate risk',
-                    'description' => 'If you or someone else is in danger, contact your local emergency services immediately. In Argentina, you can also call 0800-999-0091 (Orientación y Apoyo en la Urgencia de Salud Mental) or 0800-333-1665 (Salud Mental Responde).',
+                    'description' => 'If you or someone else is in danger, contact your local emergency services immediately.',
                 ],
                 [
-                    'title' => 'Umbralia scope',
-                    'description' => 'The platform only supports orientation, referral, reminders and operational communication for scheduled online care.',
+                    'title' => 'Appointments Kit scope',
+                    'description' => 'The platform supports bookings, reminders and operational communication for scheduled appointments.',
                 ],
                 [
                     'title' => 'Do not wait for a platform response',
-                    'description' => 'Do not use Umbralia to request urgent help or immediate intervention. In Argentina, you can also call 0800-999-0091 (Orientación y Apoyo en la Urgencia de Salud Mental) or 0800-333-1665 (Salud Mental Responde).',
+                    'description' => 'Do not use Appointments Kit to request urgent help or immediate intervention.',
                 ],
             ],
         ],

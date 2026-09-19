@@ -7,7 +7,7 @@
         id="{{ $name }}" 
         name="{{ $name }}" 
         value="{{ old($name, $attributes->get('value')) }}"
-        {{ $attributes->merge(['class' => 'mt-1 block w-full rounded-lg border-slate-200 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30 sm:text-sm']) }}
+        {{ $attributes->merge(['class' => 'mt-1 block w-full rounded-lg border-slate-200 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30 sm:text-sm']) }}
     />
     @error($name)
         <p class="mt-1 text-sm text-rose-700">{{ $message }}</p>

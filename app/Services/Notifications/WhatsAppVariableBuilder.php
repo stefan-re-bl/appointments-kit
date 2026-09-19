@@ -27,7 +27,7 @@ final readonly class WhatsAppVariableBuilder
         try {
             $timezone = $recipientType === NotificationRecipientType::PATIENT
                 ? ($appointment->patient_timezone ?: 'UTC')
-                : ($appointment->therapist?->timezone ?: 'UTC');
+                : ($appointment->professional?->timezone ?: 'UTC');
             $date = $this->timezoneService->toLocal($appointment->starts_at, $timezone)->translatedFormat('d/m/Y');
             $time = $this->timezoneService->formatForDisplay($appointment->starts_at, 'H:i', $timezone);
 
@@ -40,13 +40,13 @@ final readonly class WhatsAppVariableBuilder
                 ];
             }
 
-            if ($event === NotificationEvent::BOOKING_CONFIRMED && $recipientType === NotificationRecipientType::THERAPIST) {
+            if ($event === NotificationEvent::BOOKING_CONFIRMED && $recipientType === NotificationRecipientType::PROFESSIONAL) {
                 return [
                     $appointment->patient_name,
                     (string) $appointment->sessionType?->name,
                     $date,
                     $time,
-                    route('therapist.appointments.index'),
+                    route('professional.appointments.index'),
                 ];
             }
 
@@ -61,7 +61,7 @@ final readonly class WhatsAppVariableBuilder
             return [
                 $appointment->patient_name,
                 $time,
-                route('therapist.appointments.index'),
+                route('professional.appointments.index'),
             ];
         } finally {
             App::setLocale($previousLocale);

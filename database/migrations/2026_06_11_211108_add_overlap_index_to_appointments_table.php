@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::table('appointments', function (Blueprint $table) {
             // Índice compuesto CRUCIAL para la consulta de overlapping y bloqueo pesimista.
-            // Asegura que MySQL pueda buscar y bloquear los rangos horarios de un terapeuta
+            // Asegura que MySQL pueda buscar y bloquear los rangos horarios de un profesional.
             // sin hacer un escaneo completo de la tabla (Full Table Scan).
-            $table->index(['therapist_id', 'starts_at', 'ends_at'], 'appointments_overlap_index');
+            $table->index(['professional_id', 'starts_at', 'ends_at'], 'appointments_overlap_index');
         });
     }
 

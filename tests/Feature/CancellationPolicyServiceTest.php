@@ -108,4 +108,31 @@ final class CancellationPolicyServiceTest extends TestCase
 
         $this->assertFalse($service->canReschedule($appointment, $now));
     }
+
+    public function test_policy_uses_configured_deadlines_and_reschedule_limit(): void
+    {
+        config([
+            'booking.policies.cancellation_notice_hours' => 12,
+            'booking.policies.refund_notice_hours' => 36,
+            'booking.policies.reschedule_notice_hours' => 24,
+            'booking.policies.max_reschedules' => 3,
+        ]);
+
+        $now = CarbonImmutable::parse('2026-06-19 12:00:00', 'UTC');
+
+        $appointment = Appointment::factory()->create([
+            'starts_at' => $now->addHours(30),
+            'ends_at' => $now->addHours(31),
+            'status' => AppointmentStatus::CONFIRMED,
+            'payment_status' => PaymentStatus::PAID,
+            'reschedule_count' => 2,
+        ]);
+
+        $service = app(CancellationPolicyService::class);
+
+        $this->assertTrue($service->canCancel($appointment, $now));
+        $this->assertFalse($service->canRefund($appointment, $now));
+        $this->assertTrue($service->canReschedule($appointment, $now));
+        $this->assertSame(3, $service->maxReschedules());
+    }
 }

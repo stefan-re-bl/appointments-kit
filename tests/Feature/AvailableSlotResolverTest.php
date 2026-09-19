@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Enums\Role;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use App\Services\AvailableSlotResolver;
 use App\Services\TimezoneService;
@@ -35,10 +35,10 @@ final class AvailableSlotResolverTest extends TestCase
 
     public function test_it_resolves_a_valid_available_slot_preserving_utc_boundaries(): void
     {
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $slot = app(AvailableSlotResolver::class)->resolve(
-            $therapist,
+            $professional,
             '2026-07-06',
             (int) $sessionType->duration_minutes,
             '2026-07-06T12:00:00+00:00',
@@ -54,10 +54,10 @@ final class AvailableSlotResolverTest extends TestCase
     {
         app()->instance('user.timezone', 'UTC');
 
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $slot = app(AvailableSlotResolver::class)->resolve(
-            $therapist,
+            $professional,
             '2026-07-06',
             (int) $sessionType->duration_minutes,
             '2026-07-06T12:00:00+00:00',
@@ -71,31 +71,31 @@ final class AvailableSlotResolverTest extends TestCase
 
     public function test_it_returns_null_for_invalid_or_unavailable_selected_slots(): void
     {
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $resolver = app(AvailableSlotResolver::class);
 
         $this->assertNull($resolver->resolve(
-            $therapist,
+            $professional,
             '2026-07-06',
             (int) $sessionType->duration_minutes,
             '2026-07-06T18:00:00+00:00',
         ));
 
         $this->assertNull($resolver->resolve(
-            $therapist,
+            $professional,
             '2026-07-06',
             (int) $sessionType->duration_minutes,
             'not-a-date',
         ));
     }
 
-    public function test_it_does_not_resolve_slots_outside_therapist_availability(): void
+    public function test_it_does_not_resolve_slots_outside_professional_availability(): void
     {
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $slot = app(AvailableSlotResolver::class)->resolve(
-            $therapist,
+            $professional,
             '2026-07-06',
             (int) $sessionType->duration_minutes,
             '2026-07-06T15:00:00+00:00',
@@ -105,15 +105,15 @@ final class AvailableSlotResolverTest extends TestCase
     }
 
     /**
-     * @return array{0: Therapist, 1: SessionType}
+     * @return array{0: Professional, 1: SessionType}
      */
-    private function makeBookableTherapist(): array
+    private function makeBookableProfessional(): array
     {
         $user = User::factory()->create([
-            'role' => Role::THERAPIST,
+            'role' => Role::PROFESSIONAL,
         ]);
 
-        $therapist = Therapist::factory()
+        $professional = Professional::factory()
             ->for($user)
             ->create([
                 'timezone' => 'America/Argentina/Buenos_Aires',
@@ -122,7 +122,7 @@ final class AvailableSlotResolverTest extends TestCase
             ]);
 
         $sessionType = SessionType::factory()
-            ->for($therapist)
+            ->for($professional)
             ->create([
                 'duration_minutes' => 60,
                 'is_active' => true,
@@ -130,7 +130,7 @@ final class AvailableSlotResolverTest extends TestCase
 
         $timezoneService = app(TimezoneService::class);
 
-        $therapist->availabilities()->create([
+        $professional->availabilities()->create([
             'day_of_week' => 1,
             'start_time' => $timezoneService->timeToUtc(
                 '09:00',
@@ -145,6 +145,6 @@ final class AvailableSlotResolverTest extends TestCase
             'is_active' => true,
         ]);
 
-        return [$therapist, $sessionType];
+        return [$professional, $sessionType];
     }
 }

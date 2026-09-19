@@ -9,7 +9,7 @@ return [
     'queue' => 'Queue: :queue',
 
     'queue_worker_down' => [
-        'subject' => 'Umbralia: queue worker down or missing heartbeat',
+        'subject' => 'Appointments Kit: queue worker down or missing heartbeat',
         'intro' => 'Monitoring detected that the queue worker is not processing the expected heartbeat.',
         'reason' => 'Reason: :reason',
         'last_heartbeat' => 'Last heartbeat: :last_heartbeat',
@@ -17,13 +17,13 @@ return [
     ],
 
     'queue_busy' => [
-        'subject' => 'Umbralia: queue is busy',
+        'subject' => 'Appointments Kit: queue is busy',
         'intro' => 'Laravel detected that a queue exceeded the configured pending jobs threshold.',
         'size' => 'Pending jobs: :size',
     ],
 
     'queue_job_failed' => [
-        'subject' => 'Umbralia: queued job failed',
+        'subject' => 'Appointments Kit: queued job failed',
         'intro' => 'A queued job failed during execution.',
         'job' => 'Job: :job',
         'exception' => 'Exception: :exception',

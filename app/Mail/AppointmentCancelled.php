@@ -10,9 +10,9 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 class AppointmentCancelled extends Mailable implements ShouldQueue
@@ -26,8 +26,7 @@ class AppointmentCancelled extends Mailable implements ShouldQueue
         public Appointment $appointment,
         public string $recipientTimezone,
         public string $recipientType,
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {
@@ -49,12 +48,12 @@ class AppointmentCancelled extends Mailable implements ShouldQueue
      */
     public function viewData(): array
     {
-        $this->appointment->loadMissing(['therapist.user', 'sessionType']);
+        $this->appointment->loadMissing(['professional.user', 'sessionType']);
 
         return [
             'appointment' => $this->appointment,
             'recipientName' => $this->recipientName(),
-            'therapistName' => $this->appointment->therapist->user->name,
+            'professionalName' => $this->appointment->professional->user->name,
             'patientName' => $this->appointment->patient_name,
             'sessionTypeName' => $this->appointment->sessionType->name,
             'appointmentRange' => $this->formatRangeForRecipient(
@@ -68,8 +67,8 @@ class AppointmentCancelled extends Mailable implements ShouldQueue
 
     private function recipientName(): string
     {
-        if ($this->recipientType === 'therapist') {
-            return $this->appointment->therapist->user->name;
+        if ($this->recipientType === 'professional') {
+            return $this->appointment->professional->user->name;
         }
 
         return $this->appointment->patient_name;

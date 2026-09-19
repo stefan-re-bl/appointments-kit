@@ -10,7 +10,7 @@ return [
     'appointments' => [
         'eyebrow' => 'Administración',
         'title' => 'Reportes y exportación de turnos',
-        'description' => 'Audita turnos reservados, cancelaciones, pagos manuales pendientes y montos cobrados por terapeuta.',
+        'description' => 'Audita turnos reservados, cancelaciones, pagos manuales pendientes y montos cobrados por profesional.',
         'timezone_notice' => 'El rango de fechas se interpreta usando la zona horaria actual: :timezone.',
     ],
 
@@ -23,8 +23,8 @@ return [
     'filters' => [
         'date_from' => 'Desde',
         'date_to' => 'Hasta',
-        'therapist' => 'Terapeuta',
-        'all_therapists' => 'Todas las terapeutas',
+        'professional' => 'Profesional',
+        'all_professionals' => 'Todos los profesionales',
     ],
 
     'metrics' => [
@@ -37,9 +37,9 @@ return [
 
     'sections' => [
         'amounts_by_currency' => 'Montos por moneda',
-        'pending_by_therapist' => 'Pagos pendientes por terapeuta',
+        'pending_by_professional' => 'Pagos pendientes por profesional',
         'appointment_audit' => 'Detalle auditable de turnos',
-        'appointment_audit_description' => 'Cada fila cruza turno, terapeuta, tipo de sesión, precio, estado de pago y fecha manual de pago.',
+        'appointment_audit_description' => 'Cada fila cruza turno, profesional, tipo de sesión, precio, estado de pago y fecha manual de pago.',
     ],
 
     'table' => [
@@ -47,9 +47,9 @@ return [
         'estimated_amount' => 'Monto estimado',
         'collected_amount' => 'Monto cobrado',
         'pending_amount' => 'Monto pendiente',
-        'therapist' => 'Terapeuta',
+        'professional' => 'Profesional',
         'pending_appointments' => 'Turnos pendientes',
-        'patient' => 'Paciente',
+        'patient' => 'Cliente',
         'session_type' => 'Tipo de sesión',
         'starts_at' => 'Fecha del turno',
         'appointment_status' => 'Estado de cita',
@@ -74,7 +74,7 @@ return [
 
     'values' => [
         'not_paid' => 'Sin pago registrado',
-        'no_therapist_name' => 'Sin nombre',
+        'no_professional_name' => 'Sin nombre',
     ],
 
     'empty' => [
@@ -86,10 +86,10 @@ return [
     'csv' => [
         'headers' => [
             'appointment_id' => 'ID cita',
-            'patient_name' => 'Paciente',
-            'patient_email' => 'Email paciente',
-            'therapist_name' => 'Terapeuta',
-            'therapist_email' => 'Email terapeuta',
+            'patient_name' => 'Cliente',
+            'patient_email' => 'Email cliente',
+            'professional_name' => 'Profesional',
+            'professional_email' => 'Email profesional',
             'session_type' => 'Tipo de sesión',
             'starts_at_local' => 'Inicio local',
             'ends_at_local' => 'Fin local',

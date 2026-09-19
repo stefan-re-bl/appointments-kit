@@ -7,14 +7,24 @@ namespace App\Http\Requests\Admin;
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\Role;
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 final class FilterAppointmentsRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $professionalId = $this->input('professional_id', $this->input('professional_id'));
+
+        $this->merge([
+            'professional_id' => $professionalId,
+        ]);
+    }
+
     public function authorize(): bool
     {
-        /** @var \App\Models\User|null $user */
+        /** @var User|null $user */
         $user = $this->user();
 
         if ($user === null) {
@@ -34,7 +44,8 @@ final class FilterAppointmentsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'therapist_id' => ['nullable', 'integer', Rule::exists('therapists', 'id')],
+            'professional_id' => ['nullable', 'integer', Rule::exists('professionals', 'id')],
+            'professional_id' => ['nullable', 'integer', Rule::exists('professionals', 'id')],
             'status' => ['nullable', Rule::enum(AppointmentStatus::class)],
             'payment_status' => ['nullable', Rule::enum(PaymentStatus::class)],
             'date_from' => ['nullable', 'date_format:Y-m-d'],

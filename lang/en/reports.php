@@ -10,7 +10,7 @@ return [
     'appointments' => [
         'eyebrow' => 'Administration',
         'title' => 'Appointment reports and export',
-        'description' => 'Audit booked appointments, cancellations, pending manual payments and collected amounts by therapist.',
+        'description' => 'Audit booked appointments, cancellations, pending manual payments and collected amounts by professional.',
         'timezone_notice' => 'The date range is interpreted using the current timezone: :timezone.',
     ],
 
@@ -23,8 +23,8 @@ return [
     'filters' => [
         'date_from' => 'From',
         'date_to' => 'To',
-        'therapist' => 'Therapist',
-        'all_therapists' => 'All therapists',
+        'professional' => 'Professional',
+        'all_professionals' => 'All professionals',
     ],
 
     'metrics' => [
@@ -37,9 +37,9 @@ return [
 
     'sections' => [
         'amounts_by_currency' => 'Amounts by currency',
-        'pending_by_therapist' => 'Pending payments by therapist',
+        'pending_by_professional' => 'Pending payments by professional',
         'appointment_audit' => 'Auditable appointment detail',
-        'appointment_audit_description' => 'Each row joins appointment, therapist, session type, price, payment status and manual payment date.',
+        'appointment_audit_description' => 'Each row joins appointment, professional, session type, price, payment status and manual payment date.',
     ],
 
     'table' => [
@@ -47,9 +47,9 @@ return [
         'estimated_amount' => 'Estimated amount',
         'collected_amount' => 'Collected amount',
         'pending_amount' => 'Pending amount',
-        'therapist' => 'Therapist',
+        'professional' => 'Professional',
         'pending_appointments' => 'Pending appointments',
-        'patient' => 'Patient',
+        'patient' => 'Customer',
         'session_type' => 'Session type',
         'starts_at' => 'Appointment date',
         'appointment_status' => 'Appointment status',
@@ -74,7 +74,7 @@ return [
 
     'values' => [
         'not_paid' => 'No payment registered',
-        'no_therapist_name' => 'No name',
+        'no_professional_name' => 'No name',
     ],
 
     'empty' => [
@@ -86,10 +86,10 @@ return [
     'csv' => [
         'headers' => [
             'appointment_id' => 'Appointment ID',
-            'patient_name' => 'Patient',
-            'patient_email' => 'Patient email',
-            'therapist_name' => 'Therapist',
-            'therapist_email' => 'Therapist email',
+            'patient_name' => 'Customer',
+            'patient_email' => 'Customer email',
+            'professional_name' => 'Professional',
+            'professional_email' => 'Professional email',
             'session_type' => 'Session type',
             'starts_at_local' => 'Starts local',
             'ends_at_local' => 'Ends local',

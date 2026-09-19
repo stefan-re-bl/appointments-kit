@@ -4,7 +4,7 @@
             <h2 class="text-xl font-semibold leading-tight text-slate-900">
                 {{ __('app.my_weekly_availability') }}
             </h2>
-            <a href="{{ route('availabilities.create') }}" class="inline-flex justify-center rounded-lg bg-umbralia-title px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2">
+            <a href="{{ route('availabilities.create') }}" class="inline-flex justify-center rounded-lg bg-brand-title px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-title/90 focus:outline-none focus:ring-2 focus:ring-brand-accent/30 focus:ring-offset-2">
                 {{ __('app.add_availability') }}
             </a>
         </div>

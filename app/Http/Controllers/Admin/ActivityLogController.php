@@ -25,7 +25,7 @@ final class ActivityLogController extends Controller implements HasMiddleware
     public function index(TimezoneService $timezoneService): View
     {
         $logs = ActivityLog::query()
-            ->with(['appointment.therapist.user', 'causer'])
+            ->with(['appointment.professional.user', 'causer'])
             ->latest('created_at')
             ->paginate(25)
             ->withQueryString();

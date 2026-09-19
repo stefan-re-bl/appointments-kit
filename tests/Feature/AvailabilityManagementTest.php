@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Enums\Role;
-use App\Models\Therapist;
+use App\Models\Professional;
 use App\Models\User;
 use App\Services\TimezoneService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,9 +15,9 @@ final class AvailabilityManagementTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_therapist_can_create_valid_availability_with_utc_storage(): void
+    public function test_professional_can_create_valid_availability_with_utc_storage(): void
     {
-        [$user] = $this->makeTherapist();
+        [$user] = $this->makeProfessional();
 
         $this
             ->actingAs($user)
@@ -42,9 +42,9 @@ final class AvailabilityManagementTest extends TestCase
         ]);
     }
 
-    public function test_therapist_can_create_inactive_availability_from_hidden_checkbox_value(): void
+    public function test_professional_can_create_inactive_availability_from_hidden_checkbox_value(): void
     {
-        [$user] = $this->makeTherapist();
+        [$user] = $this->makeProfessional();
 
         $this
             ->actingAs($user)
@@ -68,13 +68,13 @@ final class AvailabilityManagementTest extends TestCase
         ]);
     }
 
-    public function test_therapist_cannot_create_overlapping_availability(): void
+    public function test_professional_cannot_create_overlapping_availability(): void
     {
-        [$user, $therapist] = $this->makeTherapist();
+        [$user, $professional] = $this->makeProfessional();
 
         $timezoneService = app(TimezoneService::class);
 
-        $therapist->availabilities()->create([
+        $professional->availabilities()->create([
             'day_of_week' => 1,
             'start_time' => $timezoneService->timeToUtc('09:00', 'America/Argentina/Buenos_Aires', 1),
             'end_time' => $timezoneService->timeToUtc('10:00', 'America/Argentina/Buenos_Aires', 1),
@@ -102,11 +102,11 @@ final class AvailabilityManagementTest extends TestCase
 
     public function test_availability_index_displays_local_times(): void
     {
-        [$user, $therapist] = $this->makeTherapist();
+        [$user, $professional] = $this->makeProfessional();
 
         $timezoneService = app(TimezoneService::class);
 
-        $therapist->availabilities()->create([
+        $professional->availabilities()->create([
             'day_of_week' => 1,
             'start_time' => $timezoneService->timeToUtc('09:00', 'America/Argentina/Buenos_Aires', 1),
             'end_time' => $timezoneService->timeToUtc('10:00', 'America/Argentina/Buenos_Aires', 1),
@@ -120,12 +120,12 @@ final class AvailabilityManagementTest extends TestCase
             ->assertSeeText('09:00 - 10:00');
     }
 
-    public function test_therapist_cannot_delete_another_therapists_availability(): void
+    public function test_professional_cannot_delete_another_professionals_availability(): void
     {
-        [, $ownerTherapist] = $this->makeTherapist();
-        [$otherUser] = $this->makeTherapist();
+        [, $ownerProfessional] = $this->makeProfessional();
+        [$otherUser] = $this->makeProfessional();
 
-        $availability = $ownerTherapist->availabilities()->create([
+        $availability = $ownerProfessional->availabilities()->create([
             'day_of_week' => 1,
             'start_time' => '12:00:00',
             'end_time' => '13:00:00',
@@ -143,20 +143,20 @@ final class AvailabilityManagementTest extends TestCase
     }
 
     /**
-     * @return array{0: User, 1: Therapist}
+     * @return array{0: User, 1: Professional}
      */
-    private function makeTherapist(): array
+    private function makeProfessional(): array
     {
         $user = User::factory()->create([
-            'role' => Role::THERAPIST,
+            'role' => Role::PROFESSIONAL,
         ]);
 
-        $therapist = Therapist::factory()
+        $professional = Professional::factory()
             ->for($user)
             ->create([
                 'timezone' => 'America/Argentina/Buenos_Aires',
             ]);
 
-        return [$user, $therapist];
+        return [$user, $professional];
     }
 }

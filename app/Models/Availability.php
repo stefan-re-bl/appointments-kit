@@ -28,8 +28,8 @@ class Availability extends Model
         ];
     }
 
-    public function therapist(): BelongsTo
+    public function professional(): BelongsTo
     {
-        return $this->belongsTo(Therapist::class);
+        return $this->belongsTo(Professional::class);
     }
 }

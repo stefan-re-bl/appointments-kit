@@ -25,7 +25,7 @@ final class ActivityLogTest extends TestCase
             'payment_status' => PaymentStatus::PENDING,
         ]);
 
-        $this->actingAs($appointment->therapist->user);
+        $this->actingAs($appointment->professional->user);
 
         $appointment->forceFill([
             'status' => AppointmentStatus::CANCELLED,
@@ -38,8 +38,8 @@ final class ActivityLogTest extends TestCase
 
         $this->assertSame('confirmed', $log->old_values['status']);
         $this->assertSame('cancelled', $log->new_values['status']);
-        $this->assertSame($appointment->therapist->user->id, $log->causer_id);
-        $this->assertSame($appointment->therapist->user::class, $log->causer_type);
+        $this->assertSame($appointment->professional->user->id, $log->causer_id);
+        $this->assertSame($appointment->professional->user::class, $log->causer_type);
 
         $this->expectException(RuntimeException::class);
 
@@ -56,7 +56,7 @@ final class ActivityLogTest extends TestCase
             'paid_at' => null,
         ]);
 
-        $this->actingAs($appointment->therapist->user);
+        $this->actingAs($appointment->professional->user);
 
         $paidAt = CarbonImmutable::now('UTC');
 
@@ -96,16 +96,16 @@ final class ActivityLogTest extends TestCase
     public function test_admin_can_view_activity_log_index(): void
     {
         $admin = User::factory()->admin()->create([
-            'name' => 'Admin Umbralia',
+            'name' => 'Admin Appointments Kit',
         ]);
 
         $appointment = Appointment::factory()->create([
-            'patient_name' => 'Paciente Auditada',
+            'patient_name' => 'Cliente Auditada',
             'status' => AppointmentStatus::CONFIRMED,
             'payment_status' => PaymentStatus::PENDING,
         ]);
 
-        $this->actingAs($appointment->therapist->user);
+        $this->actingAs($appointment->professional->user);
 
         $appointment->forceFill([
             'payment_status' => PaymentStatus::PAID,
@@ -117,7 +117,7 @@ final class ActivityLogTest extends TestCase
             ->get(route('admin.activity-logs.index'))
             ->assertOk()
             ->assertSeeText(__('app.admin.activity_logs.title'))
-            ->assertSeeText('Paciente Auditada')
+            ->assertSeeText('Cliente Auditada')
             ->assertSeeText(__('app.admin.activity_logs.events.appointment.payment_updated'))
             ->assertDontSeeText('app.admin.activity_logs.events.appointment.payment_updated');
     }

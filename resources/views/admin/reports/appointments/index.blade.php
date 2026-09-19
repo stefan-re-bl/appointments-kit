@@ -27,7 +27,7 @@
 
             <a
                 href="{{ route('admin.reports.appointments.export', $exportFilters) }}"
-                class="inline-flex items-center justify-center rounded-xl bg-umbralia-title px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-umbralia-title/90"
+                class="inline-flex items-center justify-center rounded-xl bg-brand-title px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-title/90"
             >
                 {{ __('reports.actions.export_csv') }}
             </a>
@@ -49,7 +49,7 @@
                         name="date_from"
                         type="date"
                         value="{{ $filters['date_from'] }}"
-                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                     >
 
                     @error('date_from')
@@ -67,7 +67,7 @@
                         name="date_to"
                         type="date"
                         value="{{ $filters['date_to'] }}"
-                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                     >
 
                     @error('date_to')
@@ -76,28 +76,28 @@
                 </div>
 
                 <div>
-                    <label for="therapist_id" class="block text-sm font-medium text-slate-700">
-                        {{ __('reports.filters.therapist') }}
+                    <label for="professional_id" class="block text-sm font-medium text-slate-700">
+                        {{ __('reports.filters.professional') }}
                     </label>
 
                     <select
-                        id="therapist_id"
-                        name="therapist_id"
-                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                        id="professional_id"
+                        name="professional_id"
+                        class="mt-1 block w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                     >
-                        <option value="">{{ __('reports.filters.all_therapists') }}</option>
+                        <option value="">{{ __('reports.filters.all_professionals') }}</option>
 
-                        @foreach ($therapists as $therapist)
+                        @foreach ($professionals as $professional)
                             <option
-                                value="{{ $therapist->id }}"
-                                @selected((string) $filters['therapist_id'] === (string) $therapist->id)
+                                value="{{ $professional->id }}"
+                                @selected((string) $filters['professional_id'] === (string) $professional->id)
                             >
-                                {{ $therapist->user?->name ?? __('reports.values.no_therapist_name') }}
+                                {{ $professional->user?->name ?? __('reports.values.no_professional_name') }}
                             </option>
                         @endforeach
                     </select>
 
-                    @error('therapist_id')
+                    @error('professional_id')
                         <p class="mt-1 text-sm text-rose-800">{{ $message }}</p>
                     @enderror
                 </div>
@@ -105,7 +105,7 @@
                 <div class="flex items-end gap-2">
                     <button
                         type="submit"
-                        class="inline-flex w-full items-center justify-center rounded-xl bg-umbralia-title px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-umbralia-title/90"
+                        class="inline-flex w-full items-center justify-center rounded-xl bg-brand-title px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-title/90"
                     >
                         {{ __('reports.actions.apply_filters') }}
                     </button>
@@ -194,14 +194,14 @@
 
             <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h2 class="text-lg font-semibold text-slate-900">
-                    {{ __('reports.sections.pending_by_therapist') }}
+                    {{ __('reports.sections.pending_by_professional') }}
                 </h2>
 
                 <div class="mt-4 overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead>
                             <tr class="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                <th class="px-3 py-3">{{ __('reports.table.therapist') }}</th>
+                                <th class="px-3 py-3">{{ __('reports.table.professional') }}</th>
                                 <th class="px-3 py-3">{{ __('reports.table.currency') }}</th>
                                 <th class="px-3 py-3">{{ __('reports.table.pending_appointments') }}</th>
                                 <th class="px-3 py-3">{{ __('reports.table.pending_amount') }}</th>
@@ -209,11 +209,11 @@
                         </thead>
 
                         <tbody class="divide-y divide-slate-100">
-                            @forelse ($report['therapist_summaries'] as $summary)
+                            @forelse ($report['professional_summaries'] as $summary)
                                 <tr>
                                     <td class="px-3 py-3">
-                                        <div class="font-medium text-slate-900">{{ $summary['therapist_name'] }}</div>
-                                        <div class="text-xs text-slate-500">{{ $summary['therapist_email'] }}</div>
+                                        <div class="font-medium text-slate-900">{{ $summary['professional_name'] }}</div>
+                                        <div class="text-xs text-slate-500">{{ $summary['professional_email'] }}</div>
                                     </td>
                                     <td class="px-3 py-3 text-slate-700">{{ $summary['currency'] }}</td>
                                     <td class="px-3 py-3 text-slate-700">{{ $summary['pending_payment_appointments'] }}</td>
@@ -252,7 +252,7 @@
                     <thead>
                         <tr class="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                             <th class="px-3 py-3">{{ __('reports.table.patient') }}</th>
-                            <th class="px-3 py-3">{{ __('reports.table.therapist') }}</th>
+                            <th class="px-3 py-3">{{ __('reports.table.professional') }}</th>
                             <th class="px-3 py-3">{{ __('reports.table.session_type') }}</th>
                             <th class="px-3 py-3">{{ __('reports.table.starts_at') }}</th>
                             <th class="px-3 py-3">{{ __('reports.table.appointment_status') }}</th>
@@ -271,8 +271,8 @@
                                 </td>
 
                                 <td class="px-3 py-3">
-                                    <div class="font-medium text-slate-900">{{ $row['therapist_name'] }}</div>
-                                    <div class="text-xs text-slate-500">{{ $row['therapist_email'] }}</div>
+                                    <div class="font-medium text-slate-900">{{ $row['professional_name'] }}</div>
+                                    <div class="text-xs text-slate-500">{{ $row['professional_email'] }}</div>
                                 </td>
 
                                 <td class="px-3 py-3 text-slate-700">{{ $row['session_type_name'] }}</td>

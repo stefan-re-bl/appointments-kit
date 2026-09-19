@@ -19,9 +19,9 @@ final class UpdateSessionTypeRequest extends FormRequest
         $sessionType = $this->route('session_type');
 
         return $user instanceof User
-            && $user->therapist !== null
+            && $user->professional !== null
             && $sessionType instanceof SessionType
-            && (int) $sessionType->therapist_id === (int) $user->therapist->id;
+            && (int) $sessionType->professional_id === (int) $user->professional->id;
     }
 
     /**
@@ -41,7 +41,7 @@ final class UpdateSessionTypeRequest extends FormRequest
                 'max:255',
                 Rule::unique('session_types')
                     ->ignore($sessionType)
-                    ->where(fn ($query) => $query->where('therapist_id', $user->therapist->id)),
+                    ->where(fn ($query) => $query->where('professional_id', $user->professional->id)),
             ],
             'duration_minutes' => ['required', 'integer', 'in:30,60,90'],
             'price' => ['required', 'numeric', 'min:0'],

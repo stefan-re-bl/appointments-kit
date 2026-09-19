@@ -9,7 +9,7 @@ use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\FilterAppointmentsRequest;
 use App\Models\Appointment;
-use App\Models\Therapist;
+use App\Models\Professional;
 use App\Services\TimezoneService;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\View\View;
@@ -60,13 +60,13 @@ final class AppointmentController extends Controller implements HasMiddleware
                 ->count(),
         ];
 
-        $therapists = Therapist::query()
+        $professionals = Professional::query()
             ->with('user')
             ->orderBy('id')
             ->get();
 
         return view('admin.appointments.index', [
-            'therapists' => $therapists,
+            'professionals' => $professionals,
             'appointmentStatuses' => AppointmentStatus::cases(),
             'paymentStatuses' => PaymentStatus::cases(),
             'filters' => $filters,
@@ -98,7 +98,7 @@ final class AppointmentController extends Controller implements HasMiddleware
 
             return [
                 'id' => (string) $appointment->id,
-                'title' => $appointment->therapist->user->name.' - '.$appointment->patient_name,
+                'title' => $appointment->professional->user->name.' - '.$appointment->patient_name,
                 'start' => $startsAt->toIso8601String(),
                 'end' => $endsAt->toIso8601String(),
                 'backgroundColor' => $this->eventColorForStatus($appointment->status),
@@ -107,7 +107,7 @@ final class AppointmentController extends Controller implements HasMiddleware
                 'extendedProps' => [
                     'local_date' => $startsAt->toDateString(),
                     'patient_name' => $appointment->patient_name,
-                    'therapist_name' => $appointment->therapist->user->name,
+                    'professional_name' => $appointment->professional->user->name,
                     'status' => $appointment->status->value,
                     'payment_status' => $appointment->payment_status->value,
                 ],
@@ -145,7 +145,7 @@ final class AppointmentController extends Controller implements HasMiddleware
                     'patient_name' => $appointment->patient_name,
                     'patient_email' => $appointment->patient_email,
                     'patient_timezone' => $appointment->patient_timezone,
-                    'therapist_name' => $appointment->therapist->user->name,
+                    'professional_name' => $appointment->professional->user->name,
                     'session_type' => $appointment->sessionType->name,
                     'time_range' => $timezoneService->formatForDisplay($appointment->starts_at, 'H:i', $timezone)
                         .' - '.$timezoneService->formatForDisplay($appointment->ends_at, 'H:i', $timezone),
@@ -165,9 +165,9 @@ final class AppointmentController extends Controller implements HasMiddleware
     private function appointmentsQuery(array $filters): Builder
     {
         return Appointment::query()
-            ->with(['therapist.user', 'sessionType'])
-            ->when(! empty($filters['therapist_id']), function (Builder $query) use ($filters): void {
-                $query->where('therapist_id', $filters['therapist_id']);
+            ->with(['professional.user', 'sessionType'])
+            ->when(! empty($filters['professional_id']), function (Builder $query) use ($filters): void {
+                $query->where('professional_id', $filters['professional_id']);
             })
             ->when(! empty($filters['status']), function (Builder $query) use ($filters): void {
                 $query->where('status', $filters['status']);
@@ -184,10 +184,13 @@ final class AppointmentController extends Controller implements HasMiddleware
     private function validatedCalendarFilters(Request $request, array $rules): array
     {
         return $request->validate($rules + [
-            'therapist_id' => ['nullable', 'integer', Rule::exists('therapists', 'id')],
+            'professional_id' => ['nullable', 'integer', Rule::exists('professionals', 'id')],
+            'professional_id' => ['nullable', 'integer', Rule::exists('professionals', 'id')],
             'status' => ['nullable', Rule::enum(AppointmentStatus::class)],
             'payment_status' => ['nullable', Rule::enum(PaymentStatus::class)],
-        ]);
+        ]) + [
+            'professional_id' => $request->input('professional_id', $request->input('professional_id')),
+        ];
     }
 
     private function currentTimezone(): string

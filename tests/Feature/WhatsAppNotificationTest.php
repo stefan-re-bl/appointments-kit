@@ -12,8 +12,8 @@ use App\Jobs\Notifications\ProcessMetaWhatsAppWebhook;
 use App\Jobs\Notifications\SendWhatsAppTemplateMessage;
 use App\Models\Appointment;
 use App\Models\NotificationDelivery;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use App\Services\Notifications\PhoneNumberNormalizer;
 use App\Services\Notifications\RecipientLocaleResolver;
@@ -40,6 +40,7 @@ final class WhatsAppNotificationTest extends TestCase
         CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-07-30 12:00:00', 'UTC'));
 
         config([
+            'features.whatsapp' => true,
             'services.meta_whatsapp.enabled' => true,
             'services.meta_whatsapp.phone_number_id' => '123456',
             'services.meta_whatsapp.access_token' => 'test-token',
@@ -47,12 +48,12 @@ final class WhatsAppNotificationTest extends TestCase
             'services.meta_whatsapp.language_codes.en' => 'en_US',
             'services.meta_whatsapp.templates.patient_confirmation_es' => 'patient_booking_confirmed_es',
             'services.meta_whatsapp.templates.patient_confirmation_en' => 'patient_booking_confirmed_en',
-            'services.meta_whatsapp.templates.therapist_confirmation_es' => 'therapist_booking_confirmed_es',
-            'services.meta_whatsapp.templates.therapist_confirmation_en' => 'therapist_booking_confirmed_en',
+            'services.meta_whatsapp.templates.professional_confirmation_es' => 'professional_booking_confirmed_es',
+            'services.meta_whatsapp.templates.professional_confirmation_en' => 'professional_booking_confirmed_en',
             'services.meta_whatsapp.templates.patient_reminder_es' => 'patient_appointment_reminder_es',
             'services.meta_whatsapp.templates.patient_reminder_en' => 'patient_appointment_reminder_en',
-            'services.meta_whatsapp.templates.therapist_reminder_es' => 'therapist_appointment_reminder_es',
-            'services.meta_whatsapp.templates.therapist_reminder_en' => 'therapist_appointment_reminder_en',
+            'services.meta_whatsapp.templates.professional_reminder_es' => 'professional_appointment_reminder_es',
+            'services.meta_whatsapp.templates.professional_reminder_en' => 'professional_appointment_reminder_en',
         ]);
     }
 
@@ -63,7 +64,7 @@ final class WhatsAppNotificationTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_booking_confirmation_creates_independent_patient_and_therapist_deliveries_with_locale_snapshots(): void
+    public function test_booking_confirmation_creates_independent_customer_and_professional_deliveries_with_locale_snapshots(): void
     {
         Queue::fake();
 
@@ -90,7 +91,7 @@ final class WhatsAppNotificationTest extends TestCase
         $this->assertDatabaseHas('notification_deliveries', [
             'appointment_id' => $appointment->id,
             'event' => NotificationEvent::BOOKING_CONFIRMED->value,
-            'recipient_type' => NotificationRecipientType::THERAPIST->value,
+            'recipient_type' => NotificationRecipientType::PROFESSIONAL->value,
             'recipient_locale' => 'es',
             'status' => NotificationDeliveryStatus::QUEUED->value,
         ]);
@@ -101,6 +102,25 @@ final class WhatsAppNotificationTest extends TestCase
     public function test_whatsapp_disabled_does_not_create_deliveries(): void
     {
         config(['services.meta_whatsapp.enabled' => false]);
+        Queue::fake();
+
+        $appointment = $this->makeAppointment([
+            'patient_phone' => '+14155552671',
+            'patient_whatsapp_opt_in_at' => now('UTC'),
+        ], [
+            'whatsapp_phone' => '+5491123456789',
+            'whatsapp_notifications_enabled' => true,
+        ]);
+
+        app(WhatsAppDeliveryDispatcher::class)->dispatchBookingConfirmed($appointment);
+
+        $this->assertDatabaseCount('notification_deliveries', 0);
+        Queue::assertNothingPushed();
+    }
+
+    public function test_whatsapp_feature_flag_disabled_does_not_create_deliveries(): void
+    {
+        config(['features.whatsapp' => false]);
         Queue::fake();
 
         $appointment = $this->makeAppointment([
@@ -161,13 +181,13 @@ final class WhatsAppNotificationTest extends TestCase
             NotificationRecipientType::PATIENT,
             'en',
         );
-        $therapistSpanish = $this->makeDelivery(
+        $professionalSpanish = $this->makeDelivery(
             $this->makeAppointment([], [
                 'preferred_locale' => 'es',
                 'whatsapp_phone' => '+5491123456789',
                 'whatsapp_notifications_enabled' => true,
             ]),
-            NotificationRecipientType::THERAPIST,
+            NotificationRecipientType::PROFESSIONAL,
             'es',
         );
 
@@ -177,7 +197,7 @@ final class WhatsAppNotificationTest extends TestCase
             app(WhatsAppTemplateRegistry::class),
             app(WhatsAppGateway::class),
         );
-        (new SendWhatsAppTemplateMessage($therapistSpanish->id))->handle(
+        (new SendWhatsAppTemplateMessage($professionalSpanish->id))->handle(
             app(RecipientLocaleResolver::class),
             app(WhatsAppVariableBuilder::class),
             app(WhatsAppTemplateRegistry::class),
@@ -187,7 +207,7 @@ final class WhatsAppNotificationTest extends TestCase
         $this->assertSame('es', app()->getLocale());
         $this->assertSame('patient_booking_confirmed_en', $sentTemplates->items[0]['template']);
         $this->assertSame('en_US', $sentTemplates->items[0]['language']);
-        $this->assertSame('therapist_booking_confirmed_es', $sentTemplates->items[1]['template']);
+        $this->assertSame('professional_booking_confirmed_es', $sentTemplates->items[1]['template']);
         $this->assertSame('es', $sentTemplates->items[1]['language']);
     }
 
@@ -326,19 +346,19 @@ final class WhatsAppNotificationTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $appointmentOverrides
-     * @param  array<string, mixed>  $therapistOverrides
+     * @param  array<string, mixed>  $professionalOverrides
      */
-    private function makeAppointment(array $appointmentOverrides = [], array $therapistOverrides = []): Appointment
+    private function makeAppointment(array $appointmentOverrides = [], array $professionalOverrides = []): Appointment
     {
         $user = User::factory()->create();
-        $therapist = Therapist::factory()->for($user)->create(array_merge([
+        $professional = Professional::factory()->for($user)->create(array_merge([
             'timezone' => 'America/Argentina/Buenos_Aires',
             'is_active' => true,
             'is_approved' => true,
             'google_meet_link' => 'https://meet.google.com/test-link',
-        ], $therapistOverrides));
-        $sessionType = SessionType::factory()->for($therapist)->create([
-            'name' => 'Consulta inicial',
+        ], $professionalOverrides));
+        $sessionType = SessionType::factory()->for($professional)->create([
+            'name' => 'Servicio inicial',
             'duration_minutes' => 60,
             'price' => 100,
             'currency' => 'USD',
@@ -346,13 +366,13 @@ final class WhatsAppNotificationTest extends TestCase
         ]);
 
         return Appointment::factory()
-            ->for($therapist)
+            ->for($professional)
             ->for($sessionType, 'sessionType')
             ->create(array_merge([
                 'status' => AppointmentStatus::CONFIRMED->value,
                 'starts_at' => '2026-08-01 15:00:00',
                 'ends_at' => '2026-08-01 16:00:00',
-                'patient_name' => 'Patient Test',
+                'patient_name' => 'Customer Test',
                 'patient_email' => 'patient@example.test',
                 'patient_timezone' => 'America/New_York',
                 'patient_locale' => 'es',
@@ -361,7 +381,7 @@ final class WhatsAppNotificationTest extends TestCase
 
     private function makeDelivery(Appointment $appointment, NotificationRecipientType $recipientType, string $locale): NotificationDelivery
     {
-        $appointment->loadMissing(['therapist.user', 'sessionType']);
+        $appointment->loadMissing(['professional.user', 'sessionType']);
 
         return NotificationDelivery::query()->create([
             'appointment_id' => $appointment->id,
@@ -370,7 +390,7 @@ final class WhatsAppNotificationTest extends TestCase
             'recipient_type' => $recipientType->value,
             'recipient_address' => $recipientType === NotificationRecipientType::PATIENT
                 ? ($appointment->patient_phone ?: '+14155552671')
-                : ($appointment->therapist?->whatsapp_phone ?: '+5491123456789'),
+                : ($appointment->professional?->whatsapp_phone ?: '+5491123456789'),
             'recipient_locale' => $locale,
             'provider' => 'meta',
             'status' => NotificationDeliveryStatus::QUEUED->value,

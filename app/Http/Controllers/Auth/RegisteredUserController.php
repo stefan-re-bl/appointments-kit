@@ -46,11 +46,11 @@ final class RegisteredUserController extends Controller
         ]);
 
         $user->forceFill([
-            'role' => Role::THERAPIST,
+            'role' => Role::PROFESSIONAL,
         ])->save();
 
-        if (! $user->therapist()->exists()) {
-            $user->therapist()->create([
+        if (! $user->professional()->exists()) {
+            $user->professional()->create([
                 'timezone' => $timezone,
                 'is_active' => true,
                 'is_approved' => false,

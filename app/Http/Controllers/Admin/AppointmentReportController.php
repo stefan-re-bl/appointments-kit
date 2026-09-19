@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AppointmentReportRequest;
-use App\Models\Therapist;
+use App\Models\Professional;
 use App\Services\Reports\AppointmentReportService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -31,16 +31,16 @@ final class AppointmentReportController extends Controller implements HasMiddlew
     ): View {
         $report = $reportService->build($request->filters());
 
-        $therapists = Therapist::query()
+        $professionals = Professional::query()
             ->with('user')
             ->get()
-            ->sortBy(fn (Therapist $therapist): string => strtolower($therapist->user?->name ?? ''))
+            ->sortBy(fn (Professional $professional): string => strtolower($professional->user?->name ?? ''))
             ->values();
 
         return view('admin.reports.appointments.index', [
             'report' => $report,
             'filters' => $report['filters'],
-            'therapists' => $therapists,
+            'professionals' => $professionals,
         ]);
     }
 
@@ -49,7 +49,7 @@ final class AppointmentReportController extends Controller implements HasMiddlew
         AppointmentReportService $reportService,
     ): StreamedResponse {
         $report = $reportService->build($request->filters());
-        $filename = 'umbralia-appointment-report-' . now('UTC')->format('Ymd_His') . '.csv';
+        $filename = 'appointments-kit-appointment-report-'.now('UTC')->format('Ymd_His').'.csv';
 
         return Response::streamDownload(function () use ($report): void {
             $handle = fopen('php://output', 'w');
@@ -64,8 +64,8 @@ final class AppointmentReportController extends Controller implements HasMiddlew
                 __('reports.csv.headers.appointment_id'),
                 __('reports.csv.headers.patient_name'),
                 __('reports.csv.headers.patient_email'),
-                __('reports.csv.headers.therapist_name'),
-                __('reports.csv.headers.therapist_email'),
+                __('reports.csv.headers.professional_name'),
+                __('reports.csv.headers.professional_email'),
                 __('reports.csv.headers.session_type'),
                 __('reports.csv.headers.starts_at_local'),
                 __('reports.csv.headers.ends_at_local'),
@@ -87,15 +87,15 @@ final class AppointmentReportController extends Controller implements HasMiddlew
                     $row['appointment_id'],
                     $row['patient_name'],
                     $row['patient_email'],
-                    $row['therapist_name'],
-                    $row['therapist_email'],
+                    $row['professional_name'],
+                    $row['professional_email'],
                     $row['session_type_name'],
                     $row['starts_at_display'],
                     $row['ends_at_display'],
                     $row['starts_at_utc'],
                     $row['ends_at_utc'],
-                    __('reports.status.appointment.' . $row['status']),
-                    __('reports.status.payment.' . $row['payment_status']),
+                    __('reports.status.appointment.'.$row['status']),
+                    __('reports.status.payment.'.$row['payment_status']),
                     $row['paid_at_display'] ?? '',
                     $row['paid_at_utc'] ?? '',
                     number_format((float) $row['price'], 2, '.', ''),

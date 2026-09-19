@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 #[Fillable([
-    'therapist_id',
+    'professional_id',
     'session_type_id',
     'patient_name',
     'patient_email',
@@ -74,9 +74,9 @@ class Appointment extends Model
         });
     }
 
-    public function therapist(): BelongsTo
+    public function professional(): BelongsTo
     {
-        return $this->belongsTo(Therapist::class);
+        return $this->belongsTo(Professional::class);
     }
 
     public function sessionType(): BelongsTo
@@ -108,7 +108,9 @@ class Appointment extends Model
     {
         return $query
             ->where('status', AppointmentStatus::PENDING->value)
-            ->where('created_at', '<', CarbonImmutable::now('UTC')->subMinutes(15));
+            ->where('created_at', '<', CarbonImmutable::now('UTC')->subMinutes(
+                max(1, (int) config('booking.pending_expiration_minutes', 15))
+            ));
     }
 
     /**
@@ -122,13 +124,13 @@ class Appointment extends Model
      */
     public function scopeOverlappingSlot(
         Builder $query,
-        int $therapistId,
+        int $professionalId,
         CarbonInterface|string $startsAt,
         CarbonInterface|string $endsAt,
         ?int $excludeAppointmentId = null,
     ): Builder {
         return $query
-            ->where('therapist_id', $therapistId)
+            ->where('professional_id', $professionalId)
             ->where('status', '!=', AppointmentStatus::CANCELLED->value)
             ->where('starts_at', '<', $endsAt)
             ->where('ends_at', '>', $startsAt)

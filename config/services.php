@@ -52,12 +52,12 @@ return [
         'templates' => [
             'patient_confirmation_es' => env('META_WHATSAPP_TEMPLATE_PATIENT_CONFIRMATION_ES'),
             'patient_confirmation_en' => env('META_WHATSAPP_TEMPLATE_PATIENT_CONFIRMATION_EN'),
-            'therapist_confirmation_es' => env('META_WHATSAPP_TEMPLATE_THERAPIST_CONFIRMATION_ES'),
-            'therapist_confirmation_en' => env('META_WHATSAPP_TEMPLATE_THERAPIST_CONFIRMATION_EN'),
+            'professional_confirmation_es' => env('META_WHATSAPP_TEMPLATE_PROFESSIONAL_CONFIRMATION_ES'),
+            'professional_confirmation_en' => env('META_WHATSAPP_TEMPLATE_PROFESSIONAL_CONFIRMATION_EN'),
             'patient_reminder_es' => env('META_WHATSAPP_TEMPLATE_PATIENT_REMINDER_ES'),
             'patient_reminder_en' => env('META_WHATSAPP_TEMPLATE_PATIENT_REMINDER_EN'),
-            'therapist_reminder_es' => env('META_WHATSAPP_TEMPLATE_THERAPIST_REMINDER_ES'),
-            'therapist_reminder_en' => env('META_WHATSAPP_TEMPLATE_THERAPIST_REMINDER_EN'),
+            'professional_reminder_es' => env('META_WHATSAPP_TEMPLATE_PROFESSIONAL_REMINDER_ES'),
+            'professional_reminder_en' => env('META_WHATSAPP_TEMPLATE_PROFESSIONAL_REMINDER_EN'),
         ],
     ],
 

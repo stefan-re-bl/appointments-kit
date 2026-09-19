@@ -33,7 +33,7 @@
                     <p class="text-sm mt-2 text-slate-900">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-slate-600 hover:text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-umbralia-accent/30">
+                        <button form="send-verification" class="underline text-sm text-slate-600 hover:text-slate-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-accent/30">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -47,11 +47,11 @@
             @endif
         </div>
 
-        @if ($user->therapist)
+        @if ($user->professional)
             @php
-                $avatarPreviewUrl = $user->therapist->avatar_url
+                $avatarPreviewUrl = $user->professional->avatar_url
                     ?? 'https://ui-avatars.com/api/?name='.urlencode($user->name);
-                $presentationVideoPreviewUrl = $user->therapist->presentation_video_url;
+                $presentationVideoPreviewUrl = $user->professional->presentation_video_url;
             @endphp
 
             <div
@@ -84,7 +84,7 @@
                             name="avatar"
                             type="file"
                             accept="image/jpeg,image/png,image/webp"
-                            class="mt-2 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-umbralia-title file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-umbralia-title/90"
+                            class="mt-2 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-title file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-title/90"
                             x-on:change="updatePreview($event)"
                         >
                         <p class="mt-2 text-sm text-slate-600">{{ __('app.profile.avatar_upload_help') }}</p>
@@ -133,7 +133,7 @@
                             name="presentation_video"
                             type="file"
                             accept="video/mp4,video/webm,video/ogg,video/quicktime"
-                            class="mt-2 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-umbralia-title file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-umbralia-title/90"
+                            class="mt-2 block w-full text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-title file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-title/90"
                             x-on:change="updatePreview($event)"
                         >
                         <p class="mt-2 text-sm text-slate-600">{{ __('app.profile.presentation_video_upload_help') }}</p>
@@ -143,14 +143,14 @@
             </div>
 
             <div>
-                <x-input-label for="bio" :value="__('app.profile.therapist_bio')" />
+                <x-input-label for="bio" :value="__('app.profile.professional_bio')" />
                 <textarea
                     id="bio"
                     name="bio"
                     rows="5"
-                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
-                >{{ old('bio', $user->therapist->bio) }}</textarea>
-                <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.therapist_bio_help') }}</p>
+                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
+                >{{ old('bio', $user->professional->bio) }}</textarea>
+                <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.professional_bio_help') }}</p>
                 <x-input-error class="mt-2" :messages="$errors->get('bio')" />
             </div>
 
@@ -160,27 +160,27 @@
                     id="specialties"
                     name="specialties"
                     rows="4"
-                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
-                >{{ old('specialties', $user->therapist->specialties) }}</textarea>
+                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
+                >{{ old('specialties', $user->professional->specialties) }}</textarea>
                 <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.specialties_help') }}</p>
                 <x-input-error class="mt-2" :messages="$errors->get('specialties')" />
             </div>
 
             <div>
-                <x-input-label for="therapeutic_approach" :value="__('app.profile.therapeutic_approach')" />
+                <x-input-label for="professional_approach" :value="__('app.profile.professional_approach')" />
                 <textarea
-                    id="therapeutic_approach"
-                    name="therapeutic_approach"
+                    id="professional_approach"
+                    name="professional_approach"
                     rows="4"
-                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
-                >{{ old('therapeutic_approach', $user->therapist->therapeutic_approach) }}</textarea>
-                <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.therapeutic_approach_help') }}</p>
-                <x-input-error class="mt-2" :messages="$errors->get('therapeutic_approach')" />
+                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
+                >{{ old('professional_approach', $user->professional->professional_approach) }}</textarea>
+                <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.professional_approach_help') }}</p>
+                <x-input-error class="mt-2" :messages="$errors->get('professional_approach')" />
             </div>
 
             <div>
                 <x-input-label for="google_meet_link" :value="__('app.profile.google_meet_link')" />
-                <x-text-input id="google_meet_link" name="google_meet_link" type="url" class="mt-1 block w-full" :value="old('google_meet_link', $user->therapist->google_meet_link)" />
+                <x-text-input id="google_meet_link" name="google_meet_link" type="url" class="mt-1 block w-full" :value="old('google_meet_link', $user->professional->google_meet_link)" />
                 <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.google_meet_link_help') }}</p>
                 <x-input-error class="mt-2" :messages="$errors->get('google_meet_link')" />
             </div>
@@ -191,8 +191,8 @@
                     id="payment_instructions"
                     name="payment_instructions"
                     rows="4"
-                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
-                >{{ old('payment_instructions', $user->therapist->payment_instructions) }}</textarea>
+                    class="mt-1 block w-full rounded-lg border-slate-300 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
+                >{{ old('payment_instructions', $user->professional->payment_instructions) }}</textarea>
                 <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.payment_instructions_help') }}</p>
                 <x-input-error class="mt-2" :messages="$errors->get('payment_instructions')" />
             </div>
@@ -200,7 +200,7 @@
             <div class="space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
                 <div>
                     <x-input-label for="whatsapp_phone" :value="__('app.profile.whatsapp_phone')" />
-                    <x-text-input id="whatsapp_phone" name="whatsapp_phone" type="tel" class="mt-1 block w-full" :value="old('whatsapp_phone', $user->therapist->whatsapp_phone)" placeholder="{{ __('app.whatsapp.phone_placeholder') }}" />
+                    <x-text-input id="whatsapp_phone" name="whatsapp_phone" type="tel" class="mt-1 block w-full" :value="old('whatsapp_phone', $user->professional->whatsapp_phone)" placeholder="{{ __('app.whatsapp.phone_placeholder') }}" />
                     <p class="mt-1 text-sm text-slate-700">{{ __('app.profile.whatsapp_phone_help') }}</p>
                     <x-input-error class="mt-2" :messages="$errors->get('whatsapp_phone')" />
                 </div>
@@ -210,8 +210,8 @@
                         type="checkbox"
                         name="whatsapp_notifications_enabled"
                         value="1"
-                        @checked(old('whatsapp_notifications_enabled', $user->therapist->whatsapp_notifications_enabled))
-                        class="mt-1 rounded border-umbralia-accent text-slate-600 focus:ring-umbralia-accent/30"
+                        @checked(old('whatsapp_notifications_enabled', $user->professional->whatsapp_notifications_enabled))
+                        class="mt-1 rounded border-brand-accent text-slate-600 focus:ring-brand-accent/30"
                     >
                     <span>{{ __('app.profile.whatsapp_notifications_enabled') }}</span>
                 </label>
@@ -221,8 +221,8 @@
                         type="checkbox"
                         name="whatsapp_confirmations_enabled"
                         value="1"
-                        @checked(old('whatsapp_confirmations_enabled', $user->therapist->whatsapp_confirmations_enabled))
-                        class="mt-1 rounded border-umbralia-accent text-slate-600 focus:ring-umbralia-accent/30"
+                        @checked(old('whatsapp_confirmations_enabled', $user->professional->whatsapp_confirmations_enabled))
+                        class="mt-1 rounded border-brand-accent text-slate-600 focus:ring-brand-accent/30"
                     >
                     <span>{{ __('app.profile.whatsapp_confirmations_enabled') }}</span>
                 </label>
@@ -232,8 +232,8 @@
                         type="checkbox"
                         name="whatsapp_reminders_enabled"
                         value="1"
-                        @checked(old('whatsapp_reminders_enabled', $user->therapist->whatsapp_reminders_enabled))
-                        class="mt-1 rounded border-umbralia-accent text-slate-600 focus:ring-umbralia-accent/30"
+                        @checked(old('whatsapp_reminders_enabled', $user->professional->whatsapp_reminders_enabled))
+                        class="mt-1 rounded border-brand-accent text-slate-600 focus:ring-brand-accent/30"
                     >
                     <span>{{ __('app.profile.whatsapp_reminders_enabled') }}</span>
                 </label>
@@ -243,10 +243,10 @@
                     <select
                         id="preferred_locale"
                         name="preferred_locale"
-                        class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                        class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                     >
-                        <option value="es" @selected(old('preferred_locale', $user->therapist->preferred_locale ?? 'es') === 'es')>{{ __('app.spanish') }}</option>
-                        <option value="en" @selected(old('preferred_locale', $user->therapist->preferred_locale ?? 'es') === 'en')>{{ __('app.english') }}</option>
+                        <option value="es" @selected(old('preferred_locale', $user->professional->preferred_locale ?? 'es') === 'es')>{{ __('app.spanish') }}</option>
+                        <option value="en" @selected(old('preferred_locale', $user->professional->preferred_locale ?? 'es') === 'en')>{{ __('app.english') }}</option>
                     </select>
                     <p class="mt-1 text-sm text-slate-700">{{ __('app.profile.preferred_locale_help') }}</p>
                     <x-input-error class="mt-2" :messages="$errors->get('preferred_locale')" />
@@ -257,8 +257,8 @@
                 x-data="{
                     countryTimezones: @js($countryTimezones),
                     countryDefaults: @js($countries),
-                    selectedCountry: @js(old('therapist_country', $therapistCountry)),
-                    selectedTimezone: @js(old('therapist_timezone', $therapistTimezone)),
+                    selectedCountry: @js(old('professional_country', $professionalCountry)),
+                    selectedTimezone: @js(old('professional_timezone', $professionalTimezone)),
                     referenceDate: @js($timezoneReferenceDate),
                     effectiveTimezoneOptions() {
                         const groups = {};
@@ -356,33 +356,33 @@
                 class="space-y-4 rounded-2xl border border-amber-200 bg-amber-50 p-4"
             >
                 <div>
-                    <x-input-label for="therapist_country" :value="__('app.profile.timezone_country')" />
+                    <x-input-label for="professional_country" :value="__('app.profile.timezone_country')" />
                     <select
-                        id="therapist_country"
-                        name="therapist_country"
+                        id="professional_country"
+                        name="professional_country"
                         x-model="selectedCountry"
                         x-on:change="syncTimezone()"
-                        class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                        class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                         required
                     >
                         @foreach ($countries as $countryCode => $timezone)
-                            <option value="{{ $countryCode }}" @selected(old('therapist_country', $therapistCountry) === $countryCode)>
+                            <option value="{{ $countryCode }}" @selected(old('professional_country', $professionalCountry) === $countryCode)>
                                 {{ __('booking_timezone.countries.'.$countryCode) }}
                             </option>
                         @endforeach
                     </select>
                     <p class="mt-1 text-sm text-slate-700">{{ __('app.profile.timezone_help') }}</p>
-                    <x-input-error class="mt-2" :messages="$errors->get('therapist_country')" />
+                    <x-input-error class="mt-2" :messages="$errors->get('professional_country')" />
                 </div>
 
                 <div x-show="hasTimezoneRegions()" x-cloak>
-                    <x-input-label for="therapist_timezone" :value="__('app.profile.timezone_region')" />
+                    <x-input-label for="professional_timezone" :value="__('app.profile.timezone_region')" />
                     <select
-                        id="therapist_timezone"
-                        name="therapist_timezone"
+                        id="professional_timezone"
+                        name="professional_timezone"
                         x-model="selectedTimezone"
                         x-bind:required="hasTimezoneRegions()"
-                        class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                        class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                     >
                         <option value="">{{ __('booking_timezone.region_placeholder') }}</option>
                         <template x-for="option in effectiveTimezoneOptions()" :key="option.timezone">
@@ -390,13 +390,13 @@
                         </template>
                     </select>
                     <p class="mt-1 text-sm text-slate-700">{{ __('app.profile.timezone_region_help') }}</p>
-                    <x-input-error class="mt-2" :messages="$errors->get('therapist_timezone')" />
+                    <x-input-error class="mt-2" :messages="$errors->get('professional_timezone')" />
                 </div>
             </div>
 
             <div>
                 <x-input-label for="avatar_url" :value="__('app.profile.avatar_url')" />
-                <x-text-input id="avatar_url" name="avatar_url" type="text" class="mt-1 block w-full" :value="old('avatar_url', $user->therapist->avatar_url)" />
+                <x-text-input id="avatar_url" name="avatar_url" type="text" class="mt-1 block w-full" :value="old('avatar_url', $user->professional->avatar_url)" />
                 <p class="mt-1 text-sm text-slate-600">{{ __('app.profile.avatar_url_help') }}</p>
                 <x-input-error class="mt-2" :messages="$errors->get('avatar_url')" />
             </div>

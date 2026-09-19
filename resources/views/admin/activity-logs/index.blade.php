@@ -6,7 +6,7 @@
 @section('content')
     <div class="space-y-6">
         <div>
-            <h2 class="text-2xl font-semibold text-umbralia-title">
+            <h2 class="text-2xl font-semibold text-brand-title">
                 {{ __('app.admin.activity_logs.title') }}
             </h2>
             <p class="mt-1 text-sm text-slate-600">
@@ -58,7 +58,7 @@
                                     }
 
                                     return $base . ($isNew
-                                        ? 'bg-umbralia-accent-soft text-umbralia-title ring-umbralia-accent-soft'
+                                        ? 'bg-brand-accent-soft text-brand-title ring-brand-accent-soft'
                                         : 'bg-slate-100 text-slate-800 ring-slate-200');
                                 };
                             @endphp
@@ -67,7 +67,7 @@
                                     {{ $timezoneService->formatForDisplay($log->created_at, 'd/m/Y H:i') }}
                                 </td>
                                 <td class="px-4 py-4">
-                                    <span class="rounded-full bg-umbralia-accent-soft px-3 py-1 text-xs font-semibold text-umbralia-title ring-1 ring-umbralia-accent-soft">
+                                    <span class="rounded-full bg-brand-accent-soft px-3 py-1 text-xs font-semibold text-brand-title ring-1 ring-brand-accent-soft">
                                         {{ __('app.admin.activity_logs.events.' . $log->event) }}
                                     </span>
                                 </td>
@@ -77,7 +77,7 @@
                                     </div>
                                     <div>{{ $log->appointment?->patient_name }}</div>
                                     <div class="text-xs text-slate-500">
-                                        {{ $log->appointment?->therapist?->user?->name }}
+                                        {{ $log->appointment?->professional?->user?->name }}
                                     </div>
                                 </td>
                                 <td class="px-4 py-4 text-slate-700">

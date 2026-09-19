@@ -33,7 +33,7 @@ final class RegistrationTest extends TestCase
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
 
-        $this->assertDatabaseHas('therapists', [
+        $this->assertDatabaseHas('professionals', [
             'timezone' => 'America/Argentina/Buenos_Aires',
             'is_active' => true,
             'is_approved' => false,

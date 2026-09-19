@@ -34,14 +34,14 @@ final class DashboardController extends Controller implements HasMiddleware
             return redirect()->route('admin.index');
         }
 
-        $therapist = $user->therapist()
+        $professional = $user->professional()
             ->withCount([
                 'availabilities as active_availabilities_count' => fn (Builder $query) => $query->where('is_active', true),
             ])
             ->first();
 
         return view('dashboard', [
-            'therapist' => $therapist,
+            'professional' => $professional,
         ]);
     }
 }

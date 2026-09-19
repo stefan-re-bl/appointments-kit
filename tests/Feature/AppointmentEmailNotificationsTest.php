@@ -13,8 +13,8 @@ use App\Mail\AppointmentCancelled;
 use App\Mail\AppointmentRescheduled;
 use App\Mail\BookingConfirmed;
 use App\Models\Appointment;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -25,7 +25,7 @@ class AppointmentEmailNotificationsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_rescheduled_appointment_emails_are_queued_for_patient_and_therapist(): void
+    public function test_rescheduled_appointment_emails_are_queued_for_customer_and_professional(): void
     {
         Mail::fake();
 
@@ -51,13 +51,13 @@ class AppointmentEmailNotificationsTest extends TestCase
 
         Mail::assertQueued(
             AppointmentRescheduled::class,
-            fn (AppointmentRescheduled $mail): bool => $mail->hasTo($appointment->therapist->user->email)
+            fn (AppointmentRescheduled $mail): bool => $mail->hasTo($appointment->professional->user->email)
                 && $mail->recipientTimezone === 'Europe/Madrid'
-                && $mail->recipientType === 'therapist'
+                && $mail->recipientType === 'professional'
         );
     }
 
-    public function test_cancelled_appointment_emails_are_queued_for_patient_and_therapist(): void
+    public function test_cancelled_appointment_emails_are_queued_for_customer_and_professional(): void
     {
         Mail::fake();
 
@@ -78,9 +78,9 @@ class AppointmentEmailNotificationsTest extends TestCase
 
         Mail::assertQueued(
             AppointmentCancelled::class,
-            fn (AppointmentCancelled $mail): bool => $mail->hasTo($appointment->therapist->user->email)
+            fn (AppointmentCancelled $mail): bool => $mail->hasTo($appointment->professional->user->email)
                 && $mail->recipientTimezone === 'Europe/Madrid'
-                && $mail->recipientType === 'therapist'
+                && $mail->recipientType === 'professional'
         );
     }
 
@@ -146,24 +146,24 @@ class AppointmentEmailNotificationsTest extends TestCase
     private function createAppointment(array $overrides = []): Appointment
     {
         $user = User::factory()->create([
-            'role' => Role::THERAPIST->value,
+            'role' => Role::PROFESSIONAL->value,
         ]);
 
-        $therapist = Therapist::factory()
+        $professional = Professional::factory()
             ->for($user)
             ->create([
                 'timezone' => 'Europe/Madrid',
             ]);
 
         $sessionType = SessionType::factory()
-            ->for($therapist)
+            ->for($professional)
             ->create();
 
         return Appointment::factory()
-            ->for($therapist)
+            ->for($professional)
             ->for($sessionType, 'sessionType')
             ->create(array_merge([
-                'patient_name' => 'Paciente Demo',
+                'patient_name' => 'Cliente Demo',
                 'patient_email' => 'paciente@example.com',
                 'patient_timezone' => 'America/Argentina/Buenos_Aires',
                 'starts_at' => CarbonImmutable::parse('2026-08-11 18:00:00', 'UTC'),

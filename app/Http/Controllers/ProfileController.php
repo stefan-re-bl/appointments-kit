@@ -22,23 +22,23 @@ class ProfileController extends Controller
     {
         /** @var User $user */
         $user = $request->user();
-        $therapistTimezone = ValidTimezone::normalize($user->therapist?->timezone) ?? 'UTC';
-        $therapistCountry = $countryTimezoneService->countryForTimezone($therapistTimezone) ?? 'AR';
+        $professionalTimezone = ValidTimezone::normalize($user->professional?->timezone) ?? 'UTC';
+        $professionalCountry = $countryTimezoneService->countryForTimezone($professionalTimezone) ?? 'AR';
         $timezoneReferenceDate = now('UTC')->toDateString();
         $timezoneOptions = $countryTimezoneService->timezoneOptionsForCountryOnDate(
-            $therapistCountry,
+            $professionalCountry,
             $timezoneReferenceDate,
         );
 
-        if (! array_key_exists($therapistTimezone, $timezoneOptions)) {
-            $therapistTimezone = array_key_first($timezoneOptions) ?? $therapistTimezone;
+        if (! array_key_exists($professionalTimezone, $timezoneOptions)) {
+            $professionalTimezone = array_key_first($timezoneOptions) ?? $professionalTimezone;
         }
 
         return view('profile.edit', [
             'countries' => $countryTimezoneService->countries(),
             'countryTimezones' => $countryTimezoneService->countryTimezones(),
-            'therapistCountry' => $therapistCountry,
-            'therapistTimezone' => $therapistTimezone,
+            'professionalCountry' => $professionalCountry,
+            'professionalTimezone' => $professionalTimezone,
             'timezoneReferenceDate' => $timezoneReferenceDate,
             'user' => $user,
         ]);
@@ -65,32 +65,32 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        if ($request->user()->therapist) {
-            $previousTimezone = $request->user()->therapist->timezone;
-            $therapistTimezone = ValidTimezone::normalize(
+        if ($request->user()->professional) {
+            $previousTimezone = $request->user()->professional->timezone;
+            $professionalTimezone = ValidTimezone::normalize(
                 $countryTimezoneService->timezoneForLocation(
-                    $validated['therapist_country'] ?? null,
+                    $validated['professional_country'] ?? null,
                     now('UTC')->toDateString(),
-                    $validated['therapist_timezone'] ?? null,
+                    $validated['professional_timezone'] ?? null,
                 )
             ) ?? $previousTimezone;
             $avatarUrl = $validated['avatar_url'] ?? null;
-            $presentationVideoUrl = $request->user()->therapist->presentation_video_url;
+            $presentationVideoUrl = $request->user()->professional->presentation_video_url;
 
             if ($request->hasFile('avatar')) {
-                $avatarPath = $request->file('avatar')->store('therapists/avatars', 'public');
+                $avatarPath = $request->file('avatar')->store('professionals/avatars', 'public');
                 $avatarUrl = '/storage/'.$avatarPath;
             }
 
             if ($request->hasFile('presentation_video')) {
-                $presentationVideoPath = $request->file('presentation_video')->store('therapists/presentation-videos', 'public');
+                $presentationVideoPath = $request->file('presentation_video')->store('professionals/presentation-videos', 'public');
                 $presentationVideoUrl = '/storage/'.$presentationVideoPath;
             }
 
-            $request->user()->therapist->update([
+            $request->user()->professional->update([
                 'bio' => $validated['bio'] ?? null,
                 'specialties' => $validated['specialties'] ?? null,
-                'therapeutic_approach' => $validated['therapeutic_approach'] ?? null,
+                'therapeutic_approach' => $validated['professional_approach'] ?? null,
                 'payment_instructions' => $validated['payment_instructions'] ?? null,
                 'google_meet_link' => $validated['google_meet_link'] ?? null,
                 'whatsapp_phone' => $phoneNumberNormalizer->normalize($validated['whatsapp_phone'] ?? null),
@@ -100,10 +100,10 @@ class ProfileController extends Controller
                 'preferred_locale' => $validated['preferred_locale'],
                 'avatar_url' => $avatarUrl,
                 'presentation_video_url' => $presentationVideoUrl,
-                'timezone' => $therapistTimezone,
+                'timezone' => $professionalTimezone,
             ]);
 
-            if ($therapistTimezone !== $previousTimezone) {
+            if ($professionalTimezone !== $previousTimezone) {
                 return Redirect::route('availabilities.index')
                     ->with('status', __('app.profile.timezone_changed_review_availability'));
             }

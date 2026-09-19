@@ -58,9 +58,9 @@ final class TimezoneService
     public function timeToUtc(string|CarbonInterface $localTime, string $timezone, int $dayOfWeek): string
     {
         $date = $this->getReferenceDateForDay($dayOfWeek);
-        $timeString = $localTime instanceof CarbonInterface ? $localTime->format('H:i') : $localTime;
+        $timeString = $this->normalizeTimeString($localTime);
 
-        $datetime = Carbon::createFromFormat('Y-m-d H:i', $date.' '.$timeString, $timezone);
+        $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $date.' '.$timeString, $timezone);
         $datetime->setTimezone('UTC');
 
         return $datetime->format('H:i:s');
@@ -70,17 +70,28 @@ final class TimezoneService
      * Convierte una hora UTC (HH:mm:ss) a hora local (HH:mm) para un día específico.
      *
      * Este método revierte la conversión hecha por timeToUtc() y recupera la hora
-     * de pared configurada por la terapeuta, no el offset de una fecha futura.
+     * de pared configurada por el profesional, no el offset de una fecha futura.
      */
     public function timeToLocal(string|CarbonInterface $utcTime, string $timezone, int $dayOfWeek): string
     {
         $date = $this->getReferenceDateForDay($dayOfWeek);
-        $timeString = $utcTime instanceof CarbonInterface ? $utcTime->format('H:i:s') : $utcTime;
+        $timeString = $this->normalizeTimeString($utcTime);
 
         $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $date.' '.$timeString, 'UTC');
         $datetime->setTimezone($timezone);
 
         return $datetime->format('H:i');
+    }
+
+    private function normalizeTimeString(string|CarbonInterface $time): string
+    {
+        if ($time instanceof CarbonInterface) {
+            return $time->format('H:i:s');
+        }
+
+        return preg_match('/^\d{2}:\d{2}$/', $time) === 1
+            ? $time.':00'
+            : $time;
     }
 
     /**

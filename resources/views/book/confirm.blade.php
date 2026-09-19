@@ -2,13 +2,13 @@
 
 @section('content')
 <div class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
-    <a href="{{ route('book.time') }}" class="mb-6 inline-flex items-center text-sm font-semibold text-umbralia-title hover:text-umbralia-title">&larr; {{ __('app.change_date') }}</a>
+    <a href="{{ route('book.time') }}" class="mb-6 inline-flex items-center text-sm font-semibold text-brand-title hover:text-brand-title">&larr; {{ __('app.change_date') }}</a>
 
     @include('book.partials.stepper', ['currentStep' => 3])
 
-    <div class="my-8 h-1 rounded-full bg-umbralia-accent"></div>
+    <div class="my-8 h-1 rounded-full bg-brand-accent"></div>
 
-    <h1 class="mb-8 text-center text-3xl font-bold tracking-tight text-umbralia-title">{{ __('app.confirm_booking') }}</h1>
+    <h1 class="mb-8 text-center text-3xl font-bold tracking-tight text-brand-title">{{ __('app.confirm_booking') }}</h1>
 
     <!-- Mensaje de Error General (del try/catch del controlador) -->
     @error('general')
@@ -20,8 +20,8 @@
 
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-200 bg-slate-50 p-6">
-            <h2 class="text-lg font-semibold text-umbralia-title">{{ __('app.booking_internal.summary_title') }}</h2>
-            <p class="text-slate-600">{{ $therapist->user->name }}</p>
+            <h2 class="text-lg font-semibold text-brand-title">{{ __('app.booking_internal.summary_title') }}</h2>
+            <p class="text-slate-600">{{ $professional->user->name }}</p>
         </div>
 
         <div class="space-y-4 p-6">
@@ -55,7 +55,7 @@
         @csrf
 
         <div class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <h3 class="mb-2 font-medium text-umbralia-title">{{ __('app.booking_internal.patient_details') }}</h3>
+            <h3 class="mb-2 font-medium text-brand-title">{{ __('app.booking_internal.patient_details') }}</h3>
 
             <div>
                 <label for="patient_name" class="mb-1 block text-sm font-medium text-slate-800">{{ __('app.name') }}</label>
@@ -65,7 +65,7 @@
                     id="patient_name"
                     value="{{ old('patient_name') }}"
                     required
-                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30 @error('patient_name') border-rose-400 @enderror"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30 @error('patient_name') border-rose-400 @enderror"
                 >
 
                 @error('patient_name')
@@ -81,7 +81,7 @@
                     id="patient_email"
                     value="{{ old('patient_email') }}"
                     required
-                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30 @error('patient_email') border-rose-400 @enderror"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30 @error('patient_email') border-rose-400 @enderror"
                 >
 
                 @error('patient_email')
@@ -97,7 +97,7 @@
                     id="patient_phone"
                     value="{{ old('patient_phone') }}"
                     placeholder="{{ __('app.whatsapp.phone_placeholder') }}"
-                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30 @error('patient_phone') border-rose-400 @enderror"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30 @error('patient_phone') border-rose-400 @enderror"
                 >
                 <p class="mt-1 text-sm text-slate-600">{{ __('app.whatsapp.patient_phone_help') }}</p>
 
@@ -115,7 +115,7 @@
                     name="accepted_whatsapp_communications"
                     value="1"
                     @checked(old('accepted_whatsapp_communications'))
-                    class="mt-1 rounded border-umbralia-accent text-slate-600 focus:ring-umbralia-accent/30"
+                    class="mt-1 rounded border-brand-accent text-slate-600 focus:ring-brand-accent/30"
                 >
                 <span>{{ __('app.whatsapp.patient_opt_in') }}</span>
             </label>
@@ -124,7 +124,7 @@
             @enderror
         </div>
 
-        <button type="submit" class="mt-6 flex w-full items-center justify-center rounded-lg bg-umbralia-title px-4 py-3 text-lg font-bold text-white shadow-sm transition hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2">
+        <button type="submit" class="mt-6 flex w-full items-center justify-center rounded-lg bg-brand-title px-4 py-3 text-lg font-bold text-white shadow-sm transition hover:bg-brand-title/90 focus:outline-none focus:ring-2 focus:ring-brand-accent/30 focus:ring-offset-2">
             {{ __('app.booking_internal.confirm') }}
         </button>
     </form>

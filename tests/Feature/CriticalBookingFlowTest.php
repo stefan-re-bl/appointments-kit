@@ -10,8 +10,8 @@ use App\Enums\Role;
 use App\Jobs\SendBookingConfirmedEmails;
 use App\Mail\BookingConfirmed;
 use App\Models\Appointment;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use App\Services\SlotGenerationService;
 use App\Services\TimezoneService;
@@ -45,10 +45,10 @@ final class CriticalBookingFlowTest extends TestCase
 
     public function test_slot_generation_excludes_an_occupied_slot(): void
     {
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         Appointment::factory()
-            ->for($therapist)
+            ->for($professional)
             ->for($sessionType, 'sessionType')
             ->create([
                 'starts_at' => '2026-07-06 13:00:00',
@@ -58,7 +58,7 @@ final class CriticalBookingFlowTest extends TestCase
             ]);
 
         $slots = app(SlotGenerationService::class)->generate(
-            $therapist,
+            $professional,
             '2026-07-06',
             60,
             'America/Argentina/Buenos_Aires',
@@ -75,13 +75,13 @@ final class CriticalBookingFlowTest extends TestCase
     {
         Bus::fake();
 
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $response = $this
-            ->actingAs($therapist->user)
-            ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00'))
+            ->actingAs($professional->user)
+            ->withSession($this->bookingSession($professional, $sessionType, '2026-07-06T12:00:00+00:00'))
             ->post(route('book.store'), [
-                'patient_name' => 'Paciente Crítico',
+                'patient_name' => 'Cliente Crítico',
                 'patient_email' => 'patient@example.test',
             ]);
 
@@ -99,7 +99,7 @@ final class CriticalBookingFlowTest extends TestCase
         $this->assertNotNull($appointment->terms_accepted_at);
 
         $response->assertSessionHas('booking.appointment_token', $appointment->token);
-        $response->assertSessionMissing('booking.therapist_id');
+        $response->assertSessionMissing('booking.professional_id');
         $response->assertSessionMissing('booking.session_type_id');
         $response->assertSessionMissing('booking.date');
         $response->assertSessionMissing('booking.starts_at_utc');
@@ -115,12 +115,12 @@ final class CriticalBookingFlowTest extends TestCase
     {
         Bus::fake();
 
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $this
-            ->actingAs($therapist->user)
+            ->actingAs($professional->user)
             ->withSession([
-                'booking.therapist_id' => $therapist->id,
+                'booking.professional_id' => $professional->id,
                 'booking.session_type_id' => $sessionType->id,
             ])
             ->post(route('book.store.date'), [
@@ -132,12 +132,12 @@ final class CriticalBookingFlowTest extends TestCase
             ->assertSessionHas('booking.patient_timezone', 'America/Argentina/Buenos_Aires');
 
         $response = $this
-            ->actingAs($therapist->user)
+            ->actingAs($professional->user)
             ->withSession([
                 'booking.starts_at_utc' => '2026-07-06T12:00:00+00:00',
             ])
             ->post(route('book.store'), [
-                'patient_name' => 'Paciente sin cookie',
+                'patient_name' => 'Cliente sin cookie',
                 'patient_email' => 'no-cookie@example.test',
             ]);
 
@@ -153,15 +153,15 @@ final class CriticalBookingFlowTest extends TestCase
     {
         Bus::fake();
 
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $this
-            ->actingAs($therapist->user)
-            ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00') + [
+            ->actingAs($professional->user)
+            ->withSession($this->bookingSession($professional, $sessionType, '2026-07-06T12:00:00+00:00') + [
                 'locale' => 'es',
             ])
             ->post(route('book.store'), [
-                'patient_name' => 'Paciente Español',
+                'patient_name' => 'Cliente Español',
                 'patient_email' => 'spanish@example.test',
             ])
             ->assertRedirect(route('book.success'));
@@ -177,15 +177,15 @@ final class CriticalBookingFlowTest extends TestCase
     {
         Bus::fake();
 
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $this
-            ->actingAs($therapist->user)
-            ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00') + [
+            ->actingAs($professional->user)
+            ->withSession($this->bookingSession($professional, $sessionType, '2026-07-06T12:00:00+00:00') + [
                 'locale' => 'en',
             ])
             ->post(route('book.store'), [
-                'patient_name' => 'English Patient',
+                'patient_name' => 'English Customer',
                 'patient_email' => 'english@example.test',
             ])
             ->assertRedirect(route('book.success'));
@@ -199,12 +199,12 @@ final class CriticalBookingFlowTest extends TestCase
 
     public function test_date_step_requires_explicit_patient_country_selection(): void
     {
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $this
-            ->actingAs($therapist->user)
+            ->actingAs($professional->user)
             ->withSession([
-                'booking.therapist_id' => $therapist->id,
+                'booking.professional_id' => $professional->id,
                 'booking.session_type_id' => $sessionType->id,
             ])
             ->get(route('book.date'))
@@ -223,12 +223,12 @@ final class CriticalBookingFlowTest extends TestCase
 
     public function test_booking_date_accepts_country_without_region_when_country_has_single_timezone(): void
     {
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $this
-            ->actingAs($therapist->user)
+            ->actingAs($professional->user)
             ->withSession([
-                'booking.therapist_id' => $therapist->id,
+                'booking.professional_id' => $professional->id,
                 'booking.session_type_id' => $sessionType->id,
             ])
             ->post(route('book.store.date'), [
@@ -242,12 +242,12 @@ final class CriticalBookingFlowTest extends TestCase
 
     public function test_booking_date_accepts_country_with_multiple_effective_timezones_when_region_is_selected(): void
     {
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $this
-            ->actingAs($therapist->user)
+            ->actingAs($professional->user)
             ->withSession([
-                'booking.therapist_id' => $therapist->id,
+                'booking.professional_id' => $professional->id,
                 'booking.session_type_id' => $sessionType->id,
             ])
             ->post(route('book.store.date'), [
@@ -262,13 +262,13 @@ final class CriticalBookingFlowTest extends TestCase
 
     public function test_booking_date_requires_time_region_when_country_has_multiple_effective_timezones(): void
     {
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $this
-            ->actingAs($therapist->user)
+            ->actingAs($professional->user)
             ->from(route('book.date'))
             ->withSession([
-                'booking.therapist_id' => $therapist->id,
+                'booking.professional_id' => $professional->id,
                 'booking.session_type_id' => $sessionType->id,
             ])
             ->post(route('book.store.date'), [
@@ -282,13 +282,13 @@ final class CriticalBookingFlowTest extends TestCase
 
     public function test_booking_date_rejects_invalid_country(): void
     {
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $this
-            ->actingAs($therapist->user)
+            ->actingAs($professional->user)
             ->from(route('book.date'))
             ->withSession([
-                'booking.therapist_id' => $therapist->id,
+                'booking.professional_id' => $professional->id,
                 'booking.session_type_id' => $sessionType->id,
             ])
             ->post(route('book.store.date'), [
@@ -304,14 +304,14 @@ final class CriticalBookingFlowTest extends TestCase
     {
         Bus::fake();
 
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $response = $this
-            ->actingAs($therapist->user)
+            ->actingAs($professional->user)
             ->from(route('book.confirm'))
-            ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T18:00:00+00:00'))
+            ->withSession($this->bookingSession($professional, $sessionType, '2026-07-06T18:00:00+00:00'))
             ->post(route('book.store'), [
-                'patient_name' => 'Paciente Crítico',
+                'patient_name' => 'Cliente Crítico',
                 'patient_email' => 'patient@example.test',
             ]);
 
@@ -326,12 +326,12 @@ final class CriticalBookingFlowTest extends TestCase
     {
         Bus::fake();
 
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $response = $this
-            ->actingAs($therapist->user)
+            ->actingAs($professional->user)
             ->from(route('book.confirm'))
-            ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00'))
+            ->withSession($this->bookingSession($professional, $sessionType, '2026-07-06T12:00:00+00:00'))
             ->post(route('book.store'), []);
 
         $response->assertRedirect(route('book.confirm'));
@@ -356,17 +356,17 @@ final class CriticalBookingFlowTest extends TestCase
     {
         Bus::fake();
 
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
-        $therapist->forceFill([
+        $professional->forceFill([
             'is_approved' => false,
         ])->save();
 
         $response = $this
-            ->actingAs($therapist->user)
-            ->withSession($this->bookingSession($therapist, $sessionType, '2026-07-06T12:00:00+00:00'))
+            ->actingAs($professional->user)
+            ->withSession($this->bookingSession($professional, $sessionType, '2026-07-06T12:00:00+00:00'))
             ->post(route('book.store'), [
-                'patient_name' => 'Paciente Pendiente',
+                'patient_name' => 'Cliente Pendiente',
                 'patient_email' => 'pending@example.test',
             ]);
 
@@ -376,14 +376,14 @@ final class CriticalBookingFlowTest extends TestCase
         Bus::assertNotDispatched(SendBookingConfirmedEmails::class);
     }
 
-    public function test_booking_notification_job_sends_patient_and_therapist_emails(): void
+    public function test_booking_notification_job_sends_customer_and_professional_emails(): void
     {
         Mail::fake();
 
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $appointment = Appointment::factory()
-            ->for($therapist)
+            ->for($professional)
             ->for($sessionType, 'sessionType')
             ->create([
                 'patient_email' => 'patient@example.test',
@@ -404,25 +404,25 @@ final class CriticalBookingFlowTest extends TestCase
 
         Mail::assertSent(
             BookingConfirmed::class,
-            fn (BookingConfirmed $mail): bool => $mail->recipientType === BookingConfirmed::RECIPIENT_THERAPIST
-                && $mail->hasTo('therapist@example.test'),
+            fn (BookingConfirmed $mail): bool => $mail->recipientType === BookingConfirmed::RECIPIENT_PROFESSIONAL
+                && $mail->hasTo('professional@example.test'),
         );
 
         Mail::assertSentCount(2);
     }
 
     /**
-     * @return array{0: Therapist, 1: SessionType}
+     * @return array{0: Professional, 1: SessionType}
      */
-    private function makeBookableTherapist(): array
+    private function makeBookableProfessional(): array
     {
         $user = User::factory()->create([
-            'name' => 'Terapeuta Test',
-            'email' => 'therapist@example.test',
-            'role' => Role::THERAPIST,
+            'name' => 'Profesional Test',
+            'email' => 'professional@example.test',
+            'role' => Role::PROFESSIONAL,
         ]);
 
-        $therapist = Therapist::factory()
+        $professional = Professional::factory()
             ->for($user)
             ->create([
                 'timezone' => 'America/Argentina/Buenos_Aires',
@@ -431,7 +431,7 @@ final class CriticalBookingFlowTest extends TestCase
             ]);
 
         $sessionType = SessionType::factory()
-            ->for($therapist)
+            ->for($professional)
             ->create([
                 'duration_minutes' => 60,
                 'price' => 100,
@@ -441,7 +441,7 @@ final class CriticalBookingFlowTest extends TestCase
 
         $timezoneService = app(TimezoneService::class);
 
-        $therapist->availabilities()->create([
+        $professional->availabilities()->create([
             'day_of_week' => 1,
             'start_time' => $timezoneService->timeToUtc(
                 '09:00',
@@ -456,19 +456,19 @@ final class CriticalBookingFlowTest extends TestCase
             'is_active' => true,
         ]);
 
-        return [$therapist, $sessionType];
+        return [$professional, $sessionType];
     }
 
     /**
      * @return array<string, mixed>
      */
     private function bookingSession(
-        Therapist $therapist,
+        Professional $professional,
         SessionType $sessionType,
         string $startsAtUtc,
     ): array {
         return [
-            'booking.therapist_id' => $therapist->id,
+            'booking.professional_id' => $professional->id,
             'booking.session_type_id' => $sessionType->id,
             'booking.date' => '2026-07-06',
             'booking.starts_at_utc' => $startsAtUtc,

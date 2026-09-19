@@ -8,8 +8,8 @@ use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Mail\BookingConfirmed;
 use App\Models\Appointment;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Services\Reports\AppointmentReportService;
 use App\Services\SlotGenerationService;
 use App\Services\TimezoneService;
@@ -48,12 +48,12 @@ final class TimezoneAuditTest extends TestCase
         CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-06-01 00:00:00', 'UTC'));
 
         $timezoneService = app(TimezoneService::class);
-        $therapist = Therapist::factory()->create([
+        $professional = Professional::factory()->create([
             'timezone' => 'Europe/Madrid',
             'is_active' => true,
         ]);
 
-        $therapist->availabilities()->create([
+        $professional->availabilities()->create([
             'day_of_week' => 1,
             'start_time' => $timezoneService->timeToUtc('09:00', 'Europe/Madrid', 1),
             'end_time' => $timezoneService->timeToUtc('10:00', 'Europe/Madrid', 1),
@@ -63,7 +63,7 @@ final class TimezoneAuditTest extends TestCase
         app()->instance('user.timezone', 'UTC');
 
         $slots = app(SlotGenerationService::class)->generate(
-            $therapist,
+            $professional,
             '2026-07-06',
             60,
             'America/New_York',
@@ -80,12 +80,12 @@ final class TimezoneAuditTest extends TestCase
         CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-03-01 00:00:00', 'UTC'));
 
         $timezoneService = app(TimezoneService::class);
-        $therapist = Therapist::factory()->create([
+        $professional = Professional::factory()->create([
             'timezone' => 'America/New_York',
             'is_active' => true,
         ]);
 
-        $therapist->availabilities()->create([
+        $professional->availabilities()->create([
             'day_of_week' => 7,
             'start_time' => $timezoneService->timeToUtc('09:00', 'America/New_York', 7),
             'end_time' => $timezoneService->timeToUtc('10:00', 'America/New_York', 7),
@@ -93,7 +93,7 @@ final class TimezoneAuditTest extends TestCase
         ]);
 
         $slots = app(SlotGenerationService::class)->generate(
-            $therapist,
+            $professional,
             '2026-03-08',
             60,
             'UTC',
@@ -108,17 +108,17 @@ final class TimezoneAuditTest extends TestCase
     {
         app()->instance('user.timezone', 'America/Argentina/Buenos_Aires');
 
-        [$therapist, $sessionType] = $this->makeTherapistAndSessionType();
+        [$professional, $sessionType] = $this->makeProfessionalAndSessionType();
 
         $included = $this->makeAppointment(
-            $therapist,
+            $professional,
             $sessionType,
             CarbonImmutable::parse('2026-04-01 02:30:00', 'UTC'),
             'included@example.test',
         );
 
         $excluded = $this->makeAppointment(
-            $therapist,
+            $professional,
             $sessionType,
             CarbonImmutable::parse('2026-04-01 03:30:00', 'UTC'),
             'excluded@example.test',
@@ -138,10 +138,10 @@ final class TimezoneAuditTest extends TestCase
 
     public function test_booking_email_formats_same_utc_instant_for_each_recipient_timezone(): void
     {
-        [$therapist, $sessionType] = $this->makeTherapistAndSessionType('America/Los_Angeles');
+        [$professional, $sessionType] = $this->makeProfessionalAndSessionType('America/Los_Angeles');
 
         $appointment = $this->makeAppointment(
-            $therapist,
+            $professional,
             $sessionType,
             CarbonImmutable::parse('2026-07-01 06:30:00', 'UTC'),
             'patient@example.test',
@@ -153,29 +153,29 @@ final class TimezoneAuditTest extends TestCase
             BookingConfirmed::RECIPIENT_PATIENT,
         ))->content()->with;
 
-        $therapistData = (new BookingConfirmed(
+        $professionalData = (new BookingConfirmed(
             $appointment,
-            BookingConfirmed::RECIPIENT_THERAPIST,
+            BookingConfirmed::RECIPIENT_PROFESSIONAL,
         ))->content()->with;
 
         $this->assertSame('01/07/2026 15:30', $patientData['startsAt']);
-        $this->assertSame('30/06/2026 23:30', $therapistData['startsAt']);
+        $this->assertSame('30/06/2026 23:30', $professionalData['startsAt']);
         $this->assertSame('Asia/Tokyo', $patientData['displayTimezone']);
-        $this->assertSame('America/Los_Angeles', $therapistData['displayTimezone']);
+        $this->assertSame('America/Los_Angeles', $professionalData['displayTimezone']);
     }
 
     /**
-     * @return array{0: Therapist, 1: SessionType}
+     * @return array{0: Professional, 1: SessionType}
      */
-    private function makeTherapistAndSessionType(string $timezone = 'UTC'): array
+    private function makeProfessionalAndSessionType(string $timezone = 'UTC'): array
     {
-        $therapist = Therapist::factory()->create([
+        $professional = Professional::factory()->create([
             'timezone' => $timezone,
             'is_active' => true,
         ]);
 
         $sessionType = SessionType::factory()
-            ->for($therapist)
+            ->for($professional)
             ->create([
                 'duration_minutes' => 60,
                 'price' => 100,
@@ -183,18 +183,18 @@ final class TimezoneAuditTest extends TestCase
                 'is_active' => true,
             ]);
 
-        return [$therapist, $sessionType];
+        return [$professional, $sessionType];
     }
 
     private function makeAppointment(
-        Therapist $therapist,
+        Professional $professional,
         SessionType $sessionType,
         CarbonImmutable $startsAt,
         string $email,
         string $patientTimezone = 'UTC',
     ): Appointment {
         return Appointment::factory()
-            ->for($therapist)
+            ->for($professional)
             ->for($sessionType, 'sessionType')
             ->create([
                 'patient_email' => $email,

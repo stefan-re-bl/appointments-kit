@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Enums\AppointmentStatus;
-use App\Models\Therapist;
+use App\Models\Professional;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -14,31 +14,31 @@ class SlotGenerationService
     ) {}
 
     /**
-     * Genera los slots disponibles para un terapeuta en una fecha específica.
+     * Genera los slots disponibles para un profesional en una fecha específica.
      *
      * @param  string  $date  Fecha en formato Y-m-d
      * @param  int  $durationMinutes  Duración de la sesión
-     * @param  string|null  $displayTimezone  Zona horaria para formatear labels; usa la del terapeuta si no se indica.
+     * @param  string|null  $displayTimezone  Zona horaria para formatear labels; usa la del profesional si no se indica.
      */
     public function generate(
-        Therapist $therapist,
+        Professional $professional,
         string $date,
         int $durationMinutes,
         ?string $displayTimezone = null,
     ): array {
-        if (! $therapist->is_active || ! $therapist->is_approved) {
+        if (! $professional->is_active || ! $professional->is_approved) {
             return [];
         }
 
-        $therapistTz = $therapist->timezone;
-        $displayTimezone ??= $therapistTz;
+        $professionalTimezone = $professional->timezone;
+        $displayTimezone ??= $professionalTimezone;
 
-        // 1. Crear la fecha solicitada en la zona horaria del terapeuta
-        $dateCarbon = Carbon::parse($date, $therapistTz);
+        // 1. Crear la fecha solicitada en la zona horaria del profesional.
+        $dateCarbon = Carbon::parse($date, $professionalTimezone);
         $dayOfWeek = $dateCarbon->isoWeekday(); // 1=Lunes, 7=Domingo (ISO-8601)
 
         // 2. Obtener disponibilidades para ese día
-        $availabilities = $therapist->availabilities()
+        $availabilities = $professional->availabilities()
             ->where('day_of_week', $dayOfWeek)
             ->where('is_active', true)
             ->get();
@@ -51,7 +51,7 @@ class SlotGenerationService
         $dayStartUtc = $dateCarbon->copy()->startOfDay()->setTimezone('UTC');
         $dayEndUtc = $dateCarbon->copy()->endOfDay()->setTimezone('UTC');
 
-        $existingAppointments = $therapist->appointments()
+        $existingAppointments = $professional->appointments()
             ->whereIn('status', [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED, AppointmentStatus::COMPLETED])
             ->where('starts_at', '<', $dayEndUtc)
             ->where('ends_at', '>', $dayStartUtc)
@@ -61,13 +61,13 @@ class SlotGenerationService
         $slots = [];
 
         foreach ($availabilities as $availability) {
-            // Convertir la hora UTC de la BD a la hora local del terapeuta para esa fecha específica (Manejo de DST)
-            $localStartTime = $this->timezoneService->timeToLocal($availability->start_time, $therapistTz, (int) $dayOfWeek);
-            $localEndTime = $this->timezoneService->timeToLocal($availability->end_time, $therapistTz, (int) $dayOfWeek);
+            // Convertir la hora UTC de la BD a la hora local del profesional para esa fecha.
+            $localStartTime = $this->timezoneService->timeToLocal($availability->start_time, $professionalTimezone, (int) $dayOfWeek);
+            $localEndTime = $this->timezoneService->timeToLocal($availability->end_time, $professionalTimezone, (int) $dayOfWeek);
 
             // Crear ventanas de tiempo en UTC
-            $workingStartUtc = Carbon::parse("{$date} {$localStartTime}", $therapistTz)->setTimezone('UTC');
-            $workingEndUtc = Carbon::parse("{$date} {$localEndTime}", $therapistTz)->setTimezone('UTC');
+            $workingStartUtc = Carbon::parse("{$date} {$localStartTime}", $professionalTimezone)->setTimezone('UTC');
+            $workingEndUtc = Carbon::parse("{$date} {$localEndTime}", $professionalTimezone)->setTimezone('UTC');
 
             // Iterar en intervalos de la duración de la sesión
             $currentStartUtc = $workingStartUtc->copy();

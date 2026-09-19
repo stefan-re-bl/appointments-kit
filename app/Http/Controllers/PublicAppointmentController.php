@@ -29,7 +29,7 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
         AppointmentSignedUrlService $appointmentSignedUrlService,
     ): View|Response {
         $appointment = Appointment::query()
-            ->with(['therapist.user', 'sessionType'])
+            ->with(['professional.user', 'sessionType'])
             ->where('token', $token)
             ->first();
 
@@ -51,13 +51,13 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
         $paymentStatusLabel = $this->paymentStatusLabel($appointment->payment_status);
 
         $canJoinMeet = $appointment->status === AppointmentStatus::CONFIRMED
-            && filled($appointment->therapist?->google_meet_link);
+            && filled($appointment->professional?->google_meet_link);
 
-        $canContactTherapist = in_array(
+        $canContactProfessional = in_array(
             $appointment->status,
             [AppointmentStatus::PENDING, AppointmentStatus::CONFIRMED],
             true
-        ) && filled($appointment->therapist?->user?->email);
+        ) && filled($appointment->professional?->user?->email);
 
         $canRefund = $cancellationPolicyService->canRefund($appointment);
         $canCancel = $cancellationPolicyService->canCancel($appointment);
@@ -78,7 +78,7 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
             'appointmentStatusLabel' => $appointmentStatusLabel,
             'paymentStatusLabel' => $paymentStatusLabel,
             'canJoinMeet' => $canJoinMeet,
-            'canContactTherapist' => $canContactTherapist,
+            'canContactProfessional' => $canContactProfessional,
             'canRefund' => $canRefund,
             'canCancel' => $canCancel,
             'canReschedule' => $canReschedule,

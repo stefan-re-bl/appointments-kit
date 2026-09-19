@@ -12,7 +12,7 @@ class QueueAppointmentCancelledEmails
 {
     public function execute(Appointment $appointment): void
     {
-        $appointment->loadMissing(['therapist.user', 'sessionType']);
+        $appointment->loadMissing(['professional.user', 'sessionType']);
 
         Mail::to(
             $appointment->patient_email,
@@ -26,13 +26,13 @@ class QueueAppointmentCancelledEmails
         );
 
         Mail::to(
-            $appointment->therapist->user->email,
-            $appointment->therapist->user->name,
+            $appointment->professional->user->email,
+            $appointment->professional->user->name,
         )->queue(
             new AppointmentCancelled(
                 appointment: $appointment,
-                recipientTimezone: $appointment->therapist->timezone ?: 'UTC',
-                recipientType: 'therapist',
+                recipientTimezone: $appointment->professional->timezone ?: 'UTC',
+                recipientType: 'professional',
             )
         );
     }

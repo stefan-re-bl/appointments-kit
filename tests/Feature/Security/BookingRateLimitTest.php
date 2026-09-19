@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Security;
 
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -21,20 +21,20 @@ final class BookingRateLimitTest extends TestCase
     {
         $date = CarbonImmutable::now('UTC')->addWeek();
 
-        $therapist = Therapist::factory()->create([
+        $professional = Professional::factory()->create([
             'is_active' => true,
             'timezone' => 'UTC',
         ]);
 
         SessionType::factory()
-            ->for($therapist)
+            ->for($professional)
             ->create([
                 'duration_minutes' => 30,
                 'is_active' => true,
             ]);
 
         DB::table('availabilities')->insert([
-            'therapist_id' => $therapist->id,
+            'professional_id' => $professional->id,
             'day_of_week' => $date->dayOfWeekIso,
             'start_time' => '09:00',
             'end_time' => '12:00',
@@ -50,13 +50,13 @@ final class BookingRateLimitTest extends TestCase
 
         for ($i = 0; $i < 30; $i++) {
             $this
-                ->actingAs($therapist->user)
+                ->actingAs($professional->user)
                 ->get(route('api.slots.index', $query))
                 ->assertStatus(200);
         }
 
         $this
-            ->actingAs($therapist->user)
+            ->actingAs($professional->user)
             ->get(route('api.slots.index', $query))
             ->assertStatus(429);
     }

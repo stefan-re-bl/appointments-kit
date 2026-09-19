@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Availability;
-use App\Models\Therapist;
+use App\Models\Professional;
 use Illuminate\Support\Collection;
 
 final readonly class AvailabilityService
@@ -17,11 +17,11 @@ final readonly class AvailabilityService
     /**
      * @return Collection<int, Collection<int, Availability>>
      */
-    public function groupedLocalAvailabilities(Therapist $therapist): Collection
+    public function groupedLocalAvailabilities(Professional $professional): Collection
     {
-        $timezone = $therapist->timezone;
+        $timezone = $professional->timezone;
 
-        return $therapist->availabilities()
+        return $professional->availabilities()
             ->orderBy('day_of_week')
             ->orderBy('start_time')
             ->get()
@@ -48,10 +48,10 @@ final readonly class AvailabilityService
     /**
      * @param  array<int, array{start_time: string, end_time: string, is_active?: mixed}>  $slots
      */
-    public function hasOverlaps(Therapist $therapist, int $dayOfWeek, array $slots): bool
+    public function hasOverlaps(Professional $professional, int $dayOfWeek, array $slots): bool
     {
         $allSlots = array_merge(
-            $this->existingLocalSlots($therapist, $dayOfWeek),
+            $this->existingLocalSlots($professional, $dayOfWeek),
             $this->requestedLocalSlots($slots),
         );
 
@@ -61,12 +61,12 @@ final readonly class AvailabilityService
     /**
      * @param  array<int, array{start_time: string, end_time: string, is_active?: mixed}>  $slots
      */
-    public function createMany(Therapist $therapist, int $dayOfWeek, array $slots): void
+    public function createMany(Professional $professional, int $dayOfWeek, array $slots): void
     {
-        $timezone = $therapist->timezone;
+        $timezone = $professional->timezone;
 
         foreach ($slots as $slot) {
-            $therapist->availabilities()->create([
+            $professional->availabilities()->create([
                 'day_of_week' => $dayOfWeek,
                 'start_time' => $this->timezoneService->timeToUtc($slot['start_time'], $timezone, $dayOfWeek),
                 'end_time' => $this->timezoneService->timeToUtc($slot['end_time'], $timezone, $dayOfWeek),
@@ -78,11 +78,11 @@ final readonly class AvailabilityService
     /**
      * @return array<int, array{start: string, end: string}>
      */
-    private function existingLocalSlots(Therapist $therapist, int $dayOfWeek): array
+    private function existingLocalSlots(Professional $professional, int $dayOfWeek): array
     {
-        $timezone = $therapist->timezone;
+        $timezone = $professional->timezone;
 
-        return $therapist->availabilities()
+        return $professional->availabilities()
             ->where('day_of_week', $dayOfWeek)
             ->get()
             ->map(fn (Availability $availability): array => [

@@ -25,18 +25,18 @@ final readonly class WhatsAppDeliveryDispatcher
 
     public function dispatchBookingConfirmed(Appointment $appointment): void
     {
-        $appointment->loadMissing(['therapist.user', 'sessionType']);
+        $appointment->loadMissing(['professional.user', 'sessionType']);
 
         $this->createAndDispatch($appointment, NotificationEvent::BOOKING_CONFIRMED, NotificationRecipientType::PATIENT);
-        $this->createAndDispatch($appointment, NotificationEvent::BOOKING_CONFIRMED, NotificationRecipientType::THERAPIST);
+        $this->createAndDispatch($appointment, NotificationEvent::BOOKING_CONFIRMED, NotificationRecipientType::PROFESSIONAL);
     }
 
     public function dispatchReminder(Appointment $appointment): void
     {
-        $appointment->loadMissing(['therapist.user', 'sessionType']);
+        $appointment->loadMissing(['professional.user', 'sessionType']);
 
         $this->createAndDispatch($appointment, NotificationEvent::APPOINTMENT_REMINDER, NotificationRecipientType::PATIENT);
-        $this->createAndDispatch($appointment, NotificationEvent::APPOINTMENT_REMINDER, NotificationRecipientType::THERAPIST);
+        $this->createAndDispatch($appointment, NotificationEvent::APPOINTMENT_REMINDER, NotificationRecipientType::PROFESSIONAL);
     }
 
     public function skipPendingForAppointment(Appointment $appointment, NotificationEvent $event): void
@@ -62,7 +62,10 @@ final readonly class WhatsAppDeliveryDispatcher
         NotificationEvent $event,
         NotificationRecipientType $recipientType,
     ): void {
-        if (! (bool) config('services.meta_whatsapp.enabled', false)) {
+        if (
+            ! (bool) config('features.whatsapp', false)
+            || ! (bool) config('services.meta_whatsapp.enabled', false)
+        ) {
             return;
         }
 
@@ -141,20 +144,20 @@ final readonly class WhatsAppDeliveryDispatcher
             return filled($appointment->patient_phone) ? (string) $appointment->patient_phone : null;
         }
 
-        $therapist = $appointment->therapist;
+        $professional = $appointment->professional;
 
-        if (! $therapist?->whatsapp_notifications_enabled) {
+        if (! $professional?->whatsapp_notifications_enabled) {
             return null;
         }
 
-        if ($event === NotificationEvent::BOOKING_CONFIRMED && ! $therapist->whatsapp_confirmations_enabled) {
+        if ($event === NotificationEvent::BOOKING_CONFIRMED && ! $professional->whatsapp_confirmations_enabled) {
             return null;
         }
 
-        if ($event === NotificationEvent::APPOINTMENT_REMINDER && ! $therapist->whatsapp_reminders_enabled) {
+        if ($event === NotificationEvent::APPOINTMENT_REMINDER && ! $professional->whatsapp_reminders_enabled) {
             return null;
         }
 
-        return filled($therapist->whatsapp_phone) ? (string) $therapist->whatsapp_phone : null;
+        return filled($professional->whatsapp_phone) ? (string) $professional->whatsapp_phone : null;
     }
 }

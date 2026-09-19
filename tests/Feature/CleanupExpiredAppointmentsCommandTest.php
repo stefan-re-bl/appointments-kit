@@ -50,6 +50,39 @@ class CleanupExpiredAppointmentsCommandTest extends TestCase
         ]);
     }
 
+    public function test_it_uses_configured_pending_expiration_minutes(): void
+    {
+        config([
+            'booking.pending_expiration_minutes' => 30,
+        ]);
+
+        $recentPendingAppointment = Appointment::factory()->create([
+            'status' => AppointmentStatus::PENDING,
+            'created_at' => CarbonImmutable::now('UTC')->subMinutes(20),
+            'updated_at' => CarbonImmutable::now('UTC')->subMinutes(20),
+        ]);
+
+        $expiredPendingAppointment = Appointment::factory()->create([
+            'status' => AppointmentStatus::PENDING,
+            'created_at' => CarbonImmutable::now('UTC')->subMinutes(31),
+            'updated_at' => CarbonImmutable::now('UTC')->subMinutes(31),
+        ]);
+
+        $this->artisan('appointments:cleanup-expired')
+            ->expectsOutput('Expired pending appointments cancelled: 1')
+            ->assertSuccessful();
+
+        $this->assertDatabaseHas('appointments', [
+            'id' => $recentPendingAppointment->id,
+            'status' => AppointmentStatus::PENDING->value,
+        ]);
+
+        $this->assertDatabaseHas('appointments', [
+            'id' => $expiredPendingAppointment->id,
+            'status' => AppointmentStatus::CANCELLED->value,
+        ]);
+    }
+
     public function test_it_does_not_cancel_confirmed_appointments_even_if_old(): void
     {
         $confirmedAppointment = Appointment::factory()->create([

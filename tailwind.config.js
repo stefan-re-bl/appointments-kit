@@ -12,7 +12,7 @@ export default {
     theme: {
         extend: {
             colors: {
-                umbralia: {
+                brand: {
                     title: '#540D6D',
                     accent: '#3ACEAE',
                     'accent-dark': '#239f92',

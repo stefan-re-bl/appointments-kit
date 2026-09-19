@@ -8,8 +8,8 @@ use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Enums\Role;
 use App\Models\Appointment;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use App\Services\Reports\AppointmentReportService;
 use Carbon\CarbonImmutable;
@@ -24,17 +24,17 @@ final class AppointmentReportsTest extends TestCase
     {
         app()->instance('user.timezone', 'UTC');
 
-        $therapist = Therapist::factory()->create();
+        $professional = Professional::factory()->create();
         $sessionType = SessionType::factory()->create([
-            'therapist_id' => $therapist->id,
+            'professional_id' => $professional->id,
             'price' => 10000,
             'currency' => 'ARS',
         ]);
 
         Appointment::factory()->create([
-            'therapist_id' => $therapist->id,
+            'professional_id' => $professional->id,
             'session_type_id' => $sessionType->id,
-            'patient_name' => 'Paid Patient',
+            'patient_name' => 'Paid Customer',
             'patient_email' => 'paid@example.com',
             'starts_at' => CarbonImmutable::parse('2026-06-10 12:00:00', 'UTC'),
             'ends_at' => CarbonImmutable::parse('2026-06-10 13:00:00', 'UTC'),
@@ -46,9 +46,9 @@ final class AppointmentReportsTest extends TestCase
         ]);
 
         Appointment::factory()->create([
-            'therapist_id' => $therapist->id,
+            'professional_id' => $professional->id,
             'session_type_id' => $sessionType->id,
-            'patient_name' => 'Pending Patient',
+            'patient_name' => 'Pending Customer',
             'patient_email' => 'pending@example.com',
             'starts_at' => CarbonImmutable::parse('2026-06-11 12:00:00', 'UTC'),
             'ends_at' => CarbonImmutable::parse('2026-06-11 13:00:00', 'UTC'),
@@ -60,9 +60,9 @@ final class AppointmentReportsTest extends TestCase
         ]);
 
         Appointment::factory()->create([
-            'therapist_id' => $therapist->id,
+            'professional_id' => $professional->id,
             'session_type_id' => $sessionType->id,
-            'patient_name' => 'Cancelled Patient',
+            'patient_name' => 'Cancelled Customer',
             'patient_email' => 'cancelled@example.com',
             'starts_at' => CarbonImmutable::parse('2026-06-12 12:00:00', 'UTC'),
             'ends_at' => CarbonImmutable::parse('2026-06-12 13:00:00', 'UTC'),
@@ -76,7 +76,7 @@ final class AppointmentReportsTest extends TestCase
         $report = app(AppointmentReportService::class)->build([
             'date_from' => '2026-06-01',
             'date_to' => '2026-06-30',
-            'therapist_id' => null,
+            'professional_id' => null,
         ]);
 
         $this->assertSame(3, $report['metrics']['total_appointments']);
@@ -102,17 +102,17 @@ final class AppointmentReportsTest extends TestCase
             'email_verified_at' => now(),
         ]);
 
-        $therapist = Therapist::factory()->create();
+        $professional = Professional::factory()->create();
         $sessionType = SessionType::factory()->create([
-            'therapist_id' => $therapist->id,
+            'professional_id' => $professional->id,
             'price' => 15000,
             'currency' => 'ARS',
         ]);
 
         Appointment::factory()->create([
-            'therapist_id' => $therapist->id,
+            'professional_id' => $professional->id,
             'session_type_id' => $sessionType->id,
-            'patient_name' => 'CSV Patient',
+            'patient_name' => 'CSV Customer',
             'patient_email' => 'csv@example.com',
             'starts_at' => CarbonImmutable::parse('2026-06-15 12:00:00', 'UTC'),
             'ends_at' => CarbonImmutable::parse('2026-06-15 13:00:00', 'UTC'),
@@ -134,7 +134,7 @@ final class AppointmentReportsTest extends TestCase
 
         $content = $response->streamedContent();
 
-        $this->assertStringContainsString('CSV Patient', $content);
+        $this->assertStringContainsString('CSV Customer', $content);
         $this->assertStringContainsString('csv@example.com', $content);
         $this->assertStringContainsString('15000.00', $content);
         $this->assertStringContainsString('ARS', $content);

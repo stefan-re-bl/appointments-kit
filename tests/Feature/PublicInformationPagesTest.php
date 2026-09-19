@@ -11,7 +11,7 @@ final class PublicInformationPagesTest extends TestCase
     public function test_public_information_pages_render_in_spanish(): void
     {
         $pages = [
-            'information.how-it-works' => 'De la orientación al acompañamiento online',
+            'information.how-it-works' => 'De la consulta inicial a la cita confirmada',
             'information.faq' => 'Respuestas antes de empezar',
             'information.patients' => 'Qué necesitás saber antes de tu sesión',
             'information.payment-and-cancellation' => 'Coordinación clara antes de comenzar',
@@ -21,7 +21,7 @@ final class PublicInformationPagesTest extends TestCase
             $this->get(route($routeName, ['lang' => 'es']))
                 ->assertOk()
                 ->assertSeeText($heading)
-                ->assertSee('https://wa.me/5491150501775', false);
+                ->assertSee('https://wa.me/?text=', false);
         }
     }
 
@@ -33,7 +33,7 @@ final class PublicInformationPagesTest extends TestCase
             ->assertSeeText('La cancelación del turno con derecho a reembolso puede solicitarse hasta 24 horas antes del horario acordado.')
             ->assertSeeText('Modificación de fecha u horario')
             ->assertSeeText('La modificación de fecha u horario puede solicitarse hasta 48 horas antes del turno.')
-            ->assertSeeText('Cualquier excepción a estas condiciones quedará sujeta al acuerdo previo entre paciente y terapeuta.');
+            ->assertSeeText('cualquier excepción queda sujeta al acuerdo del negocio');
     }
 
     public function test_information_pages_render_in_english(): void
@@ -41,9 +41,7 @@ final class PublicInformationPagesTest extends TestCase
         $this->get(route('information.patients', ['lang' => 'en']))
             ->assertOk()
             ->assertSeeText('What to know before your session')
-            ->assertSeeText('Not an emergency service')
-            ->assertSeeText('0800-999-0091')
-            ->assertSeeText('0800-333-1665');
+            ->assertSeeText('Service depends on availability');
 
         $this->get(route('information.payment-and-cancellation', ['lang' => 'en']))
             ->assertOk()
@@ -60,5 +58,13 @@ final class PublicInformationPagesTest extends TestCase
             ->assertSee(route('information.faq'), false)
             ->assertSee(route('information.patients'), false)
             ->assertSee(route('information.payment-and-cancellation'), false);
+    }
+
+    public function test_customer_information_uses_generic_public_slug(): void
+    {
+        $this->assertStringEndsWith('/customers', route('information.patients'));
+
+        $this->get('/patients')
+            ->assertRedirect('/customers');
     }
 }

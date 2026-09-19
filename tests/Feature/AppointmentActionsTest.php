@@ -13,8 +13,8 @@ use App\Enums\Role;
 use App\Mail\AppointmentCancelled;
 use App\Mail\AppointmentRescheduled;
 use App\Models\Appointment;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use App\Services\TimezoneService;
 use Carbon\CarbonImmutable;
@@ -25,6 +25,20 @@ use Tests\TestCase;
 class AppointmentActionsTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('2026-08-01 12:00:00', 'UTC'));
+    }
+
+    protected function tearDown(): void
+    {
+        CarbonImmutable::setTestNow();
+
+        parent::tearDown();
+    }
 
     public function test_it_reschedules_an_appointment_and_queues_emails(): void
     {
@@ -60,7 +74,7 @@ class AppointmentActionsTest extends TestCase
         ]);
 
         $this->createAppointment([
-            'therapist_id' => $appointment->therapist_id,
+            'professional_id' => $appointment->professional_id,
             'session_type_id' => $appointment->session_type_id,
             'starts_at' => CarbonImmutable::parse('2026-08-11 18:00:00', 'UTC'),
             'ends_at' => CarbonImmutable::parse('2026-08-11 19:00:00', 'UTC'),
@@ -96,7 +110,7 @@ class AppointmentActionsTest extends TestCase
 
         $timezoneService = app(TimezoneService::class);
 
-        $appointment->therapist->availabilities()->create([
+        $appointment->professional->availabilities()->create([
             'day_of_week' => 2,
             'start_time' => $timezoneService->timeToUtc(
                 '15:00',
@@ -163,10 +177,10 @@ class AppointmentActionsTest extends TestCase
     private function createAppointment(array $overrides = []): Appointment
     {
         $user = User::factory()->create([
-            'role' => Role::THERAPIST->value,
+            'role' => Role::PROFESSIONAL->value,
         ]);
 
-        $therapist = Therapist::factory()
+        $professional = Professional::factory()
             ->for($user)
             ->create([
                 'timezone' => 'America/Argentina/Buenos_Aires',
@@ -175,16 +189,16 @@ class AppointmentActionsTest extends TestCase
             ]);
 
         $sessionType = SessionType::factory()
-            ->for($therapist)
+            ->for($professional)
             ->create([
                 'duration_minutes' => 60,
             ]);
 
         return Appointment::factory()
-            ->for($therapist)
+            ->for($professional)
             ->for($sessionType, 'sessionType')
             ->create(array_merge([
-                'patient_name' => 'Paciente Demo',
+                'patient_name' => 'Cliente Demo',
                 'patient_email' => 'paciente@example.com',
                 'patient_timezone' => 'America/Argentina/Buenos_Aires',
                 'starts_at' => CarbonImmutable::parse('2026-08-10 16:00:00', 'UTC'),

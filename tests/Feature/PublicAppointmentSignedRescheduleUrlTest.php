@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\Appointment;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\URL;
@@ -78,14 +78,14 @@ final class PublicAppointmentSignedRescheduleUrlTest extends TestCase
 
     public function test_signed_reschedule_slots_endpoint_returns_slots_payload(): void
     {
-        $therapist = Therapist::factory()->create([
+        $professional = Professional::factory()->create([
             'timezone' => 'UTC',
         ]);
-        $sessionType = SessionType::factory()->for($therapist)->create([
+        $sessionType = SessionType::factory()->for($professional)->create([
             'duration_minutes' => 60,
         ]);
         $appointment = Appointment::factory()
-            ->for($therapist)
+            ->for($professional)
             ->for($sessionType, 'sessionType')
             ->create([
                 'starts_at' => Carbon::now('UTC')->addWeek(),

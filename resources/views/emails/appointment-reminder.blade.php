@@ -4,7 +4,7 @@
 {{ __('reminders.appointment.intro') }}
 
 <x-mail::panel>
-**{{ __('reminders.appointment.therapist') }}:** {{ $appointment->therapist->user->name }}
+**{{ __('reminders.appointment.professional') }}:** {{ $appointment->professional->user->name }}
 
 **{{ __('reminders.appointment.starts_at') }}:** {{ $startsAt }}
 

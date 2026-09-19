@@ -17,7 +17,7 @@ return new class extends Migration
             $table->timestamp('patient_whatsapp_opt_out_at')->nullable()->after('patient_whatsapp_opt_in_at');
         });
 
-        Schema::table('therapists', function (Blueprint $table): void {
+        Schema::table('professionals', function (Blueprint $table): void {
             $table->string('whatsapp_phone')->nullable()->after('google_meet_link');
             $table->boolean('whatsapp_notifications_enabled')->default(false)->after('whatsapp_phone');
             $table->boolean('whatsapp_confirmations_enabled')->default(true)->after('whatsapp_notifications_enabled');
@@ -59,7 +59,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('notification_deliveries');
 
-        Schema::table('therapists', function (Blueprint $table): void {
+        Schema::table('professionals', function (Blueprint $table): void {
             $table->dropColumn([
                 'whatsapp_phone',
                 'whatsapp_notifications_enabled',

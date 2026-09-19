@@ -8,17 +8,17 @@
     @php
         $approvalKey = 'pending';
 
-        if ($therapist && ! $therapist->is_active) {
+        if ($professional && ! $professional->is_active) {
             $approvalKey = 'inactive';
-        } elseif ($therapist && $therapist->is_approved) {
+        } elseif ($professional && $professional->is_approved) {
             $approvalKey = 'approved';
         }
 
-        $checklist = $therapist ? [
-            'profile' => filled($therapist->bio),
-            'meet_link' => filled($therapist->google_meet_link),
-            'availability' => (int) $therapist->active_availabilities_count > 0,
-            'approval' => $therapist->is_approved,
+        $checklist = $professional ? [
+            'profile' => filled($professional->bio),
+            'meet_link' => filled($professional->google_meet_link),
+            'availability' => (int) $professional->active_availabilities_count > 0,
+            'approval' => $professional->is_approved,
         ] : [];
     @endphp
 
@@ -30,15 +30,15 @@
                 </div>
             @endif
 
-            @if (! $therapist)
+            @if (! $professional)
                 <section class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
-                    <p class="text-sm text-gray-700">{{ __('app.dashboard_onboarding.no_therapist') }}</p>
+                    <p class="text-sm text-gray-700">{{ __('app.dashboard_onboarding.no_professional') }}</p>
                 </section>
             @else
                 <section class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                         <div>
-                            <p class="text-sm font-semibold uppercase tracking-wide text-umbralia-title">
+                            <p class="text-sm font-semibold uppercase tracking-wide text-brand-title">
                                 {{ __('app.dashboard_onboarding.eyebrow') }}
                             </p>
                             <h3 class="mt-2 text-2xl font-semibold text-gray-950">
@@ -62,13 +62,13 @@
                     <div class="mt-6">
                         <a
                             href="{{ route('book.index') }}"
-                            class="inline-flex items-center justify-center rounded-lg bg-umbralia-title px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2"
+                            class="inline-flex items-center justify-center rounded-lg bg-brand-title px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-title/90 focus:outline-none focus:ring-2 focus:ring-brand-accent/30 focus:ring-offset-2"
                         >
                             {{ __('app.dashboard_onboarding.add_appointment') }}
                         </a>
                     </div>
 
-                    @if (! $therapist->is_approved)
+                    @if (! $professional->is_approved)
                         <div class="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
                             <p class="font-semibold">{{ __('app.dashboard_approval.pending_title') }}</p>
                             <p class="mt-1">{{ __('app.dashboard_approval.pending_message') }}</p>
@@ -122,13 +122,13 @@
                     </h3>
 
                     <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        <a href="{{ route('profile.edit') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-umbralia-accent hover:bg-umbralia-accent-soft">
+                        <a href="{{ route('profile.edit') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-brand-accent hover:bg-brand-accent-soft">
                             {{ __('app.dashboard_onboarding.quick_links.profile') }}
                         </a>
-                        <a href="{{ route('availabilities.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-umbralia-accent hover:bg-umbralia-accent-soft">
+                        <a href="{{ route('availabilities.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-brand-accent hover:bg-brand-accent-soft">
                             {{ __('app.dashboard_onboarding.quick_links.availability') }}
                         </a>
-                        <a href="{{ route('therapist.appointments.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-umbralia-accent hover:bg-umbralia-accent-soft">
+                        <a href="{{ route('professional.appointments.index') }}" class="rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-800 hover:border-brand-accent hover:bg-brand-accent-soft">
                             {{ __('app.dashboard_onboarding.quick_links.appointments') }}
                         </a>
                     </div>

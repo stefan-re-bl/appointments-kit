@@ -4,21 +4,21 @@ use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogControll
 use App\Http\Controllers\Admin\AppointmentController as AdminAppointmentController;
 use App\Http\Controllers\Admin\AppointmentReportController;
 use App\Http\Controllers\Admin\ContactMessageController as AdminContactMessageController;
-use App\Http\Controllers\Admin\TherapistController as AdminTherapistController;
+use App\Http\Controllers\Admin\ProfessionalController as AdminProfessionalController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Professional\AppointmentIndexController;
+use App\Http\Controllers\Professional\AppointmentPaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicAppointmentCancellationController;
 use App\Http\Controllers\PublicAppointmentController;
 use App\Http\Controllers\PublicAppointmentRescheduleController;
 use App\Http\Controllers\PublicAppointmentRescheduleStoreController;
-use App\Http\Controllers\PublicTherapistDirectoryController;
-use App\Http\Controllers\PublicTherapistProfileController;
+use App\Http\Controllers\PublicProfessionalDirectoryController;
+use App\Http\Controllers\PublicProfessionalProfileController;
 use App\Http\Controllers\SessionTypeController;
-use App\Http\Controllers\Therapist\AppointmentIndexController;
-use App\Http\Controllers\Therapist\AppointmentPaymentController;
 use App\Http\Controllers\Webhooks\MetaWhatsAppWebhookController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
@@ -31,7 +31,9 @@ Route::view('/how-it-works', 'information.show', ['page' => 'how_it_works'])
 Route::view('/faq', 'information.show', ['page' => 'faq'])
     ->name('information.faq');
 
-Route::view('/patients', 'information.show', ['page' => 'patients'])
+Route::redirect('/patients', '/customers', 301);
+
+Route::view('/customers', 'information.show', ['page' => 'patients'])
     ->name('information.patients');
 
 Route::view('/payment-and-cancellation', 'information.show', ['page' => 'payment_and_cancellation'])
@@ -64,11 +66,15 @@ Route::post('/webhooks/meta/whatsapp', [MetaWhatsAppWebhookController::class, 'r
     ->middleware('throttle:60,1')
     ->name('webhooks.meta-whatsapp.receive');
 
-Route::get('/therapists', PublicTherapistDirectoryController::class)
-    ->name('therapists.index');
+Route::redirect('/therapists', '/professionals', 301);
 
-Route::get('/therapists/{slug}', PublicTherapistProfileController::class)
-    ->name('therapists.show');
+Route::get('/therapists/{slug}', fn (string $slug): RedirectResponse => redirect()->route('professionals.show', $slug, 301));
+
+Route::get('/professionals', PublicProfessionalDirectoryController::class)
+    ->name('professionals.index');
+
+Route::get('/professionals/{slug}', PublicProfessionalProfileController::class)
+    ->name('professionals.show');
 
 // --- Página pública "Mi Cita" (Ticket #11) ---
 Route::get('/appointment/{token}', PublicAppointmentController::class)
@@ -112,14 +118,16 @@ Route::middleware(['auth', 'verified', 'admin'])
         Route::get('/', fn (): RedirectResponse => redirect()->route('admin.appointments.index'))
             ->name('index');
 
-        Route::resource('therapists', AdminTherapistController::class)
+        Route::resource('professionals', AdminProfessionalController::class)
+            ->parameters(['professionals' => 'professional'])
+            ->names('professionals')
             ->only(['index', 'edit', 'update']);
 
-        Route::patch('/therapists/{therapist}/approve', [AdminTherapistController::class, 'approve'])
-            ->name('therapists.approve');
+        Route::patch('/professionals/{professional}/approve', [AdminProfessionalController::class, 'approve'])
+            ->name('professionals.approve');
 
-        Route::patch('/therapists/{therapist}/revoke-approval', [AdminTherapistController::class, 'revokeApproval'])
-            ->name('therapists.revoke-approval');
+        Route::patch('/professionals/{professional}/revoke-approval', [AdminProfessionalController::class, 'revokeApproval'])
+            ->name('professionals.revoke-approval');
 
         Route::get('/appointments', [AdminAppointmentController::class, 'index'])
             ->name('appointments.index');
@@ -146,28 +154,30 @@ Route::middleware(['auth', 'verified', 'admin'])
             ->name('reports.appointments.export');
     });
 
-// --- Panel de Terapeuta: Gestión de Citas y Pagos Manuales (Ticket #20) ---
+// --- Panel profesional: Gestión de citas y pagos manuales (Ticket #20) ---
 Route::middleware(['auth', 'verified'])->group(function (): void {
-    Route::get('/therapist/appointments', AppointmentIndexController::class)
-        ->name('therapist.appointments.index');
+    Route::redirect('/therapist/appointments', '/professional/appointments', 301);
 
-    Route::get('/therapist/appointments/events', [AppointmentIndexController::class, 'events'])
-        ->name('therapist.appointments.events');
+    Route::get('/professional/appointments', AppointmentIndexController::class)
+        ->name('professional.appointments.index');
 
-    Route::get('/therapist/appointments/day', [AppointmentIndexController::class, 'day'])
-        ->name('therapist.appointments.day');
+    Route::get('/professional/appointments/events', [AppointmentIndexController::class, 'events'])
+        ->name('professional.appointments.events');
 
-    Route::patch('/therapist/appointments/{appointment}/payment', AppointmentPaymentController::class)
-        ->name('therapist.appointments.payment.update');
+    Route::get('/professional/appointments/day', [AppointmentIndexController::class, 'day'])
+        ->name('professional.appointments.day');
+
+    Route::patch('/professional/appointments/{appointment}/payment', AppointmentPaymentController::class)
+        ->name('professional.appointments.payment.update');
 });
 
-// --- Carga interna de turnos por terapeutas ---
+// --- Carga interna de citas por profesionales ---
 Route::prefix('book')->name('book.')->group(function (): void {
     Route::get('/', [BookingController::class, 'index'])->name('index');
 
-    Route::post('/therapist', [BookingController::class, 'storeTherapist'])
+    Route::post('/professional', [BookingController::class, 'storeProfessional'])
         ->middleware('throttle:booking')
-        ->name('store.therapist');
+        ->name('store.professional');
 
     Route::get('/session', [BookingController::class, 'session'])->name('session');
 

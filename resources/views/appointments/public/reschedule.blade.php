@@ -8,7 +8,7 @@
                     {{ __('appointment_reschedule.badge') }}
                 </p>
 
-                <h1 class="mt-2 text-2xl font-bold text-umbralia-title">
+                <h1 class="mt-2 text-2xl font-bold text-brand-title">
                     {{ __('appointment_reschedule.title') }}
                 </h1>
 
@@ -38,17 +38,17 @@
             @endif
 
             <div class="mb-8 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <h2 class="text-base font-semibold text-umbralia-title">
+                <h2 class="text-base font-semibold text-brand-title">
                     {{ __('appointment_reschedule.current_appointment') }}
                 </h2>
 
                 <dl class="mt-4 grid gap-4 text-sm sm:grid-cols-2">
                     <div>
                         <dt class="font-medium text-slate-500">
-                            {{ __('appointment_reschedule.therapist') }}
+                            {{ __('appointment_reschedule.professional') }}
                         </dt>
                         <dd class="mt-1 text-slate-950">
-                            {{ $appointment->therapist->user->name }}
+                            {{ $appointment->professional->user->name }}
                         </dd>
                     </div>
 
@@ -118,7 +118,7 @@
                             min="{{ $minimumDate }}"
                             x-model="date"
                             x-on:change="loadSlots()"
-                            class="mt-2 block w-full rounded-lg border-slate-200 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                            class="mt-2 block w-full rounded-lg border-slate-200 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                             required
                         >
 
@@ -176,7 +176,7 @@
                                         x-bind:aria-pressed="isSelected(slot)"
                                         class="rounded-lg border px-4 py-3 text-center text-sm font-medium transition"
                                         x-bind:class="isSelected(slot)
-                                            ? 'border-umbralia-accent bg-slate-50 text-slate-600'
+                                            ? 'border-brand-accent bg-slate-50 text-slate-600'
                                             : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'"
                                     >
                                         <span x-text="slot.label"></span>
@@ -214,7 +214,7 @@
                         <button
                             type="submit"
                             x-bind:disabled="!selectedStartUtc || loading"
-                            class="inline-flex justify-center rounded-lg bg-umbralia-title px-4 py-2 text-sm font-medium text-white transition hover:bg-umbralia-title/90 disabled:cursor-not-allowed disabled:opacity-50"
+                            class="inline-flex justify-center rounded-lg bg-brand-title px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-title/90 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {{ __('appointment_reschedule.submit') }}
                         </button>

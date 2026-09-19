@@ -18,17 +18,16 @@ final readonly class AppointmentReportService
 {
     public function __construct(
         private TimezoneService $timezoneService,
-    ) {
-    }
+    ) {}
 
     /**
-     * @param array<string, mixed> $filters
+     * @param  array<string, mixed>  $filters
      * @return array{
-     *     filters: array{date_from: string|null, date_to: string|null, therapist_id: int|null},
+     *     filters: array{date_from: string|null, date_to: string|null, professional_id: int|null},
      *     timezone: string,
      *     metrics: array<string, int|float>,
      *     currency_summaries: Collection<int, array<string, int|float|string>>,
-     *     therapist_summaries: Collection<int, array<string, int|float|string>>,
+     *     professional_summaries: Collection<int, array<string, int|float|string>>,
      *     rows: Collection<int, array<string, int|float|string|null>>
      * }
      */
@@ -37,12 +36,12 @@ final readonly class AppointmentReportService
         $normalizedFilters = $this->normalizeFilters($filters);
 
         $query = Appointment::query()
-            ->with(['therapist.user', 'sessionType'])
+            ->with(['professional.user', 'sessionType'])
             ->orderBy('starts_at')
             ->orderBy('id');
 
-        if ($normalizedFilters['therapist_id'] !== null) {
-            $query->where('therapist_id', $normalizedFilters['therapist_id']);
+        if ($normalizedFilters['professional_id'] !== null) {
+            $query->where('professional_id', $normalizedFilters['professional_id']);
         }
 
         $this->applyDateRange($query, $normalizedFilters);
@@ -55,18 +54,18 @@ final readonly class AppointmentReportService
             'timezone' => $this->currentTimezone(),
             'metrics' => $this->buildMetrics($appointments),
             'currency_summaries' => $this->buildCurrencySummaries($appointments),
-            'therapist_summaries' => $this->buildTherapistSummaries($appointments),
+            'professional_summaries' => $this->buildProfessionalSummaries($appointments),
             'rows' => $this->buildRows($appointments),
         ];
     }
 
     /**
-     * @param array<string, mixed> $filters
-     * @return array{date_from: string|null, date_to: string|null, therapist_id: int|null}
+     * @param  array<string, mixed>  $filters
+     * @return array{date_from: string|null, date_to: string|null, professional_id: int|null}
      */
     private function normalizeFilters(array $filters): array
     {
-        $therapistId = $filters['therapist_id'] ?? null;
+        $professionalId = $filters['professional_id'] ?? $filters['professional_id'] ?? null;
 
         return [
             'date_from' => isset($filters['date_from']) && $filters['date_from'] !== ''
@@ -75,13 +74,13 @@ final readonly class AppointmentReportService
             'date_to' => isset($filters['date_to']) && $filters['date_to'] !== ''
                 ? (string) $filters['date_to']
                 : null,
-            'therapist_id' => is_numeric($therapistId) ? (int) $therapistId : null,
+            'professional_id' => is_numeric($professionalId) ? (int) $professionalId : null,
         ];
     }
 
     /**
-     * @param Builder<Appointment> $query
-     * @param array{date_from: string|null, date_to: string|null, therapist_id: int|null} $filters
+     * @param  Builder<Appointment>  $query
+     * @param  array{date_from: string|null, date_to: string|null, professional_id: int|null}  $filters
      */
     private function applyDateRange(Builder $query, array $filters): void
     {
@@ -117,7 +116,7 @@ final readonly class AppointmentReportService
     }
 
     /**
-     * @param Collection<int, Appointment> $appointments
+     * @param  Collection<int, Appointment>  $appointments
      * @return array<string, int|float>
      */
     private function buildMetrics(Collection $appointments): array
@@ -153,7 +152,7 @@ final readonly class AppointmentReportService
     }
 
     /**
-     * @param Collection<int, Appointment> $appointments
+     * @param  Collection<int, Appointment>  $appointments
      * @return Collection<int, array<string, int|float|string>>
      */
     private function buildCurrencySummaries(Collection $appointments): Collection
@@ -183,15 +182,15 @@ final readonly class AppointmentReportService
     }
 
     /**
-     * @param Collection<int, Appointment> $appointments
+     * @param  Collection<int, Appointment>  $appointments
      * @return Collection<int, array<string, int|float|string>>
      */
-    private function buildTherapistSummaries(Collection $appointments): Collection
+    private function buildProfessionalSummaries(Collection $appointments): Collection
     {
         return $appointments
             ->filter(fn (Appointment $appointment): bool => $this->isChargeable($appointment))
             ->groupBy(
-                fn (Appointment $appointment): string => $appointment->therapist_id . '|' . $this->currency($appointment),
+                fn (Appointment $appointment): string => $appointment->professional_id.'|'.$this->currency($appointment),
             )
             ->map(function (Collection $items): array {
                 /** @var Collection<int, Appointment> $items */
@@ -207,9 +206,9 @@ final readonly class AppointmentReportService
                 );
 
                 return [
-                    'therapist_id' => $first->therapist_id,
-                    'therapist_name' => $first->therapist?->user?->name ?? '—',
-                    'therapist_email' => $first->therapist?->user?->email ?? '—',
+                    'professional_id' => $first->professional_id,
+                    'professional_name' => $first->professional?->user?->name ?? '—',
+                    'professional_email' => $first->professional?->user?->email ?? '—',
                     'currency' => $this->currency($first),
                     'appointments_count' => $items->count(),
                     'paid_appointments' => $paidAppointments->count(),
@@ -224,7 +223,7 @@ final readonly class AppointmentReportService
     }
 
     /**
-     * @param Collection<int, Appointment> $appointments
+     * @param  Collection<int, Appointment>  $appointments
      * @return Collection<int, array<string, int|float|string|null>>
      */
     private function buildRows(Collection $appointments): Collection
@@ -234,8 +233,8 @@ final readonly class AppointmentReportService
                 'appointment_id' => $appointment->id,
                 'patient_name' => $appointment->patient_name,
                 'patient_email' => $appointment->patient_email,
-                'therapist_name' => $appointment->therapist?->user?->name ?? '—',
-                'therapist_email' => $appointment->therapist?->user?->email ?? '—',
+                'professional_name' => $appointment->professional?->user?->name ?? '—',
+                'professional_email' => $appointment->professional?->user?->email ?? '—',
                 'session_type_name' => $appointment->sessionType?->name ?? '—',
                 'starts_at_display' => $this->timezoneService->formatForDisplay($appointment->starts_at, 'd/m/Y H:i'),
                 'ends_at_display' => $this->timezoneService->formatForDisplay($appointment->ends_at, 'd/m/Y H:i'),

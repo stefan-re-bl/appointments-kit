@@ -19,13 +19,13 @@ final class BookingConfirmed extends Mailable
 
     public const RECIPIENT_PATIENT = 'patient';
 
-    public const RECIPIENT_THERAPIST = 'therapist';
+    public const RECIPIENT_PROFESSIONAL = 'professional';
 
     public function __construct(
         public readonly Appointment $appointment,
         public readonly string $recipientType,
     ) {
-        $this->appointment->loadMissing(['therapist.user', 'sessionType']);
+        $this->appointment->loadMissing(['professional.user', 'sessionType']);
     }
 
     public function envelope(): Envelope
@@ -82,9 +82,9 @@ final class BookingConfirmed extends Mailable
             'endsAt' => $endsAt,
             'displayTimezone' => $displayTimezone,
             'appointmentUrl' => route('appointments.public.show', $this->appointment->token),
-            'meetLink' => $this->appointment->therapist?->google_meet_link,
-            'paymentInstructions' => $this->appointment->therapist?->payment_instructions,
-            'therapistName' => $this->appointment->therapist?->user?->name,
+            'meetLink' => $this->appointment->professional?->google_meet_link,
+            'paymentInstructions' => $this->appointment->professional?->payment_instructions,
+            'professionalName' => $this->appointment->professional?->user?->name,
             'patientName' => $this->appointment->patient_name,
             'sessionTypeName' => $this->appointment->sessionType?->name,
         ];
@@ -92,8 +92,8 @@ final class BookingConfirmed extends Mailable
 
     private function displayTimezone(): string
     {
-        if ($this->recipientType === self::RECIPIENT_THERAPIST) {
-            return $this->appointment->therapist?->timezone ?: 'UTC';
+        if ($this->recipientType === self::RECIPIENT_PROFESSIONAL) {
+            return $this->appointment->professional?->timezone ?: 'UTC';
         }
 
         return $this->appointment->patient_timezone ?: 'UTC';

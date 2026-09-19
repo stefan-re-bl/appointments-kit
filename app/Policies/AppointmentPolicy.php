@@ -12,7 +12,7 @@ final class AppointmentPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $this->hasRole($user, Role::ADMIN) || $user->therapist !== null;
+        return $this->hasRole($user, Role::ADMIN) || $user->professional !== null;
     }
 
     public function view(User $user, Appointment $appointment): bool
@@ -41,13 +41,13 @@ final class AppointmentPolicy
 
     private function ownsAppointment(User $user, Appointment $appointment): bool
     {
-        $user->loadMissing('therapist');
+        $user->loadMissing('professional');
 
-        if ($user->therapist === null) {
+        if ($user->professional === null) {
             return false;
         }
 
-        return (int) $user->therapist->id === (int) $appointment->therapist_id;
+        return (int) $user->professional->id === (int) $appointment->professional_id;
     }
 
     private function hasRole(User $user, Role $role): bool

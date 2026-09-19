@@ -5,8 +5,8 @@ namespace Database\Factories;
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Appointment;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,7 +20,7 @@ class AppointmentFactory extends Factory
         $startsAt = Carbon::now('UTC')->addDays(fake()->numberBetween(1, 10));
 
         return [
-            'therapist_id' => Therapist::factory(),
+            'professional_id' => Professional::factory(),
             'session_type_id' => SessionType::factory(),
             'patient_name' => fake()->name(),
             'patient_email' => fake()->unique()->safeEmail(),

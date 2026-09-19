@@ -7,8 +7,8 @@ namespace Tests\Feature;
 use App\Enums\AppointmentStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Appointment;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
@@ -19,13 +19,13 @@ final class PublicAppointmentPageTest extends TestCase
 
     public function test_patient_can_view_public_appointment_page_with_patient_timezone(): void
     {
-        $therapist = Therapist::factory()->create([
+        $professional = Professional::factory()->create([
             'google_meet_link' => 'https://meet.google.com/test-room',
-            'payment_instructions' => 'Transferencia a alias UMBRALIA.TEST.',
+            'payment_instructions' => 'Transferencia al alias de prueba.',
         ]);
 
         $sessionType = SessionType::factory()
-            ->for($therapist)
+            ->for($professional)
             ->create([
                 'name' => 'Sesión individual',
                 'duration_minutes' => 60,
@@ -34,10 +34,10 @@ final class PublicAppointmentPageTest extends TestCase
             ]);
 
         $appointment = Appointment::factory()
-            ->for($therapist)
+            ->for($professional)
             ->for($sessionType, 'sessionType')
             ->create([
-                'patient_name' => 'Paciente Demo',
+                'patient_name' => 'Cliente Demo',
                 'patient_email' => 'paciente@example.com',
                 'patient_timezone' => 'America/Argentina/Cordoba',
                 'starts_at' => Carbon::parse('2026-07-10 18:00:00', 'UTC'),
@@ -49,11 +49,11 @@ final class PublicAppointmentPageTest extends TestCase
 
         $this->get(route('appointments.public.show', ['token' => $appointment->token]))
             ->assertOk()
-            ->assertSeeText('Paciente Demo')
+            ->assertSeeText('Cliente Demo')
             ->assertSeeText('10/07/2026 15:00')
             ->assertSeeText('10/07/2026 16:00')
             ->assertSeeText('America/Argentina/Cordoba')
-            ->assertSeeText('Transferencia a alias UMBRALIA.TEST.')
+            ->assertSeeText('Transferencia al alias de prueba.')
             ->assertSee('https://meet.google.com/test-room');
     }
 
@@ -66,14 +66,14 @@ final class PublicAppointmentPageTest extends TestCase
 
     public function test_payment_status_reflects_paid_appointment(): void
     {
-        $therapist = Therapist::factory()->create();
+        $professional = Professional::factory()->create();
 
         $sessionType = SessionType::factory()
-            ->for($therapist)
+            ->for($professional)
             ->create();
 
         $appointment = Appointment::factory()
-            ->for($therapist)
+            ->for($professional)
             ->for($sessionType, 'sessionType')
             ->create([
                 'patient_timezone' => 'America/Argentina/Cordoba',

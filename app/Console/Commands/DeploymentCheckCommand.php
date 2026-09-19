@@ -155,7 +155,7 @@ final class DeploymentCheckCommand extends Command
             '/',
             '/how-it-works',
             '/faq',
-            '/patients',
+            '/customers',
             '/payment-and-cancellation',
             '/legal',
             '/terms',

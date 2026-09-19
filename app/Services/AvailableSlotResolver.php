@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Therapist;
+use App\Models\Professional;
 use Carbon\Carbon;
 use Throwable;
 
@@ -18,14 +18,14 @@ final readonly class AvailableSlotResolver
      * @return array{start_utc: mixed, end_utc: mixed, label?: mixed}|null
      */
     public function resolve(
-        Therapist $therapist,
+        Professional $professional,
         string $date,
         int $durationMinutes,
         string $selectedStartUtc,
         ?string $displayTimezone = null,
     ): ?array {
         $slots = $this->slotGenerationService->generate(
-            $therapist,
+            $professional,
             $date,
             $durationMinutes,
             $displayTimezone,

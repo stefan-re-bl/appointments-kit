@@ -35,7 +35,7 @@ final class PublicAppointmentRescheduleController extends Controller implements 
         TimezoneService $timezoneService,
     ): View|Response {
         $appointment = Appointment::query()
-            ->with(['therapist.user', 'sessionType'])
+            ->with(['professional.user', 'sessionType'])
             ->where('token', $token)
             ->first();
 
@@ -95,7 +95,7 @@ final class PublicAppointmentRescheduleController extends Controller implements 
         ]);
 
         $appointment = Appointment::query()
-            ->with(['therapist.user', 'sessionType'])
+            ->with(['professional.user', 'sessionType'])
             ->where('token', $token)
             ->first();
 
@@ -116,7 +116,7 @@ final class PublicAppointmentRescheduleController extends Controller implements 
         }
 
         $slots = $slotGenerationService->generate(
-            $appointment->therapist,
+            $appointment->professional,
             $validated['date'],
             (int) $appointment->sessionType->duration_minutes,
             $timezone,

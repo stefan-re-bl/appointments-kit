@@ -10,8 +10,8 @@ use App\Enums\Role;
 use App\Jobs\SendAppointmentReminderEmail;
 use App\Mail\AppointmentReminder;
 use App\Models\Appointment;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Console\Command;
@@ -124,6 +124,52 @@ final class SendAppointmentRemindersCommandTest extends TestCase
         $this->assertNull($appointment->refresh()->reminder_sent_at);
     }
 
+    public function test_it_uses_configured_reminder_window(): void
+    {
+        config([
+            'booking.reminders.lead_hours' => 12,
+        ]);
+
+        Mail::fake();
+        Queue::fake();
+
+        $appointment = $this->makeAppointment([
+            'starts_at' => $this->now->addHours(12)->subMinute()->toDateTimeString(),
+            'ends_at' => $this->now->addHours(13)->subMinute()->toDateTimeString(),
+        ]);
+
+        $this->artisan('appointments:send-reminders')
+            ->assertExitCode(Command::SUCCESS);
+
+        Queue::assertPushed(SendAppointmentReminderEmail::class, 1);
+        Mail::assertNothingSent();
+
+        $this->assertNotNull($appointment->refresh()->reminder_queued_at);
+    }
+
+    public function test_it_respects_configured_reminder_window_limit(): void
+    {
+        config([
+            'booking.reminders.lead_hours' => 12,
+        ]);
+
+        Mail::fake();
+        Queue::fake();
+
+        $appointment = $this->makeAppointment([
+            'starts_at' => $this->now->addHours(12)->addMinute()->toDateTimeString(),
+            'ends_at' => $this->now->addHours(13)->addMinute()->toDateTimeString(),
+        ]);
+
+        $this->artisan('appointments:send-reminders')
+            ->assertExitCode(Command::SUCCESS);
+
+        Mail::assertNothingSent();
+        Queue::assertNothingPushed();
+
+        $this->assertNull($appointment->refresh()->reminder_sent_at);
+    }
+
     public function test_dry_run_does_not_send_or_mark_reminders(): void
     {
         Mail::fake();
@@ -216,12 +262,12 @@ final class SendAppointmentRemindersCommandTest extends TestCase
      */
     private function makeAppointment(array $overrides = []): Appointment
     {
-        $therapistUser = User::factory()->create([
-            'role' => Role::THERAPIST->value,
+        $professionalUser = User::factory()->create([
+            'role' => Role::PROFESSIONAL->value,
         ]);
 
-        $therapist = Therapist::factory()
-            ->for($therapistUser)
+        $professional = Professional::factory()
+            ->for($professionalUser)
             ->create([
                 'timezone' => 'America/Argentina/Buenos_Aires',
                 'google_meet_link' => 'https://meet.google.com/test-link',
@@ -229,9 +275,9 @@ final class SendAppointmentRemindersCommandTest extends TestCase
             ]);
 
         $sessionType = SessionType::factory()
-            ->for($therapist)
+            ->for($professional)
             ->create([
-                'name' => 'Sesión individual',
+                'name' => 'Servicio individual',
                 'duration_minutes' => 60,
                 'price' => 10000,
                 'currency' => 'ARS',
@@ -239,10 +285,10 @@ final class SendAppointmentRemindersCommandTest extends TestCase
             ]);
 
         return Appointment::factory()
-            ->for($therapist)
+            ->for($professional)
             ->for($sessionType, 'sessionType')
             ->create(array_merge([
-                'patient_name' => 'Patient Test',
+                'patient_name' => 'Customer Test',
                 'patient_email' => 'patient@example.test',
                 'patient_timezone' => 'America/Argentina/Buenos_Aires',
                 'starts_at' => $this->now->addDay()->subMinute()->toDateTimeString(),

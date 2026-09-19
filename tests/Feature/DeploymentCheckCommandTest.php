@@ -21,7 +21,7 @@ final class DeploymentCheckCommandTest extends TestCase
         config([
             'app.env' => 'production',
             'app.debug' => false,
-            'app.url' => 'https://umbralia.example',
+            'app.url' => 'https://appointments-kit.example',
             'queue.default' => 'redis',
             'cache.default' => 'redis',
             'session.driver' => 'redis',
@@ -30,7 +30,7 @@ final class DeploymentCheckCommandTest extends TestCase
         $this->fakeCachedConfiguration();
 
         Http::fake([
-            'https://umbralia.example*' => Http::response('', 200),
+            'https://appointments-kit.example*' => Http::response('', 200),
         ]);
 
         Redis::shouldReceive('connection->ping')
@@ -49,7 +49,7 @@ final class DeploymentCheckCommandTest extends TestCase
         config([
             'app.env' => 'production',
             'app.debug' => false,
-            'app.url' => 'http://umbralia.example',
+            'app.url' => 'http://appointments-kit.example',
             'queue.default' => 'redis',
             'cache.default' => 'redis',
             'session.driver' => 'redis',
@@ -58,7 +58,7 @@ final class DeploymentCheckCommandTest extends TestCase
         $this->fakeCachedConfiguration();
 
         Http::fake([
-            'http://umbralia.example*' => Http::response('', 200),
+            'http://appointments-kit.example*' => Http::response('', 200),
         ]);
 
         Redis::shouldReceive('connection->ping')

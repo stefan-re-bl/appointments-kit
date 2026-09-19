@@ -21,14 +21,14 @@
                 <div class="flex flex-col items-center gap-2">
                     <span @class([
                         'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ring-1',
-                        'bg-umbralia-title text-white ring-umbralia-accent' => $isActive || $isComplete,
+                        'bg-brand-title text-white ring-brand-accent' => $isActive || $isComplete,
                         'bg-white text-slate-500 ring-slate-200' => ! $isActive && ! $isComplete,
                     ])>
                         {{ $stepNumber }}
                     </span>
                     <span @class([
                         'hidden max-w-full truncate text-center text-xs font-medium sm:block',
-                        'text-umbralia-title' => $isActive,
+                        'text-brand-title' => $isActive,
                         'text-slate-500' => ! $isActive,
                     ])>
                         {{ $label }}

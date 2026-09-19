@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('availabilities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('therapist_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('professional_id')->constrained()->cascadeOnDelete();
             // 1 = Lunes, 7 = Domingo (Estándar ISO-8601)
-            $table->tinyInteger('day_of_week'); 
+            $table->tinyInteger('day_of_week');
             // Se almacenarán en UTC
             $table->time('start_time');
             $table->time('end_time');

@@ -14,7 +14,7 @@ final class StoreAvailabilityRequest extends FormRequest
         /** @var User|null $user */
         $user = $this->user();
 
-        return $user instanceof User && $user->therapist !== null;
+        return $user instanceof User && $user->professional !== null;
     }
 
     /**

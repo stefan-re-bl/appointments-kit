@@ -31,7 +31,7 @@ final class PublicAppointmentRescheduleStoreController extends Controller implem
         RescheduleAction $rescheduleAction,
     ): RedirectResponse|Response {
         $appointment = Appointment::query()
-            ->with(['therapist.user', 'sessionType'])
+            ->with(['professional.user', 'sessionType'])
             ->where('token', $token)
             ->first();
 

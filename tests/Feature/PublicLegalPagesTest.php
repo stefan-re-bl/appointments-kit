@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Enums\Role;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,7 +18,7 @@ final class PublicLegalPagesTest extends TestCase
     public function test_legal_pages_render_and_are_linked_from_public_footer(): void
     {
         $pages = [
-            'legal.index' => 'Información legal de Umbralia',
+            'legal.index' => 'Información legal de Appointments Kit',
             'legal.terms' => 'Términos y condiciones',
             'legal.privacy' => 'Política de privacidad',
             'legal.emergency-notice' => 'Aviso ante emergencias',
@@ -29,9 +29,7 @@ final class PublicLegalPagesTest extends TestCase
                 ->get(route($routeName, ['lang' => 'es']))
                 ->assertOk()
                 ->assertSeeText($heading)
-                ->assertSeeText('Umbralia no atiende emergencias')
-                ->assertSeeText('0800-999-0091')
-                ->assertSeeText('0800-333-1665')
+                ->assertSeeText('Legal')
                 ->assertSeeText('no procesa pagos');
         }
 
@@ -45,12 +43,12 @@ final class PublicLegalPagesTest extends TestCase
 
     public function test_internal_booking_confirmation_does_not_show_public_legal_acceptance(): void
     {
-        [$therapist, $sessionType] = $this->makeBookableTherapist();
+        [$professional, $sessionType] = $this->makeBookableProfessional();
 
         $this
-            ->actingAs($therapist->user)
+            ->actingAs($professional->user)
             ->withSession([
-                'booking.therapist_id' => $therapist->id,
+                'booking.professional_id' => $professional->id,
                 'booking.session_type_id' => $sessionType->id,
                 'booking.date' => '2026-07-06',
                 'booking.starts_at_utc' => '2026-07-06T12:00:00+00:00',
@@ -65,26 +63,26 @@ final class PublicLegalPagesTest extends TestCase
     }
 
     /**
-     * @return array{0: Therapist, 1: SessionType}
+     * @return array{0: Professional, 1: SessionType}
      */
-    private function makeBookableTherapist(): array
+    private function makeBookableProfessional(): array
     {
         $user = User::factory()->create([
-            'role' => Role::THERAPIST,
+            'role' => Role::PROFESSIONAL,
         ]);
 
-        $therapist = Therapist::factory()->for($user)->create([
+        $professional = Professional::factory()->for($user)->create([
             'timezone' => 'America/Argentina/Buenos_Aires',
             'google_meet_link' => 'https://meet.google.com/abc-defg-hij',
             'is_active' => true,
             'is_approved' => true,
         ]);
 
-        $sessionType = SessionType::factory()->for($therapist)->create([
+        $sessionType = SessionType::factory()->for($professional)->create([
             'duration_minutes' => 60,
             'is_active' => true,
         ]);
 
-        return [$therapist, $sessionType];
+        return [$professional, $sessionType];
     }
 }

@@ -25,7 +25,7 @@
                 <div class="flex">
                     <div class="flex flex-shrink-0 items-center">
                         <a href="/" class="text-2xl font-bold tracking-tight text-slate-700">
-                            {{ config('app.name', 'Umbralia') }}
+                            {{ config('app.name', 'Appointments Kit') }}
                         </a>
                     </div>
                 </div>

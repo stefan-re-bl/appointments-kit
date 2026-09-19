@@ -8,7 +8,7 @@
     <div class="min-h-screen bg-white py-10">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <div class="mb-8 text-center">
-                <h1 class="text-3xl font-bold tracking-tight text-umbralia-title">
+                <h1 class="text-3xl font-bold tracking-tight text-brand-title">
                     {{ __('app.appointment_public.title') }}
                 </h1>
 
@@ -30,7 +30,7 @@
             @endif
 
             <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-                <div class="border-b border-umbralia-accent bg-umbralia-title px-6 py-5">
+                <div class="border-b border-brand-accent bg-brand-title px-6 py-5">
                     <p class="text-sm font-medium text-slate-200">
                         {{ __('app.appointment_public.appointment_code') }}
                     </p>
@@ -42,7 +42,7 @@
 
                 <div class="grid gap-6 p-6">
                     <section>
-                        <h2 class="text-lg font-semibold text-umbralia-title">
+                        <h2 class="text-lg font-semibold text-brand-title">
                             {{ __('app.appointment_public.sections.patient') }}
                         </h2>
 
@@ -68,17 +68,17 @@
                     </section>
 
                     <section class="border-t border-slate-200 pt-6">
-                        <h2 class="text-lg font-semibold text-umbralia-title">
+                        <h2 class="text-lg font-semibold text-brand-title">
                             {{ __('app.appointment_public.sections.appointment') }}
                         </h2>
 
                         <dl class="mt-4 grid gap-4 sm:grid-cols-2">
                             <div>
                                     <dt class="text-sm font-medium text-slate-500">
-                                    {{ __('app.appointment_public.fields.therapist') }}
+                                    {{ __('app.appointment_public.fields.professional') }}
                                 </dt>
                                 <dd class="mt-1 text-sm text-slate-950">
-                                    {{ $appointment->therapist?->user?->name ?? __('app.appointment_public.unavailable') }}
+                                    {{ $appointment->professional?->user?->name ?? __('app.appointment_public.unavailable') }}
                                 </dd>
                             </div>
 
@@ -121,7 +121,7 @@
                     </section>
 
                     <section class="border-t border-slate-200 pt-6">
-                        <h2 class="text-lg font-semibold text-umbralia-title">
+                        <h2 class="text-lg font-semibold text-brand-title">
                             {{ __('app.appointment_public.sections.payment') }}
                         </h2>
 
@@ -140,13 +140,13 @@
                                 </p>
                             @endif
 
-                            @if (filled($appointment->therapist?->payment_instructions))
+                            @if (filled($appointment->professional?->payment_instructions))
                                 <div class="mt-4 border-t border-slate-200 pt-4">
                                     <h3 class="text-sm font-semibold text-slate-900">
                                         {{ __('app.appointment_public.payment_instructions_title') }}
                                     </h3>
                                     <p class="mt-2 whitespace-pre-line text-sm leading-6 text-slate-700">
-                                        {{ $appointment->therapist->payment_instructions }}
+                                        {{ $appointment->professional->payment_instructions }}
                                     </p>
                                 </div>
                             @endif
@@ -154,7 +154,7 @@
                     </section>
 
                     <section class="border-t border-slate-200 pt-6">
-                        <h2 class="text-lg font-semibold text-umbralia-title">
+                        <h2 class="text-lg font-semibold text-brand-title">
                             {{ __('appointment_policy.sections.policy') }}
                         </h2>
 
@@ -166,17 +166,17 @@
                     </section>
 
                     <section class="border-t border-slate-200 pt-6">
-                        <h2 class="text-lg font-semibold text-umbralia-title">
+                        <h2 class="text-lg font-semibold text-brand-title">
                             {{ __('app.appointment_public.sections.actions') }}
                         </h2>
 
                         <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                             @if ($canJoinMeet)
                                 <a
-                                    href="{{ $appointment->therapist->google_meet_link }}"
+                                    href="{{ $appointment->professional->google_meet_link }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    class="inline-flex items-center justify-center rounded-lg bg-umbralia-title px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-umbralia-title/90"
+                                    class="inline-flex items-center justify-center rounded-lg bg-brand-title px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-title/90"
                                 >
                                     {{ __('app.appointment_public.actions.join_meet') }}
                                 </a>
@@ -201,18 +201,18 @@
                             @if ($canReschedule && filled($rescheduleUrl ?? null))
                                 <a
                                     href="{{ $rescheduleUrl }}"
-                                    class="inline-flex items-center justify-center rounded-lg bg-umbralia-title px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-umbralia-title/90"
+                                    class="inline-flex items-center justify-center rounded-lg bg-brand-title px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-title/90"
                                 >
                                     {{ __('appointment_policy.actions.request_reschedule') }}
                                 </a>
                             @endif
 
-                            @if ($canContactTherapist)
+                            @if ($canContactProfessional)
                                 <a
-                                    href="mailto:{{ $appointment->therapist->user->email }}?subject={{ rawurlencode(__('app.appointment_public.actions.contact_subject')) }}"
+                                    href="mailto:{{ $appointment->professional->user->email }}?subject={{ rawurlencode(__('app.appointment_public.actions.contact_subject')) }}"
                                     class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50"
                                 >
-                                    {{ __('app.appointment_public.actions.contact_therapist') }}
+                                    {{ __('app.appointment_public.actions.contact_professional') }}
                                 </a>
                             @endif
 

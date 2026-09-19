@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use App\Enums\AppointmentStatus;
 use App\Enums\Role;
 use App\Models\Appointment;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use App\Services\BookingService;
 use Carbon\Carbon;
@@ -18,7 +18,7 @@ class BookingRaceConditionTest extends TestCase
 {
     use RefreshDatabase;
 
-    private Therapist $therapist;
+    private Professional $professional;
 
     private SessionType $sessionType;
 
@@ -29,25 +29,25 @@ class BookingRaceConditionTest extends TestCase
         parent::setUp();
 
         $user = User::factory()->create([
-            'role' => Role::THERAPIST,
+            'role' => Role::PROFESSIONAL,
         ]);
 
-        $this->therapist = Therapist::factory()->create([
+        $this->professional = Professional::factory()->create([
             'user_id' => $user->id,
             'is_active' => true,
             'is_approved' => true,
         ]);
 
         $this->sessionType = SessionType::factory()->create([
-            'therapist_id' => $this->therapist->id,
+            'professional_id' => $this->professional->id,
         ]);
 
         $startsAt = Carbon::now('UTC')->addDay()->startOfHour();
 
         $this->baseData = [
-            'therapist_id' => $this->therapist->id,
+            'professional_id' => $this->professional->id,
             'session_type_id' => $this->sessionType->id,
-            'patient_name' => 'Paciente Test',
+            'patient_name' => 'Cliente Test',
             'patient_email' => 'test@example.com',
             'patient_timezone' => 'America/Argentina/Buenos_Aires',
             'terms_accepted_at' => Carbon::now('UTC'),

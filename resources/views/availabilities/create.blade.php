@@ -14,7 +14,7 @@
                     
                     <div class="mb-6">
                         <label for="day_of_week" class="block text-sm font-medium text-slate-800">{{ __('app.availability.day_of_week') }}</label>
-                        <select name="day_of_week" id="day_of_week" class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30" required>
+                        <select name="day_of_week" id="day_of_week" class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30" required>
                             @foreach($days as $num => $day)
                                 <option value="{{ $num }}" {{ old('day_of_week') == $num ? 'selected' : '' }}>{{ $day }}</option>
                             @endforeach
@@ -36,18 +36,18 @@
                             <div class="mb-4 grid gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-[1fr_1fr_auto_auto] sm:items-end">
                                 <div class="flex-1">
                                     <label class="block text-xs font-medium text-slate-600">{{ __('app.availability.start') }}</label>
-                                    <input type="time" :name="'slots['+index+'][start_time]'" x-model="slot.start_time" class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30" required>
+                                    <input type="time" :name="'slots['+index+'][start_time]'" x-model="slot.start_time" class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30" required>
                                 </div>
                                 <div class="flex-1">
                                     <label class="block text-xs font-medium text-slate-600">{{ __('app.availability.end') }}</label>
-                                    <input type="time" :name="'slots['+index+'][end_time]'" x-model="slot.end_time" class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30" required>
+                                    <input type="time" :name="'slots['+index+'][end_time]'" x-model="slot.end_time" class="mt-1 block w-full rounded-lg border-slate-300 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30" required>
                                 </div>
                                 <div class="flex flex-col">
                                     <label class="mb-1 block text-xs font-medium text-slate-600">{{ __('app.active') }}</label>
                                     {{-- El hidden envía 0 si el checkbox está desmarcado. --}}
                                     <div class="relative">
                                         <input type="hidden" :name="'slots['+index+'][is_active]'" value="0">
-                                        <input type="checkbox" :name="'slots['+index+'][is_active]'" value="1" x-model="slot.is_active" class="rounded border-slate-300 text-umbralia-title shadow-sm focus:ring-umbralia-accent/30">
+                                        <input type="checkbox" :name="'slots['+index+'][is_active]'" value="1" x-model="slot.is_active" class="rounded border-slate-300 text-brand-title shadow-sm focus:ring-brand-accent/30">
                                     </div>
                                 </div>
                                 <button type="button" @click="slots.splice(index, 1)" class="text-xl font-bold text-rose-600 hover:text-rose-800" x-show="slots.length > 1">
@@ -58,7 +58,7 @@
 
                         <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
                             <a href="{{ route('availabilities.index') }}" class="inline-flex justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50">{{ __('app.availability.cancel') }}</a>
-                            <button type="submit" class="rounded-lg bg-umbralia-title px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-umbralia-title/90 focus:outline-none focus:ring-2 focus:ring-umbralia-accent/30 focus:ring-offset-2">
+                            <button type="submit" class="rounded-lg bg-brand-title px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-title/90 focus:outline-none focus:ring-2 focus:ring-brand-accent/30 focus:ring-offset-2">
                                 {{ __('app.availability.save') }}
                             </button>
                         </div>

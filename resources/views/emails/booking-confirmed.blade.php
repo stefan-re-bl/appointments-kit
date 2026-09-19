@@ -4,14 +4,14 @@
 @if ($recipientType === \App\Mail\BookingConfirmed::RECIPIENT_PATIENT)
 {{ __('app.emails.booking_confirmed.greeting_patient', ['name' => $patientName]) }}
 @else
-{{ __('app.emails.booking_confirmed.greeting_therapist', ['name' => $therapistName]) }}
+{{ __('app.emails.booking_confirmed.greeting_professional', ['name' => $professionalName]) }}
 @endif
 
 {{ __('app.emails.booking_confirmed.intro') }}
 
 <x-mail::panel>
 <strong>{{ __('app.emails.booking_confirmed.patient') }}:</strong> {{ $patientName }}<br>
-<strong>{{ __('app.emails.booking_confirmed.therapist') }}:</strong> {{ $therapistName }}<br>
+<strong>{{ __('app.emails.booking_confirmed.professional') }}:</strong> {{ $professionalName }}<br>
 <strong>{{ __('app.emails.booking_confirmed.starts_at') }}:</strong> {{ $startsAt }}<br>
 <strong>{{ __('app.emails.booking_confirmed.ends_at') }}:</strong> {{ $endsAt }}<br>
 <strong>{{ __('app.emails.booking_confirmed.timezone') }}:</strong> {{ $displayTimezone }}
@@ -29,7 +29,7 @@
 
 {{ __('legal.email.patient_disclaimer') }}
 @else
-{{ __('app.emails.booking_confirmed.payment_therapist_notice') }}
+{{ __('app.emails.booking_confirmed.payment_professional_notice') }}
 @endif
 
 <x-mail::button :url="$appointmentUrl">

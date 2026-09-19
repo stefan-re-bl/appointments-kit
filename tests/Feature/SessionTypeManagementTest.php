@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Enums\Role;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -15,12 +15,12 @@ final class SessionTypeManagementTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_session_type_index_is_no_longer_available_to_therapists(): void
+    public function test_session_type_index_is_no_longer_available_to_professionals(): void
     {
         $user = User::factory()->create([
-            'role' => Role::THERAPIST,
+            'role' => Role::PROFESSIONAL,
         ]);
-        Therapist::factory()->for($user)->create();
+        Professional::factory()->for($user)->create();
 
         $this
             ->actingAs($user)
@@ -31,10 +31,10 @@ final class SessionTypeManagementTest extends TestCase
     public function test_session_type_mutation_routes_redirect_to_dashboard(): void
     {
         $user = User::factory()->create([
-            'role' => Role::THERAPIST,
+            'role' => Role::PROFESSIONAL,
         ]);
-        $therapist = Therapist::factory()->for($user)->create();
-        $sessionType = SessionType::factory()->for($therapist)->create();
+        $professional = Professional::factory()->for($user)->create();
+        $sessionType = SessionType::factory()->for($professional)->create();
 
         $this
             ->actingAs($user)

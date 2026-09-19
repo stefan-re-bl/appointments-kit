@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('session_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('therapist_id')->constrained('therapists')->cascadeOnDelete();
+            $table->foreignId('professional_id')->constrained('professionals')->cascadeOnDelete();
             $table->string('name');
             $table->unsignedSmallInteger('duration_minutes');
             $table->decimal('price', 10, 2);
@@ -18,8 +18,8 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
-            // Restricción: No se permite duplicar nombre para el mismo terapeuta
-            $table->unique(['therapist_id', 'name']);
+            // Restricción: no se permite duplicar nombre para el mismo profesional.
+            $table->unique(['professional_id', 'name']);
         });
     }
 

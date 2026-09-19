@@ -46,7 +46,7 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect(route('admin.index', absolute: false));
     }
 
-    public function test_admins_are_redirected_away_from_therapist_dashboard(): void
+    public function test_admins_are_redirected_away_from_professional_dashboard(): void
     {
         $user = User::factory()->create([
             'role' => Role::ADMIN,

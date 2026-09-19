@@ -91,7 +91,7 @@ window.adminAppointmentsCalendar = function (config) {
 
         filters() {
             return {
-                therapist_id: this.$refs.therapistFilter?.value ?? '',
+                professional_id: this.$refs.professionalFilter?.value ?? '',
                 status: this.$refs.statusFilter?.value ?? '',
                 payment_status: this.$refs.paymentFilter?.value ?? '',
             };
@@ -147,8 +147,8 @@ window.adminAppointmentsCalendar = function (config) {
         },
 
         resetFilters() {
-            if (this.$refs.therapistFilter) {
-                this.$refs.therapistFilter.value = '';
+            if (this.$refs.professionalFilter) {
+                this.$refs.professionalFilter.value = '';
             }
 
             if (this.$refs.statusFilter) {
@@ -165,7 +165,7 @@ window.adminAppointmentsCalendar = function (config) {
         statusBadgeClass(status) {
             return {
                 cancelled: 'bg-slate-100 text-slate-700 ring-slate-200',
-                completed: 'bg-umbralia-accent-soft text-umbralia-title ring-umbralia-accent/30',
+                completed: 'bg-brand-accent-soft text-brand-title ring-brand-accent/30',
                 confirmed: 'bg-emerald-50 text-emerald-800 ring-emerald-200',
                 pending: 'bg-amber-50 text-amber-800 ring-amber-200',
             }[status] ?? 'bg-slate-50 text-slate-700 ring-slate-200';

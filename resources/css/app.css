@@ -4,20 +4,20 @@
 
 @layer base {
     :root {
-        --umbralia-ink: #0f172a;
-        --umbralia-muted: #475569;
-        --umbralia-primary: #540D6D;
-        --umbralia-primary-dark: #3f0a53;
-        --umbralia-primary-soft: #f6eef9;
-        --umbralia-accent: #3ACEAE;
-        --umbralia-accent-dark: #239f92;
-        --umbralia-accent-soft: #e8faf7;
-        --umbralia-warm: #ffffff;
+        --brand-ink: #0f172a;
+        --brand-muted: #475569;
+        --brand-primary: #540D6D;
+        --brand-primary-dark: #3f0a53;
+        --brand-primary-soft: #f6eef9;
+        --brand-accent: #3ACEAE;
+        --brand-accent-dark: #239f92;
+        --brand-accent-soft: #e8faf7;
+        --brand-warm: #ffffff;
     }
 
     body {
-        color: var(--umbralia-ink);
-        background: var(--umbralia-warm);
+        color: var(--brand-ink);
+        background: var(--brand-warm);
     }
 
     h1,
@@ -26,12 +26,12 @@
     h4,
     h5,
     h6 {
-        color: var(--umbralia-primary);
+        color: var(--brand-primary);
     }
 
     ::selection {
-        background: var(--umbralia-accent-soft);
-        color: var(--umbralia-ink);
+        background: var(--brand-accent-soft);
+        color: var(--brand-ink);
     }
 }
 
@@ -53,14 +53,14 @@
 
 .admin-appointments-calendar .fc {
     --fc-border-color: #e2e8f0;
-    --fc-button-active-bg-color: var(--umbralia-primary-dark);
-    --fc-button-active-border-color: var(--umbralia-primary-dark);
-    --fc-button-bg-color: var(--umbralia-primary);
-    --fc-button-border-color: var(--umbralia-primary);
-    --fc-button-hover-bg-color: var(--umbralia-primary-dark);
-    --fc-button-hover-border-color: var(--umbralia-primary-dark);
-    --fc-event-border-color: var(--umbralia-primary);
-    --fc-event-bg-color: var(--umbralia-primary);
+    --fc-button-active-bg-color: var(--brand-primary-dark);
+    --fc-button-active-border-color: var(--brand-primary-dark);
+    --fc-button-bg-color: var(--brand-primary);
+    --fc-button-border-color: var(--brand-primary);
+    --fc-button-hover-bg-color: var(--brand-primary-dark);
+    --fc-button-hover-border-color: var(--brand-primary-dark);
+    --fc-event-border-color: var(--brand-primary);
+    --fc-event-bg-color: var(--brand-primary);
     --fc-page-bg-color: #ffffff;
     --fc-small-font-size: 0.78rem;
     color: #0f172a;
@@ -79,7 +79,7 @@
 }
 
 .admin-appointments-calendar .fc .fc-toolbar-title {
-    color: var(--umbralia-primary);
+    color: var(--brand-primary);
     font-size: 1.125rem;
     font-weight: 700;
 }
@@ -90,7 +90,7 @@
 }
 
 .admin-appointments-calendar .fc .fc-day-today {
-    background: var(--umbralia-accent-soft);
+    background: var(--brand-accent-soft);
 }
 
 .admin-appointments-calendar .fc .fc-event {

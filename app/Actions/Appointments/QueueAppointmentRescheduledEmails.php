@@ -16,7 +16,7 @@ class QueueAppointmentRescheduledEmails
         CarbonInterface $previousStartsAt,
         CarbonInterface $previousEndsAt,
     ): void {
-        $appointment->loadMissing(['therapist.user', 'sessionType']);
+        $appointment->loadMissing(['professional.user', 'sessionType']);
 
         Mail::to(
             $appointment->patient_email,
@@ -32,15 +32,15 @@ class QueueAppointmentRescheduledEmails
         );
 
         Mail::to(
-            $appointment->therapist->user->email,
-            $appointment->therapist->user->name,
+            $appointment->professional->user->email,
+            $appointment->professional->user->name,
         )->queue(
             new AppointmentRescheduled(
                 appointment: $appointment,
                 previousStartsAt: $previousStartsAt,
                 previousEndsAt: $previousEndsAt,
-                recipientTimezone: $appointment->therapist->timezone ?: 'UTC',
-                recipientType: 'therapist',
+                recipientTimezone: $appointment->professional->timezone ?: 'UTC',
+                recipientType: 'professional',
             )
         );
     }

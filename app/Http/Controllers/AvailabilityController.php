@@ -25,14 +25,14 @@ final class AvailabilityController implements HasMiddleware
                 /** @var User|null $user */
                 $user = Auth::user();
 
-                if (! $user instanceof User || ! $user->therapist) {
+                if (! $user instanceof User || ! $user->professional) {
                     abort(403, __('app.availability.errors.unauthorized'));
                 }
 
                 $routeAvailability = $request->route('availability');
 
                 if ($routeAvailability instanceof Availability) {
-                    if ((int) $routeAvailability->therapist_id !== (int) $user->therapist->id) {
+                    if ((int) $routeAvailability->professional_id !== (int) $user->professional->id) {
                         abort(403, __('app.availability.errors.forbidden'));
                     }
                 }
@@ -47,8 +47,8 @@ final class AvailabilityController implements HasMiddleware
         /** @var User $user */
         $user = Auth::user();
 
-        $therapist = $user->therapist;
-        $availabilities = $availabilityService->groupedLocalAvailabilities($therapist);
+        $professional = $user->professional;
+        $availabilities = $availabilityService->groupedLocalAvailabilities($professional);
 
         $days = $this->getDaysOfWeek();
 
@@ -67,19 +67,19 @@ final class AvailabilityController implements HasMiddleware
         /** @var User $user */
         $user = Auth::user();
 
-        $therapist = $user->therapist;
+        $professional = $user->professional;
         $dayOfWeek = (int) $request->input('day_of_week');
 
         /** @var array<int, array{start_time: string, end_time: string, is_active?: mixed}> $slots */
         $slots = $request->input('slots', []);
 
-        if ($availabilityService->hasOverlaps($therapist, $dayOfWeek, $slots)) {
+        if ($availabilityService->hasOverlaps($professional, $dayOfWeek, $slots)) {
             return back()
                 ->withErrors(['slots' => __('app.availability.errors.overlap')])
                 ->withInput();
         }
 
-        $availabilityService->createMany($therapist, $dayOfWeek, $slots);
+        $availabilityService->createMany($professional, $dayOfWeek, $slots);
 
         return redirect()
             ->route('availabilities.index')

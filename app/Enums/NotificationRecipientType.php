@@ -7,5 +7,5 @@ namespace App\Enums;
 enum NotificationRecipientType: string
 {
     case PATIENT = 'patient';
-    case THERAPIST = 'therapist';
+    case PROFESSIONAL = 'professional';
 }

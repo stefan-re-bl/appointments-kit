@@ -7,8 +7,8 @@ namespace Tests\Feature\Security;
 use App\Enums\PaymentStatus;
 use App\Enums\Role;
 use App\Models\Appointment;
+use App\Models\Professional;
 use App\Models\SessionType;
-use App\Models\Therapist;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Gate;
@@ -20,21 +20,21 @@ final class AppointmentPolicyTest extends TestCase
     use RefreshDatabase;
 
     #[Test]
-    public function therapist_can_view_own_appointment(): void
+    public function professional_can_view_own_appointment(): void
     {
-        [$user, $therapist] = $this->createTherapistUser();
-        $appointment = $this->createAppointmentFor($therapist);
+        [$user, $professional] = $this->createProfessionalUser();
+        $appointment = $this->createAppointmentFor($professional);
 
         $this->assertTrue(Gate::forUser($user)->allows('view', $appointment));
     }
 
     #[Test]
-    public function therapist_cannot_view_another_therapists_appointment(): void
+    public function professional_cannot_view_another_professionals_appointment(): void
     {
-        [$userA] = $this->createTherapistUser();
-        [, $therapistB] = $this->createTherapistUser();
+        [$userA] = $this->createProfessionalUser();
+        [, $professionalB] = $this->createProfessionalUser();
 
-        $appointment = $this->createAppointmentFor($therapistB);
+        $appointment = $this->createAppointmentFor($professionalB);
 
         $this->assertFalse(Gate::forUser($userA)->allows('view', $appointment));
     }
@@ -46,23 +46,23 @@ final class AppointmentPolicyTest extends TestCase
             'role' => Role::ADMIN->value,
         ]);
 
-        [, $therapist] = $this->createTherapistUser();
-        $appointment = $this->createAppointmentFor($therapist);
+        [, $professional] = $this->createProfessionalUser();
+        $appointment = $this->createAppointmentFor($professional);
 
         $this->assertTrue(Gate::forUser($admin)->allows('view', $appointment));
     }
 
     #[Test]
-    public function therapist_cannot_update_payment_for_another_therapists_appointment(): void
+    public function professional_cannot_update_payment_for_another_professionals_appointment(): void
     {
-        [$userA] = $this->createTherapistUser();
-        [, $therapistB] = $this->createTherapistUser();
+        [$userA] = $this->createProfessionalUser();
+        [, $professionalB] = $this->createProfessionalUser();
 
-        $appointment = $this->createAppointmentFor($therapistB);
+        $appointment = $this->createAppointmentFor($professionalB);
 
         $response = $this
             ->actingAs($userA)
-            ->patch(route('therapist.appointments.payment.update', $appointment), [
+            ->patch(route('professional.appointments.payment.update', $appointment), [
                 'payment_status' => PaymentStatus::PAID->value,
             ]);
 
@@ -70,29 +70,29 @@ final class AppointmentPolicyTest extends TestCase
     }
 
     /**
-     * @return array{0: User, 1: Therapist}
+     * @return array{0: User, 1: Professional}
      */
-    private function createTherapistUser(): array
+    private function createProfessionalUser(): array
     {
         $user = User::factory()->create([
-            'role' => Role::THERAPIST->value,
+            'role' => Role::PROFESSIONAL->value,
         ]);
 
-        $therapist = Therapist::factory()
+        $professional = Professional::factory()
             ->for($user)
             ->create();
 
-        return [$user, $therapist];
+        return [$user, $professional];
     }
 
-    private function createAppointmentFor(Therapist $therapist): Appointment
+    private function createAppointmentFor(Professional $professional): Appointment
     {
         $sessionType = SessionType::factory()
-            ->for($therapist)
+            ->for($professional)
             ->create();
 
         return Appointment::factory()->create([
-            'therapist_id' => $therapist->id,
+            'professional_id' => $professional->id,
             'session_type_id' => $sessionType->id,
         ]);
     }

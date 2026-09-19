@@ -15,7 +15,7 @@ final class StoreSessionTypeRequest extends FormRequest
         /** @var User|null $user */
         $user = $this->user();
 
-        return $user instanceof User && $user->therapist !== null;
+        return $user instanceof User && $user->professional !== null;
     }
 
     /**
@@ -32,7 +32,7 @@ final class StoreSessionTypeRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::unique('session_types')->where(
-                    fn ($query) => $query->where('therapist_id', $user->therapist->id)
+                    fn ($query) => $query->where('professional_id', $user->professional->id)
                 ),
             ],
             'duration_minutes' => ['required', 'integer', 'in:30,60,90'],

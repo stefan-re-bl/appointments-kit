@@ -21,12 +21,12 @@ final class SessionTypeController implements HasMiddleware
     {
         return [
             new Middleware('auth'),
-            // Middleware anónimo para asegurar que solo terapeutas accedan y sean dueños del recurso.
+            // Middleware anónimo para asegurar que solo profesionales accedan y sean dueños del recurso.
             new Middleware(function (Request $request, callable $next) {
                 /** @var User|null $user */
                 $user = Auth::user();
 
-                if (! $user instanceof User || ! $user->therapist) {
+                if (! $user instanceof User || ! $user->professional) {
                     abort(403, __('app.session_type_management.errors.unauthorized'));
                 }
 
@@ -34,7 +34,7 @@ final class SessionTypeController implements HasMiddleware
                 $routeSessionType = $request->route('session_type');
 
                 if ($routeSessionType instanceof SessionType) {
-                    if ((int) $routeSessionType->therapist_id !== (int) $user->therapist->id) {
+                    if ((int) $routeSessionType->professional_id !== (int) $user->professional->id) {
                         abort(403, __('app.session_type_management.errors.forbidden'));
                     }
                 }

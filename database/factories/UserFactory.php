@@ -28,7 +28,7 @@ final class UserFactory extends Factory
             }
 
             $user->forceFill([
-                'role' => Role::THERAPIST,
+                'role' => Role::PROFESSIONAL,
             ]);
         });
     }
@@ -56,10 +56,10 @@ final class UserFactory extends Factory
         ]);
     }
 
-    public function therapist(): static
+    public function professional(): static
     {
         return $this->state(fn (array $attributes): array => [
-            'role' => Role::THERAPIST,
+            'role' => Role::PROFESSIONAL,
         ]);
     }
 

@@ -14,12 +14,12 @@ final class AdminUserSeeder extends Seeder
     public function run(): void
     {
         $user = User::query()->firstOrNew([
-            'email' => 'admin@clinicalapp.com',
+            'email' => 'admin@example.test',
         ]);
 
         $user->forceFill([
             'name' => 'Admin',
-            'email' => 'admin@clinicalapp.com',
+            'email' => 'admin@example.test',
             'role' => Role::ADMIN,
             'email_verified_at' => $user->email_verified_at ?? now('UTC'),
         ]);

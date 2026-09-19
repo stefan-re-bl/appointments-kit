@@ -38,7 +38,7 @@ class RescheduleAppointment
             &$previousEndsAt,
         ): Appointment|false {
             $lockedAppointment = Appointment::query()
-                ->with(['therapist.user', 'sessionType'])
+                ->with(['professional.user', 'sessionType'])
                 ->whereKey($appointment->id)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -54,7 +54,7 @@ class RescheduleAppointment
             $hasOverlap = Appointment::query()
                 ->whereKeyNot($lockedAppointment->id)
                 ->overlappingSlot(
-                    $lockedAppointment->therapist_id,
+                    $lockedAppointment->professional_id,
                     $newStartsAt,
                     $newEndsAt,
                 )
@@ -76,7 +76,7 @@ class RescheduleAppointment
 
             return $lockedAppointment
                 ->refresh()
-                ->loadMissing(['therapist.user', 'sessionType']);
+                ->loadMissing(['professional.user', 'sessionType']);
         });
 
         if (! $rescheduledAppointment instanceof Appointment) {

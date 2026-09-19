@@ -17,10 +17,10 @@ final readonly class RescheduleAction
 
     public function execute(Appointment $appointment, string $date, string $startUtc): Appointment|false
     {
-        $appointment->loadMissing(['therapist.user', 'sessionType']);
+        $appointment->loadMissing(['professional.user', 'sessionType']);
 
         $selectedSlot = $this->availableSlotResolver->resolve(
-            $appointment->therapist,
+            $appointment->professional,
             $date,
             (int) $appointment->sessionType->duration_minutes,
             $startUtc,

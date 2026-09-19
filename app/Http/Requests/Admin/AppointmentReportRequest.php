@@ -29,21 +29,22 @@ final class AppointmentReportRequest extends FormRequest
         return [
             'date_from' => ['nullable', 'date_format:Y-m-d'],
             'date_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:date_from'],
-            'therapist_id' => ['nullable', 'integer', Rule::exists('therapists', 'id')],
+            'professional_id' => ['nullable', 'integer', Rule::exists('professionals', 'id')],
+            'professional_id' => ['nullable', 'integer', Rule::exists('professionals', 'id')],
         ];
     }
 
     /**
-     * @return array{date_from: string|null, date_to: string|null, therapist_id: int|null}
+     * @return array{date_from: string|null, date_to: string|null, professional_id: int|null}
      */
     public function filters(): array
     {
-        $therapistId = $this->input('therapist_id');
+        $professionalId = $this->input('professional_id', $this->input('professional_id'));
 
         return [
             'date_from' => $this->filled('date_from') ? (string) $this->input('date_from') : null,
             'date_to' => $this->filled('date_to') ? (string) $this->input('date_to') : null,
-            'therapist_id' => is_numeric($therapistId) ? (int) $therapistId : null,
+            'professional_id' => is_numeric($professionalId) ? (int) $professionalId : null,
         ];
     }
 }

@@ -20,7 +20,7 @@ final class AppointmentReminder extends Mailable
     public function __construct(
         public Appointment $appointment,
     ) {
-        $this->appointment->loadMissing(['therapist.user', 'sessionType']);
+        $this->appointment->loadMissing(['professional.user', 'sessionType']);
     }
 
     public function envelope(): Envelope
@@ -55,7 +55,7 @@ final class AppointmentReminder extends Mailable
             'publicUrl' => route('appointments.public.show', [
                 'token' => $this->appointment->token,
             ]),
-            'googleMeetLink' => $this->appointment->therapist->google_meet_link,
+            'googleMeetLink' => $this->appointment->professional->google_meet_link,
         ];
     }
 

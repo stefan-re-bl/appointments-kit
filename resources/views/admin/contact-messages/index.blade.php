@@ -14,7 +14,7 @@
                     <select
                         id="status"
                         name="status"
-                        class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                        class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                     >
                         <option value="all" @selected($selectedStatus === 'all')>
                             {{ __('app.admin.contact_messages.filters.all_statuses') }}
@@ -27,7 +27,7 @@
                     </select>
                 </div>
 
-                <button type="submit" class="inline-flex justify-center rounded-md bg-umbralia-title px-4 py-2.5 text-sm font-semibold text-white hover:bg-umbralia-title/90">
+                <button type="submit" class="inline-flex justify-center rounded-md bg-brand-title px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-title/90">
                     {{ __('app.admin.contact_messages.filters.apply') }}
                 </button>
 
@@ -47,17 +47,17 @@
                     <article class="grid gap-5 p-5 lg:grid-cols-[1fr_18rem]">
                         <div>
                             <div class="flex flex-wrap items-center gap-3">
-                                <h3 class="text-base font-semibold text-umbralia-title">{{ $contactMessage->name }}</h3>
+                                <h3 class="text-base font-semibold text-brand-title">{{ $contactMessage->name }}</h3>
                                 <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
                                     {{ __('app.contact.inquiry_types.' . $contactMessage->inquiry_type->value) }}
                                 </span>
-                                <span class="rounded-full bg-umbralia-accent-soft px-3 py-1 text-xs font-semibold text-umbralia-title">
+                                <span class="rounded-full bg-brand-accent-soft px-3 py-1 text-xs font-semibold text-brand-title">
                                     {{ __('app.contact.statuses.' . $contactMessage->status->value) }}
                                 </span>
                             </div>
 
                             <p class="mt-2 text-sm text-slate-600">
-                                <a href="mailto:{{ $contactMessage->email }}" class="font-medium text-slate-900 hover:text-umbralia-title">
+                                <a href="mailto:{{ $contactMessage->email }}" class="font-medium text-slate-900 hover:text-brand-title">
                                     {{ $contactMessage->email }}
                                 </a>
                                 <span class="mx-2 text-slate-300">/</span>
@@ -77,7 +77,7 @@
                             <select
                                 id="status_{{ $contactMessage->id }}"
                                 name="status"
-                                class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-umbralia-accent focus:ring-umbralia-accent/30"
+                                class="mt-2 block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                             >
                                 @foreach ($statuses as $status)
                                     <option value="{{ $status->value }}" @selected($contactMessage->status === $status)>
@@ -86,7 +86,7 @@
                                 @endforeach
                             </select>
 
-                            <button type="submit" class="mt-4 w-full rounded-md bg-umbralia-title px-4 py-2 text-sm font-semibold text-white hover:bg-umbralia-title/90">
+                            <button type="submit" class="mt-4 w-full rounded-md bg-brand-title px-4 py-2 text-sm font-semibold text-white hover:bg-brand-title/90">
                                 {{ __('app.admin.contact_messages.update_status') }}
                             </button>
                         </form>

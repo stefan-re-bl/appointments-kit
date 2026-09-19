@@ -12,19 +12,11 @@ use Carbon\CarbonInterface;
 
 final class CancellationPolicyService
 {
-    private const CANCEL_DEADLINE_HOURS = 24;
-
-    private const REFUND_DEADLINE_HOURS = 24;
-
-    private const RESCHEDULE_DEADLINE_HOURS = 48;
-
-    private const MAX_RESCHEDULES = 2;
-
     public function canRefund(Appointment $appointment, ?CarbonInterface $now = null): bool
     {
         return $this->isActionable($appointment, $now)
             && $this->startsAtUtc($appointment)->greaterThanOrEqualTo(
-                $this->nowUtc($now)->addHours(self::REFUND_DEADLINE_HOURS)
+                $this->nowUtc($now)->addHours($this->refundDeadlineHours())
             )
             && $this->paymentStatusValue($appointment) === PaymentStatus::PAID->value;
     }
@@ -33,32 +25,37 @@ final class CancellationPolicyService
     {
         return $this->isActionable($appointment, $now)
             && $this->startsAtUtc($appointment)->greaterThanOrEqualTo(
-                $this->nowUtc($now)->addHours(self::CANCEL_DEADLINE_HOURS)
+                $this->nowUtc($now)->addHours($this->cancelDeadlineHours())
             );
     }
 
     public function canReschedule(Appointment $appointment, ?CarbonInterface $now = null): bool
     {
         return $this->isActionable($appointment, $now)
-            && (int) $appointment->reschedule_count < self::MAX_RESCHEDULES
+            && (int) $appointment->reschedule_count < $this->maxReschedules()
             && $this->startsAtUtc($appointment)->greaterThanOrEqualTo(
-                $this->nowUtc($now)->addHours(self::RESCHEDULE_DEADLINE_HOURS)
+                $this->nowUtc($now)->addHours($this->rescheduleDeadlineHours())
             );
+    }
+
+    public function cancelDeadlineHours(): int
+    {
+        return max(0, (int) config('booking.policies.cancellation_notice_hours', 24));
     }
 
     public function maxReschedules(): int
     {
-        return self::MAX_RESCHEDULES;
+        return max(0, (int) config('booking.policies.max_reschedules', 2));
     }
 
     public function refundDeadlineHours(): int
     {
-        return self::REFUND_DEADLINE_HOURS;
+        return max(0, (int) config('booking.policies.refund_notice_hours', 24));
     }
 
     public function rescheduleDeadlineHours(): int
     {
-        return self::RESCHEDULE_DEADLINE_HOURS;
+        return max(0, (int) config('booking.policies.reschedule_notice_hours', 48));
     }
 
     public function messageKey(Appointment $appointment, ?CarbonInterface $now = null): string
@@ -75,7 +72,7 @@ final class CancellationPolicyService
             return 'appointment_policy.messages.cancel_without_refund';
         }
 
-        if ((int) $appointment->reschedule_count >= self::MAX_RESCHEDULES) {
+        if ((int) $appointment->reschedule_count >= $this->maxReschedules()) {
             return 'appointment_policy.messages.reschedule_limit_reached';
         }
 

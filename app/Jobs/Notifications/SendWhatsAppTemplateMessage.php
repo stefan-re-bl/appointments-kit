@@ -46,7 +46,7 @@ final class SendWhatsAppTemplateMessage implements ShouldQueue
         WhatsAppGateway $gateway,
     ): void {
         $delivery = NotificationDelivery::query()
-            ->with(['appointment.therapist.user', 'appointment.sessionType'])
+            ->with(['appointment.professional.user', 'appointment.sessionType'])
             ->find($this->notificationDeliveryId);
 
         if (! $delivery instanceof NotificationDelivery) {
@@ -159,17 +159,17 @@ final class SendWhatsAppTemplateMessage implements ShouldQueue
                 && filled($appointment->patient_phone);
         }
 
-        $therapist = $appointment->therapist;
+        $professional = $appointment->professional;
 
-        if (! $therapist?->whatsapp_notifications_enabled || ! filled($therapist->whatsapp_phone)) {
+        if (! $professional?->whatsapp_notifications_enabled || ! filled($professional->whatsapp_phone)) {
             return false;
         }
 
         if ($delivery->event === NotificationEvent::BOOKING_CONFIRMED) {
-            return (bool) $therapist->whatsapp_confirmations_enabled;
+            return (bool) $professional->whatsapp_confirmations_enabled;
         }
 
-        return (bool) $therapist->whatsapp_reminders_enabled;
+        return (bool) $professional->whatsapp_reminders_enabled;
     }
 
     private function markSkipped(NotificationDelivery $delivery, string $code, string $message): void

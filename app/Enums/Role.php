@@ -5,5 +5,5 @@ namespace App\Enums;
 enum Role: string
 {
     case ADMIN = 'admin';
-    case THERAPIST = 'therapist';
+    case PROFESSIONAL = 'professional';
 }
