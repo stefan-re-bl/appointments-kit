@@ -1,63 +1,104 @@
-# Umbralia
+# Appointments Kit
 
-Aplicación Laravel 13 / PHP 8.5 para reservas online de terapeutas, con pagos manuales, gestión de disponibilidad, emails, recordatorios, panel administrativo y soporte multiidioma.
+Appointments Kit es una plataforma Laravel para reservas y gestión de citas.
+
+El objetivo es reutilizar el mismo código en despliegues independientes por cliente.
+Cada cliente usa su propio `.env`, base de datos, branding y datos operativos.
+
+No implementa multitenancy.
 
 ## Stack
 
-- Laravel 13, PHP 8.5
-- Laravel Sail sobre Docker
-- MySQL 8.4
-- Redis para cache, sesiones y colas en producción/staging
-- Blade, Tailwind CSS, Alpine.js y Vite
+- PHP 8.3 o superior.
+- Laravel 13.
+- MySQL o SQLite para desarrollo.
+- Redis opcional para producción.
+- Blade, Tailwind CSS, Alpine.js y Vite.
+- Colas de Laravel para emails, recordatorios y notificaciones.
 
-## Desarrollo Local
+## Instalación Local
 
-Todos los comandos de proyecto deben ejecutarse con Sail.
-
-```bash
-./vendor/bin/sail up -d
-./vendor/bin/sail artisan migrate --seed
-./vendor/bin/sail npm install
-./vendor/bin/sail npm run dev
-```
-
-Para ejecutar tests focalizados:
+Usa Composer, Node y PHP local, o Laravel Sail si está disponible.
 
 ```bash
-./vendor/bin/sail artisan test --filter=CriticalBookingFlowTest
+cp .env.example .env
+composer install
+php artisan key:generate
+php artisan migrate --seed
+npm install
+npm run build
 ```
 
-Para compilar assets:
+Para reconstruir una demo:
 
 ```bash
-./vendor/bin/sail npm run build
+php artisan demo:reset
 ```
+
+El comando está protegido en producción.
+Usa `--force` solo si entiendes el impacto.
+
+## Accesos Demo
+
+La demo crea datos ficticios de `Demo Services`.
+
+- Admin: `admin@demo.test`
+- Profesionales: `ana.martinez@demo.test`, `lucas.fernandez@demo.test`, `sofia.gomez@demo.test`
+- Contraseña: `password`
+
+## Configuración Principal
+
+La configuración variable vive en archivos dedicados:
+
+- `config/branding.php`
+- `config/booking.php`
+- `config/features.php`
+- `config/terminology.php`
+- `config/services.php`
+
+Consulta [CONFIGURATION.md](CONFIGURATION.md) para el detalle.
 
 ## Flujos Principales
 
-- Paciente: home pública, perfil de terapeuta, reserva multipaso, email de confirmación, página pública "Mi Cita", reprogramación y cancelación.
-- Terapeuta: perfil profesional, instrucciones de pago, link de reunión, tipos de sesión, disponibilidad semanal, gestión de citas y pagos manuales.
-- Admin: aprobación de terapeutas, listado global de citas, reportes CSV, soporte y auditoría de cambios de citas.
+- Cliente: consulta información pública y recibe comunicaciones de una cita.
+- Profesional: configura perfil, disponibilidad y gestiona citas.
+- Admin: aprueba profesionales, consulta agenda global, reportes y auditoría.
+- Sistema: procesa recordatorios, emails, colas, limpieza y notificaciones.
 
-## Reglas Técnicas Clave
+## Estado Del Dominio Interno
 
-- DB en UTC; conversiones y formato con `App\Services\TimezoneService`.
-- El paciente confirma país y región horaria efectiva cuando corresponde.
-- No se usan Stripe ni Mercado Pago; los pagos son manuales.
-- Los textos visibles en Blade deben usar traducciones.
-- Middleware en `bootstrap/app.php`; no usar `app/Http/Kernel.php`.
-- Controladores con middleware deben usar `HasMiddleware`.
-- Modelos con atributos PHP 8: `#[Fillable]`, `#[Hidden]`.
+El producto ya tiene configuración base para branding, reglas y funciones.
 
-## Operación
+Algunos nombres internos todavía conservan el origen del proyecto:
 
-Las guías de deploy viven en `docs/deploy/vps.md` y `docs/deploy/hostinger-business.md`. Antes de publicar, validar:
+- `Professional`
+- `SessionType`
+- campos `patient_*`
 
-- `.env` productivo con `APP_ENV=production` y `APP_DEBUG=false`.
-- Migraciones ejecutadas.
-- Assets compilados.
-- SMTP real configurado.
-- Worker de cola persistente activo.
-- Scheduler cada minuto.
-- HTTPS y dominio correctos.
-- `php artisan deployment:check --url=https://dominio` en el VPS.
+La interfaz debe moverse primero mediante configuración y traducciones.
+El renombrado interno debe hacerse después, en commits pequeños.
+
+## Pruebas
+
+Ejecuta pruebas focalizadas:
+
+```bash
+php artisan test --filter=DemoSeederTest
+```
+
+Ejecuta la suite completa:
+
+```bash
+php artisan test
+```
+
+La prueba `ProfileTest::test_therapist_can_upload_local_profile_photo` requiere la extensión PHP `GD`.
+
+## Documentación
+
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [CONFIGURATION.md](CONFIGURATION.md)
+- [DEVELOPMENT.md](DEVELOPMENT.md)
+- [DEPLOYMENT.md](DEPLOYMENT.md)
+- [CLIENT_ONBOARDING.md](CLIENT_ONBOARDING.md)
+- [DEMO.md](DEMO.md)

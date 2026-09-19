@@ -1,4 +1,4 @@
-# AGENTS.md - Umbralia
+# AGENTS.md - Appointments Kit
 
 Proyecto Laravel 13 / PHP 8.5 en WSL2 Debian con Laravel Sail.
 

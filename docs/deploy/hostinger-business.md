@@ -1,6 +1,6 @@
 # Deploy en Hostinger Business
 
-Esta guía adapta Umbralia a Hostinger Business con SSH, PHP 8.3/8.4/8.5, MySQL y Cron. No asume Redis, Supervisor, Nginx manual ni Laravel Sail en producción.
+Esta guía adapta Appointments Kit a Hostinger Business con SSH, PHP 8.3/8.4/8.5, MySQL y Cron. No asume Redis, Supervisor, Nginx manual ni Laravel Sail en producción.
 
 ## Decisiones para Hostinger Business
 
@@ -94,7 +94,7 @@ Configurar estos Cron Jobs en hPanel. En Hostinger Business puede no existir `cr
 Scheduler de Laravel:
 
 ```bash
-* * * * * /opt/alt/php85/usr/bin/php /home/USER/umbralia-app/artisan schedule:run >> /home/USER/umbralia-app/storage/logs/scheduler.log 2>&1
+* * * * * /opt/alt/php85/usr/bin/php /home/USER/appointments-kit/artisan schedule:run >> /home/USER/appointments-kit/storage/logs/scheduler.log 2>&1
 ```
 
 Con `SCHEDULE_QUEUE_WORKER=true`, este único Cron también procesa la cola por lotes cortos. No es tan robusto como Supervisor, pero es suficiente para bajo tráfico inicial si los jobs son cortos. Si Hostinger permite procesos persistentes, desactivar `SCHEDULE_QUEUE_WORKER` y usar un worker permanente.
@@ -113,8 +113,8 @@ Ejecutar por SSH:
 Validar manualmente:
 
 - Home pública.
-- Registro de terapeuta.
-- Aprobación y visibilidad pública del terapeuta.
+- Registro de profesional.
+- Aprobación y visibilidad pública del profesional.
 - Flujo completo de reserva.
 - Email de confirmación.
 - Página pública de cita.

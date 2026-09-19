@@ -20,8 +20,8 @@ sail artisan test --filter='WhatsAppNotificationTest|ProfileTest|CriticalBooking
 
 Estos tests no verifican entrega real de Meta. Verifican:
 
-- Persistencia de locale del paciente.
-- Preferencia persistente de locale de terapeuta.
+- Persistencia de locale del cliente.
+- Preferencia persistente de locale de profesional.
 - Selección de plantillas por destinatario/locale.
 - Timezone independiente por destinatario.
 - Webhook firmado con fixtures.
@@ -51,7 +51,7 @@ Para una prueba real controlada registrar:
 
 - ID interno de `notification_deliveries`.
 - Evento.
-- Destinatario lógico (`patient` o `therapist`).
+- Destinatario lógico (`patient` o `professional`, identificadores internos heredados).
 - Locale interno.
 - Código de idioma Meta.
 - Nombre de plantilla.
