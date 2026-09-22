@@ -29,7 +29,7 @@ final class ProfessionalFactory extends Factory
             'preferred_locale' => 'es',
             'bio' => fake()->paragraphs(3, true),
             'specialties' => fake()->sentence(),
-            'therapeutic_approach' => fake()->paragraph(),
+            'professional_approach' => fake()->paragraph(),
             'payment_instructions' => fake()->sentence(),
             'is_active' => fake()->boolean(80),
             'is_approved' => true,

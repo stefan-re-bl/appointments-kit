@@ -39,7 +39,7 @@ return [
         'amounts_by_currency' => 'Amounts by currency',
         'pending_by_professional' => 'Pending payments by professional',
         'appointment_audit' => 'Auditable appointment detail',
-        'appointment_audit_description' => 'Each row joins appointment, professional, session type, price, payment status and manual payment date.',
+        'appointment_audit_description' => 'Each row joins appointment, professional, service, price, payment status and manual payment date.',
     ],
 
     'table' => [
@@ -86,11 +86,13 @@ return [
     'csv' => [
         'headers' => [
             'appointment_id' => 'Appointment ID',
+            'customer_name' => 'Customer',
+            'customer_email' => 'Customer email',
             'patient_name' => 'Customer',
             'patient_email' => 'Customer email',
             'professional_name' => 'Professional',
             'professional_email' => 'Professional email',
-            'session_type' => 'Session type',
+            'session_type' => 'Service',
             'starts_at_local' => 'Starts local',
             'ends_at_local' => 'Ends local',
             'starts_at_utc' => 'Starts UTC',

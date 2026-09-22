@@ -45,7 +45,6 @@ final class FilterAppointmentsRequest extends FormRequest
     {
         return [
             'professional_id' => ['nullable', 'integer', Rule::exists('professionals', 'id')],
-            'professional_id' => ['nullable', 'integer', Rule::exists('professionals', 'id')],
             'status' => ['nullable', Rule::enum(AppointmentStatus::class)],
             'payment_status' => ['nullable', Rule::enum(PaymentStatus::class)],
             'date_from' => ['nullable', 'date_format:Y-m-d'],

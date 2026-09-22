@@ -19,7 +19,7 @@ final class DemoResetCommandTest extends TestCase
         ]);
 
         $this->artisan('demo:reset')
-            ->expectsOutput('Demo environment reset with Demo Services data.')
+            ->expectsOutput('Demo environment reset with Demo Salud data.')
             ->assertSuccessful();
 
         $this->assertDatabaseMissing('users', [
@@ -27,7 +27,7 @@ final class DemoResetCommandTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('users', [
-            'name' => 'Admin Demo Services',
+            'name' => 'Admin Demo Salud',
             'email' => 'admin@demo.test',
         ]);
     }

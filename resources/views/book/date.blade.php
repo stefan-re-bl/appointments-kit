@@ -15,9 +15,9 @@
         method="POST"
         x-data="{
             countryTimezones: @js($countryTimezones),
-            selectedCountry: @js(old('patient_country', $patientCountry ?? '')),
+            selectedCountry: @js(old('customer_country', old('patient_country', $patientCountry ?? ''))),
             selectedDate: @js(old('date', $selectedDate)),
-            selectedTimezone: @js(old('patient_timezone', $patientTimezone ?? '')),
+            selectedTimezone: @js(old('customer_timezone', old('patient_timezone', $patientTimezone ?? ''))),
             effectiveTimezoneOptions() {
                 const groups = {};
 
@@ -109,12 +109,12 @@
         @csrf
         <div class="space-y-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
             <div>
-                <label for="patient_country" class="mb-2 block text-sm font-medium text-slate-800">
+                <label for="customer_country" class="mb-2 block text-sm font-medium text-slate-800">
                     {{ __('booking_timezone.country_label') }}
                 </label>
                 <select
-                    name="patient_country"
-                    id="patient_country"
+                    name="customer_country"
+                    id="customer_country"
                     x-ref="country"
                     x-model="selectedCountry"
                     @change="syncTimezone()"
@@ -123,7 +123,7 @@
                 >
                     <option value="">{{ __('booking_timezone.country_placeholder') }}</option>
                     @foreach ($countries as $countryCode => $timezone)
-                        <option value="{{ $countryCode }}" @selected(old('patient_country', $patientCountry) === $countryCode)>
+                        <option value="{{ $countryCode }}" @selected(old('customer_country', old('patient_country', $patientCountry)) === $countryCode)>
                             {{ __('booking_timezone.countries.'.$countryCode) }}
                         </option>
                     @endforeach
@@ -151,12 +151,12 @@
             </div>
 
             <div x-show="hasTimezoneRegions()" x-cloak>
-                <label for="patient_timezone" class="mb-2 block text-sm font-medium text-slate-800">
+                <label for="customer_timezone" class="mb-2 block text-sm font-medium text-slate-800">
                     {{ __('booking_timezone.region_label') }}
                 </label>
                 <select
-                    name="patient_timezone"
-                    id="patient_timezone"
+                    name="customer_timezone"
+                    id="customer_timezone"
                     x-model="selectedTimezone"
                     :required="hasTimezoneRegions()"
                     class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/30 @error('patient_timezone') border-rose-300 @enderror"

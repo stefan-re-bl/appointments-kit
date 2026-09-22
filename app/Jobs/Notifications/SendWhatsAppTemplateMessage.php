@@ -46,7 +46,7 @@ final class SendWhatsAppTemplateMessage implements ShouldQueue
         WhatsAppGateway $gateway,
     ): void {
         $delivery = NotificationDelivery::query()
-            ->with(['appointment.professional.user', 'appointment.sessionType'])
+            ->with(['appointment.professional.user', 'appointment.service'])
             ->find($this->notificationDeliveryId);
 
         if (! $delivery instanceof NotificationDelivery) {
@@ -153,10 +153,10 @@ final class SendWhatsAppTemplateMessage implements ShouldQueue
             return false;
         }
 
-        if ($delivery->recipient_type === NotificationRecipientType::PATIENT) {
-            return $appointment->patient_whatsapp_opt_in_at !== null
-                && $appointment->patient_whatsapp_opt_out_at === null
-                && filled($appointment->patient_phone);
+        if ($delivery->recipient_type === NotificationRecipientType::CUSTOMER) {
+            return $appointment->customer_whatsapp_opt_in_at !== null
+                && $appointment->customer_whatsapp_opt_out_at === null
+                && filled($appointment->customer_phone);
         }
 
         $professional = $appointment->professional;

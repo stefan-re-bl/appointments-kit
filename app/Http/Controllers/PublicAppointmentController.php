@@ -29,7 +29,7 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
         AppointmentSignedUrlService $appointmentSignedUrlService,
     ): View|Response {
         $appointment = Appointment::query()
-            ->with(['professional.user', 'sessionType'])
+            ->with(['professional.user', 'service'])
             ->where('token', $token)
             ->first();
 
@@ -37,7 +37,7 @@ final class PublicAppointmentController extends Controller implements HasMiddlew
             return response()->view('appointments.public-not-found', status: 404);
         }
 
-        $patientTimezone = $this->resolvePatientTimezone($appointment->patient_timezone);
+        $patientTimezone = $this->resolvePatientTimezone($appointment->customer_timezone);
 
         app()->instance('user.timezone', $patientTimezone);
 

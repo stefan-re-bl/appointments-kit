@@ -36,7 +36,7 @@ final readonly class AppointmentReportService
         $normalizedFilters = $this->normalizeFilters($filters);
 
         $query = Appointment::query()
-            ->with(['professional.user', 'sessionType'])
+            ->with(['professional.user', 'service'])
             ->orderBy('starts_at')
             ->orderBy('id');
 
@@ -231,11 +231,13 @@ final readonly class AppointmentReportService
         return $appointments->map(function (Appointment $appointment): array {
             return [
                 'appointment_id' => $appointment->id,
-                'patient_name' => $appointment->patient_name,
-                'patient_email' => $appointment->patient_email,
+                'customer_name' => $appointment->customer_name,
+                'customer_email' => $appointment->customer_email,
+                'patient_name' => $appointment->customer_name,
+                'patient_email' => $appointment->customer_email,
                 'professional_name' => $appointment->professional?->user?->name ?? '—',
                 'professional_email' => $appointment->professional?->user?->email ?? '—',
-                'session_type_name' => $appointment->sessionType?->name ?? '—',
+                'session_type_name' => $appointment->service?->name ?? '—',
                 'starts_at_display' => $this->timezoneService->formatForDisplay($appointment->starts_at, 'd/m/Y H:i'),
                 'ends_at_display' => $this->timezoneService->formatForDisplay($appointment->ends_at, 'd/m/Y H:i'),
                 'starts_at_utc' => $this->formatUtc($appointment->starts_at),

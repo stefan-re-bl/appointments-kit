@@ -35,7 +35,7 @@ final class PublicAppointmentRescheduleController extends Controller implements 
         TimezoneService $timezoneService,
     ): View|Response {
         $appointment = Appointment::query()
-            ->with(['professional.user', 'sessionType'])
+            ->with(['professional.user', 'service'])
             ->where('token', $token)
             ->first();
 
@@ -43,7 +43,7 @@ final class PublicAppointmentRescheduleController extends Controller implements 
             return response()->view('appointments.public-not-found', status: 404);
         }
 
-        $patientTimezone = $appointment->patient_timezone ?: 'UTC';
+        $patientTimezone = $appointment->customer_timezone ?: 'UTC';
 
         app()->instance('user.timezone', $patientTimezone);
 
@@ -95,7 +95,7 @@ final class PublicAppointmentRescheduleController extends Controller implements 
         ]);
 
         $appointment = Appointment::query()
-            ->with(['professional.user', 'sessionType'])
+            ->with(['professional.user', 'service'])
             ->where('token', $token)
             ->first();
 
@@ -118,7 +118,7 @@ final class PublicAppointmentRescheduleController extends Controller implements 
         $slots = $slotGenerationService->generate(
             $appointment->professional,
             $validated['date'],
-            (int) $appointment->sessionType->duration_minutes,
+            (int) $appointment->service->duration_minutes,
             $timezone,
         );
 

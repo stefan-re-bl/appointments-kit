@@ -18,12 +18,12 @@ final class DemoSeederTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_demo_seeder_creates_fictional_demo_services_data(): void
+    public function test_demo_seeder_creates_fictional_demo_salud_data(): void
     {
         $this->seed(DemoSeeder::class);
 
         $this->assertDatabaseHas('users', [
-            'name' => 'Admin Demo Services',
+            'name' => 'Admin Demo Salud',
             'email' => 'admin@demo.test',
         ]);
 
@@ -33,7 +33,7 @@ final class DemoSeederTest extends TestCase
             ]);
         }
 
-        foreach (['Servicio inicial', 'Servicio estándar', 'Servicio extendido'] as $serviceName) {
+        foreach (['Consulta inicial', 'Consulta estándar', 'Consulta extendida'] as $serviceName) {
             $this->assertDatabaseHas('session_types', [
                 'name' => $serviceName,
             ]);

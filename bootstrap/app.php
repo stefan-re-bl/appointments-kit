@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureFeatureIsEnabled;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\SetTimezone;
@@ -20,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
+            'feature' => EnsureFeatureIsEnabled::class,
         ]);
 
         $middleware->web(append: [

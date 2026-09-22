@@ -38,7 +38,7 @@ class RescheduleAppointment
             &$previousEndsAt,
         ): Appointment|false {
             $lockedAppointment = Appointment::query()
-                ->with(['professional.user', 'sessionType'])
+                ->with(['professional.user', 'service'])
                 ->whereKey($appointment->id)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -76,7 +76,7 @@ class RescheduleAppointment
 
             return $lockedAppointment
                 ->refresh()
-                ->loadMissing(['professional.user', 'sessionType']);
+                ->loadMissing(['professional.user', 'service']);
         });
 
         if (! $rescheduledAppointment instanceof Appointment) {

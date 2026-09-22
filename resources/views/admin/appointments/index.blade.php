@@ -210,11 +210,11 @@
                                     <p class="text-sm font-semibold text-slate-950" x-text="appointment.time_range"></p>
 
                                     <div class="min-w-0">
-                                        <p class="truncate text-sm font-semibold text-slate-950" x-text="appointment.patient_name"></p>
-                                        <p class="mt-1 truncate text-sm text-slate-500" x-text="appointment.patient_email"></p>
+                                        <p class="truncate text-sm font-semibold text-slate-950" x-text="appointment.customer_name"></p>
+                                        <p class="mt-1 truncate text-sm text-slate-500" x-text="appointment.customer_email"></p>
                                         <p class="mt-2 text-xs text-slate-500">
                                             {{ __('app.admin.appointments.patient_timezone') }}:
-                                            <span x-text="appointment.patient_timezone"></span>
+                                            <span x-text="appointment.customer_timezone"></span>
                                         </p>
                                     </div>
 

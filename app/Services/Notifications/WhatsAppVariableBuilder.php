@@ -25,15 +25,15 @@ final readonly class WhatsAppVariableBuilder
         App::setLocale($locale);
 
         try {
-            $timezone = $recipientType === NotificationRecipientType::PATIENT
-                ? ($appointment->patient_timezone ?: 'UTC')
+            $timezone = $recipientType === NotificationRecipientType::CUSTOMER
+                ? ($appointment->customer_timezone ?: 'UTC')
                 : ($appointment->professional?->timezone ?: 'UTC');
             $date = $this->timezoneService->toLocal($appointment->starts_at, $timezone)->translatedFormat('d/m/Y');
             $time = $this->timezoneService->formatForDisplay($appointment->starts_at, 'H:i', $timezone);
 
-            if ($event === NotificationEvent::BOOKING_CONFIRMED && $recipientType === NotificationRecipientType::PATIENT) {
+            if ($event === NotificationEvent::BOOKING_CONFIRMED && $recipientType === NotificationRecipientType::CUSTOMER) {
                 return [
-                    $appointment->patient_name,
+                    $appointment->customer_name,
                     $date,
                     $time,
                     route('appointments.public.show', $appointment->token),
@@ -42,24 +42,24 @@ final readonly class WhatsAppVariableBuilder
 
             if ($event === NotificationEvent::BOOKING_CONFIRMED && $recipientType === NotificationRecipientType::PROFESSIONAL) {
                 return [
-                    $appointment->patient_name,
-                    (string) $appointment->sessionType?->name,
+                    $appointment->customer_name,
+                    (string) $appointment->service?->name,
                     $date,
                     $time,
                     route('professional.appointments.index'),
                 ];
             }
 
-            if ($event === NotificationEvent::APPOINTMENT_REMINDER && $recipientType === NotificationRecipientType::PATIENT) {
+            if ($event === NotificationEvent::APPOINTMENT_REMINDER && $recipientType === NotificationRecipientType::CUSTOMER) {
                 return [
-                    $appointment->patient_name,
+                    $appointment->customer_name,
                     $time,
                     route('appointments.public.show', $appointment->token),
                 ];
             }
 
             return [
-                $appointment->patient_name,
+                $appointment->customer_name,
                 $time,
                 route('professional.appointments.index'),
             ];

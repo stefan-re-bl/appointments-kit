@@ -2,28 +2,24 @@
 
 Appointments Kit usa un despliegue independiente por cliente.
 
-Cada cliente necesita:
+Cada cliente necesita codigo desplegado, `.env`, base de datos, assets, dominio y credenciales propias.
 
-- código desplegado;
-- `.env` propio;
-- base de datos propia;
-- assets de marca propios;
-- credenciales externas propias.
+## Preparacion
 
-No uses una base compartida entre clientes.
+1. Crea base de datos.
+2. Crea `.env` desde `.env.production.example`.
+3. Configura `APP_NAME`, `APP_ENV=production`, `APP_KEY` y `APP_URL`.
+4. Configura base de datos.
+5. Configura correo.
+6. Configura branding.
+7. Configura reglas de booking.
+8. Configura feature flags.
+9. Configura WhatsApp solo si el cliente lo usa.
+10. Sube assets de marca.
 
-## Preparación
+## Build Productivo
 
-1. Crea `.env` desde `.env.example`.
-2. Completa `APP_KEY`.
-3. Configura base de datos.
-4. Configura correo.
-5. Configura branding.
-6. Configura reglas de booking.
-7. Configura feature flags.
-8. Configura WhatsApp solo si el cliente lo usa.
-
-## Build
+Ejecuta en el servidor:
 
 ```bash
 composer install --no-dev --prefer-dist --optimize-autoloader
@@ -36,9 +32,26 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-## Colas
+## Permisos
 
-Producción con Redis:
+El servidor web debe poder escribir en:
+
+```text
+storage
+bootstrap/cache
+```
+
+No expongas el proyecto completo como document root.
+
+El document root debe apuntar a:
+
+```text
+public
+```
+
+## Colas Con Redis
+
+Recomendado para VPS o hosting con worker persistente.
 
 ```dotenv
 QUEUE_CONNECTION=redis
@@ -46,22 +59,37 @@ CACHE_STORE=redis
 SESSION_DRIVER=redis
 ```
 
-Ejecuta un worker persistente:
+Worker:
 
 ```bash
 php artisan queue:work redis --queue=default --sleep=3 --tries=3 --timeout=90
 ```
 
-Producción sin worker persistente:
+Usa Supervisor, systemd, Forge, Ploi o equivalente.
+
+Plantilla:
+
+```text
+deploy/supervisor/appointments-kit-worker.conf
+```
+
+## Colas Sin Worker Persistente
+
+Usa este modo en hosting que solo permite Cron.
 
 ```dotenv
 QUEUE_CONNECTION=database
+CACHE_STORE=database
+SESSION_DRIVER=database
 SCHEDULE_QUEUE_WORKER=true
+MONITORING_QUEUE_ENABLED=false
 ```
+
+El scheduler ejecuta un worker corto.
 
 ## Scheduler
 
-Ejecuta cada minuto:
+Configura un Cron por minuto:
 
 ```bash
 * * * * * php /path/to/app/artisan schedule:run >> /dev/null 2>&1
@@ -69,44 +97,83 @@ Ejecuta cada minuto:
 
 El scheduler procesa:
 
-- limpieza de turnos pendientes expirados;
+- limpieza de citas pendientes expiradas;
 - recordatorios;
 - heartbeat;
-- monitoreo de colas.
+- monitoreo de colas;
+- worker corto si `SCHEDULE_QUEUE_WORKER=true`.
 
-## Plantillas
+Plantilla:
 
-El directorio `deploy` incluye plantillas genéricas:
+```text
+deploy/cron/appointments-kit-scheduler
+```
 
-- `deploy/nginx/appointments-kit.conf`
-- `deploy/supervisor/appointments-kit-worker.conf`
-- `deploy/cron/appointments-kit-scheduler`
+## Nginx
 
-Reemplaza `example.com` por el dominio real.
-Reemplaza `/var/www/appointments-kit/current` por la ruta real.
+Plantilla:
 
-## Verificación
+```text
+deploy/nginx/appointments-kit.conf
+```
+
+Reemplaza:
+
+- `example.com`;
+- `/var/www/appointments-kit/current`;
+- version de PHP-FPM si aplica.
+
+## Verificacion
+
+Con Redis:
 
 ```bash
 php artisan deployment:check --profile=redis --url=https://example.com
+```
+
+Con database queue:
+
+```bash
+php artisan deployment:check --profile=database --url=https://example.com
+```
+
+Tambien ejecuta:
+
+```bash
 php artisan schedule:list
 php artisan migrate:status
 ```
 
-Usa `--profile=database` si no usas Redis.
+## Checklist Pre Entrega
 
-## Demo En Producción
+1. HTTPS activo.
+2. `APP_URL` correcto.
+3. Migraciones aplicadas.
+4. Assets compilados.
+5. Storage link creado.
+6. Correo validado.
+7. Scheduler activo.
+8. Worker activo o `SCHEDULE_QUEUE_WORKER=true`.
+9. Admin creado.
+10. Profesionales cargados.
+11. Disponibilidad cargada.
+12. Cita completa probada.
+13. Recordatorio probado.
+14. Cancelacion y reprogramacion probadas.
+15. Backup inicial creado.
+16. `deployment:check` pasa.
 
-No ejecutes `demo:reset` en producción.
+## Demo En Produccion
 
-El comando falla en producción sin `--force`.
+No ejecutes `demo:reset` en produccion real.
+
+El comando falla en produccion sin `--force`.
+
 Usa `--force` solo en entornos desechables.
 
-## Guías Existentes
-
-También existen guías específicas:
+## Guías Especificas
 
 - `docs/deploy/vps.md`
 - `docs/deploy/hostinger-business.md`
 
-Las plantillas genéricas son la referencia principal.
+Estas guias complementan este documento.

@@ -109,4 +109,51 @@ class BookingRaceConditionTest extends TestCase
         $this->assertNotNull($expiredAppointment);
         $this->assertEquals('test@example.com', $expiredAppointment->patient_email);
     }
+
+    public function test_booking_service_accepts_customer_input_aliases(): void
+    {
+        $bookingService = app(BookingService::class);
+        $data = $this->baseData;
+
+        unset(
+            $data['patient_name'],
+            $data['patient_email'],
+            $data['patient_timezone'],
+        );
+
+        $data['starts_at'] = Carbon::now('UTC')->addDays(3)->startOfHour();
+        $data['ends_at'] = Carbon::now('UTC')->addDays(3)->startOfHour()->addMinutes(60);
+        $data['customer_name'] = 'Cliente Alias';
+        $data['customer_email'] = 'alias@example.test';
+        $data['customer_phone'] = '+5491112345678';
+        $data['customer_timezone'] = 'America/Argentina/Buenos_Aires';
+        $data['customer_locale'] = 'es';
+
+        $appointment = $bookingService->bookSlot($data);
+
+        $this->assertInstanceOf(Appointment::class, $appointment);
+        $this->assertSame('Cliente Alias', $appointment->patient_name);
+        $this->assertSame('alias@example.test', $appointment->patient_email);
+        $this->assertSame('+5491112345678', $appointment->patient_phone);
+        $this->assertSame('America/Argentina/Buenos_Aires', $appointment->patient_timezone);
+        $this->assertSame('es', $appointment->patient_locale);
+    }
+
+    public function test_booking_service_accepts_service_id_alias(): void
+    {
+        $bookingService = app(BookingService::class);
+        $data = $this->baseData;
+
+        unset($data['session_type_id']);
+
+        $data['service_id'] = $this->sessionType->id;
+        $data['starts_at'] = Carbon::now('UTC')->addDays(4)->startOfHour();
+        $data['ends_at'] = Carbon::now('UTC')->addDays(4)->startOfHour()->addMinutes(60);
+
+        $appointment = $bookingService->bookSlot($data);
+
+        $this->assertInstanceOf(Appointment::class, $appointment);
+        $this->assertSame($this->sessionType->id, $appointment->session_type_id);
+        $this->assertSame($this->sessionType->id, $appointment->service_id);
+    }
 }

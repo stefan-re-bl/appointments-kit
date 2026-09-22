@@ -35,8 +35,19 @@ final class SendAppointmentReminderEmail implements ShouldQueue
 
     public function handle(): void
     {
+        if (! (bool) config('features.email_notifications', true)) {
+            Appointment::query()
+                ->whereKey($this->appointmentId)
+                ->whereNull('reminder_sent_at')
+                ->update([
+                    'reminder_queued_at' => null,
+                ]);
+
+            return;
+        }
+
         $appointment = Appointment::query()
-            ->with(['professional.user', 'sessionType'])
+            ->with(['professional.user', 'service'])
             ->find($this->appointmentId);
 
         if (! $appointment instanceof Appointment) {
@@ -61,7 +72,7 @@ final class SendAppointmentReminderEmail implements ShouldQueue
 
         $appointment->increment('reminder_attempts');
 
-        Mail::to($appointment->patient_email)->send(
+        Mail::to($appointment->customer_email)->send(
             new AppointmentReminder($appointment)
         );
 

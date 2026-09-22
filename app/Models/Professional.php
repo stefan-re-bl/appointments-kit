@@ -28,6 +28,7 @@ use InvalidArgumentException;
     'preferred_locale',
     'bio',
     'specialties',
+    'professional_approach',
     'therapeutic_approach',
     'payment_instructions',
     'is_active',
@@ -83,7 +84,12 @@ class Professional extends Model
 
     public function sessionTypes(): HasMany
     {
-        return $this->hasMany(SessionType::class);
+        return $this->services();
+    }
+
+    public function services(): HasMany
+    {
+        return $this->hasMany(Service::class);
     }
 
     public function availabilities(): HasMany
@@ -102,8 +108,29 @@ class Professional extends Model
     protected function professionalApproach(): Attribute
     {
         return Attribute::make(
-            get: fn (): ?string => $this->therapeutic_approach,
-            set: fn (?string $value): array => ['therapeutic_approach' => $value],
+            get: fn (): ?string => $this->attributes['professional_approach']
+                ?? $this->attributes['therapeutic_approach']
+                ?? null,
+            set: fn (?string $value): array => [
+                'professional_approach' => $value,
+                'therapeutic_approach' => $value,
+            ],
+        );
+    }
+
+    /**
+     * @return Attribute<string|null, string|null>
+     */
+    protected function therapeuticApproach(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): ?string => $this->attributes['therapeutic_approach']
+                ?? $this->attributes['professional_approach']
+                ?? null,
+            set: fn (?string $value): array => [
+                'therapeutic_approach' => $value,
+                'professional_approach' => $value,
+            ],
         );
     }
 

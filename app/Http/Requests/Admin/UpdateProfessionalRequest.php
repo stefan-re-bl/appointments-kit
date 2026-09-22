@@ -55,7 +55,7 @@ final class UpdateProfessionalRequest extends FormRequest
             'bio' => ['nullable', 'string', 'max:5000'],
             'avatar_url' => ['nullable', 'url', 'max:2048'],
             'session_price' => ['required', 'numeric', 'min:0', 'max:99999999.99'],
-            'session_currency' => ['required', 'string', Rule::in(['ARS', 'USD'])],
+            'session_currency' => ['required', 'string', Rule::in(config('booking.currencies.supported', ['ARS', 'USD']))],
             'is_active' => ['sometimes', 'boolean'],
             'is_approved' => ['sometimes', 'boolean'],
         ];

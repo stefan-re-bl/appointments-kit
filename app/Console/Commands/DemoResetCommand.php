@@ -27,7 +27,7 @@ final class DemoResetCommand extends Command
             '--force' => true,
         ]);
 
-        $this->info('Demo environment reset with Demo Services data.');
+        $this->info('Demo environment reset with Demo Salud data.');
 
         return self::SUCCESS;
     }

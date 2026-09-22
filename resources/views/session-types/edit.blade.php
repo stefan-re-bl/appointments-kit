@@ -1,4 +1,11 @@
 <x-app-layout>
+    @php
+        $currencyLabels = __('app.session_type_management.currency_options');
+        $currencyOptions = collect(config('booking.currencies.supported', ['ARS', 'USD']))
+            ->mapWithKeys(fn (string $currency): array => [$currency => $currencyLabels[$currency] ?? $currency])
+            ->all();
+    @endphp
+
     <div class="py-8">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <div class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
@@ -15,7 +22,7 @@
 
                     <div class="mt-4 grid gap-4 sm:grid-cols-2">
                         <x-input name="price" :label="__('app.session_type_management.fields.price')" type="number" step="0.01" :value="old('price', $sessionType->price)" />
-                        <x-select name="currency" :label="__('app.session_type_management.fields.currency')" :options="__('app.session_type_management.currency_options')" :selected="old('currency', $sessionType->currency)" />
+                        <x-select name="currency" :label="__('app.session_type_management.fields.currency')" :options="$currencyOptions" :selected="old('currency', $sessionType->currency)" />
                     </div>
 
                     <div class="mt-6 flex items-center">

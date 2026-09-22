@@ -52,7 +52,7 @@
                                     {{ __('app.appointment_public.fields.patient_name') }}
                                 </dt>
                                 <dd class="mt-1 text-sm text-slate-950">
-                                    {{ $appointment->patient_name }}
+                                    {{ $appointment->customer_name }}
                                 </dd>
                             </div>
 
@@ -61,7 +61,7 @@
                                     {{ __('app.appointment_public.fields.patient_email') }}
                                 </dt>
                                 <dd class="mt-1 text-sm text-slate-950">
-                                    {{ $appointment->patient_email }}
+                                    {{ $appointment->customer_email }}
                                 </dd>
                             </div>
                         </dl>

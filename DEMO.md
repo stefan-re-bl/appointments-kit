@@ -2,84 +2,87 @@
 
 La demo usa datos ficticios.
 
-No contiene datos reales del cliente original.
+No debe contener datos reales de ningun cliente.
 
 ## Crear Demo
+
+En desarrollo:
+
+```bash
+./vendor/bin/sail artisan demo:reset
+```
+
+Sin Sail:
 
 ```bash
 php artisan demo:reset
 ```
 
-El comando ejecuta:
+El comando ejecuta migraciones limpias y carga `Database\\Seeders\\DemoSeeder`.
 
-```bash
-php artisan migrate:fresh --seed --seeder=Database\\Seeders\\DemoSeeder --force
-```
+En produccion falla sin `--force`.
 
-En producción falla sin `--force`.
+No uses `--force` en una instancia real.
 
-## Datos Creados
-
-Empresa demostrativa:
-
-- `Demo Services`
+## Accesos
 
 Admin:
 
-- `Admin Demo Services`
-- `admin@demo.test`
-- contraseña `password`
+- email: `admin@demo.test`
+- password: `password`
 
 Profesionales:
 
-- `Ana Martínez`
-- `Lucas Fernández`
-- `Sofía Gómez`
+- `ana.martinez@demo.test`
+- `lucas.fernandez@demo.test`
+- `sofia.gomez@demo.test`
+- password: `password`
 
-Servicios:
-
-- `Servicio inicial`
-- `Servicio estándar`
-- `Servicio extendido`
-
-Clientes ficticios:
-
-- `María Pérez`
-- `Julián Torres`
-- `Carla Ruiz`
-- `Diego Molina`
-
-## Estados Incluidos
+## Datos Creados
 
 La demo crea:
 
-- turnos futuros;
-- turnos pasados;
-- turnos cancelados;
-- turnos completados;
-- turnos reprogramados;
+- marca ficticia `Demo Salud`;
+- admin;
+- profesionales `Ana Martínez`, `Lucas Fernández` y `Sofía Gómez`;
+- servicios `Consulta inicial`, `Consulta estándar` y `Consulta extendida`;
+- disponibilidad semanal;
+- clientes ficticios;
+- citas futuras;
+- citas pasadas;
+- citas canceladas;
+- citas completadas;
+- citas reprogramadas;
 - pagos pendientes;
 - pagos registrados;
-- pagos bonificados;
-- disponibilidad semanal.
+- pagos bonificados.
+
+## Usos
+
+Usa la demo para mostrar:
+
+- home publica;
+- directorio profesional;
+- perfil profesional;
+- agenda del profesional;
+- calendario admin;
+- estados de pago;
+- auditoria;
+- reportes;
+- recordatorios;
+- cancelacion;
+- reprogramacion.
 
 ## Validar Demo
 
 ```bash
-php artisan test --filter=DemoSeederTest
-php artisan test --filter=DemoResetCommandTest
+./vendor/bin/sail artisan test --filter=DemoSeederTest
+./vendor/bin/sail artisan test --filter=DemoResetCommandTest
 ```
 
-## Uso En Presentaciones
+## Reglas
 
-Usa la demo para mostrar:
-
-- agenda de profesionales;
-- estados de pago;
-- auditoría;
-- reportes;
-- recordatorios;
-- cancelación;
-- reprogramación.
-
-No uses datos reales en una demo comercial.
+- No uses datos reales en demos comerciales.
+- No compartas passwords reales.
+- No ejecutes reset demo en produccion.
+- No uses la demo como backup.

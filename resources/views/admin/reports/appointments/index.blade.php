@@ -266,8 +266,8 @@
                         @forelse ($report['rows'] as $row)
                             <tr>
                                 <td class="px-3 py-3">
-                                    <div class="font-medium text-slate-900">{{ $row['patient_name'] }}</div>
-                                    <div class="text-xs text-slate-500">{{ $row['patient_email'] }}</div>
+                                    <div class="font-medium text-slate-900">{{ $row['customer_name'] }}</div>
+                                    <div class="text-xs text-slate-500">{{ $row['customer_email'] }}</div>
                                 </td>
 
                                 <td class="px-3 py-3">

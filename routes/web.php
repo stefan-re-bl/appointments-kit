@@ -18,6 +18,7 @@ use App\Http\Controllers\PublicAppointmentRescheduleController;
 use App\Http\Controllers\PublicAppointmentRescheduleStoreController;
 use App\Http\Controllers\PublicProfessionalDirectoryController;
 use App\Http\Controllers\PublicProfessionalProfileController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SessionTypeController;
 use App\Http\Controllers\Webhooks\MetaWhatsAppWebhookController;
 use Illuminate\Http\RedirectResponse;
@@ -26,17 +27,21 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'welcome')->name('home');
 
 Route::view('/how-it-works', 'information.show', ['page' => 'how_it_works'])
+    ->middleware('feature:public_information_pages')
     ->name('information.how-it-works');
 
 Route::view('/faq', 'information.show', ['page' => 'faq'])
+    ->middleware(['feature:public_information_pages', 'feature:public_faq'])
     ->name('information.faq');
 
 Route::redirect('/patients', '/customers', 301);
 
 Route::view('/customers', 'information.show', ['page' => 'patients'])
+    ->middleware('feature:public_information_pages')
     ->name('information.patients');
 
 Route::view('/payment-and-cancellation', 'information.show', ['page' => 'payment_and_cancellation'])
+    ->middleware('feature:public_information_pages')
     ->name('information.payment-and-cancellation');
 
 Route::view('/legal', 'legal.show', ['page' => 'index'])
@@ -52,18 +57,19 @@ Route::view('/emergency-notice', 'legal.show', ['page' => 'emergency'])
     ->name('legal.emergency-notice');
 
 Route::get('/contact', [ContactMessageController::class, 'create'])
+    ->middleware('feature:public_contact_form')
     ->name('contact.create');
 
 Route::post('/contact', [ContactMessageController::class, 'store'])
-    ->middleware('throttle:5,1')
+    ->middleware(['feature:public_contact_form', 'throttle:5,1'])
     ->name('contact.store');
 
 Route::get('/webhooks/meta/whatsapp', [MetaWhatsAppWebhookController::class, 'verify'])
-    ->middleware('throttle:60,1')
+    ->middleware(['feature:whatsapp', 'throttle:60,1'])
     ->name('webhooks.meta-whatsapp.verify');
 
 Route::post('/webhooks/meta/whatsapp', [MetaWhatsAppWebhookController::class, 'receive'])
-    ->middleware('throttle:60,1')
+    ->middleware(['feature:whatsapp', 'throttle:60,1'])
     ->name('webhooks.meta-whatsapp.receive');
 
 Route::redirect('/therapists', '/professionals', 301);
@@ -71,9 +77,11 @@ Route::redirect('/therapists', '/professionals', 301);
 Route::get('/therapists/{slug}', fn (string $slug): RedirectResponse => redirect()->route('professionals.show', $slug, 301));
 
 Route::get('/professionals', PublicProfessionalDirectoryController::class)
+    ->middleware('feature:public_provider_directory')
     ->name('professionals.index');
 
 Route::get('/professionals/{slug}', PublicProfessionalProfileController::class)
+    ->middleware('feature:public_provider_directory')
     ->name('professionals.show');
 
 // --- Página pública "Mi Cita" (Ticket #11) ---
@@ -82,21 +90,21 @@ Route::get('/appointment/{token}', PublicAppointmentController::class)
 
 // --- Link firmado de reprogramación pública (Ticket #18) ---
 Route::get('/appointment/{token}/reschedule', PublicAppointmentRescheduleController::class)
-    ->middleware(['signed', 'throttle:booking'])
+    ->middleware(['feature:public_rescheduling', 'signed', 'throttle:booking'])
     ->name('appointments.public.reschedule');
 
 Route::get('/appointment/{token}/reschedule/slots', [PublicAppointmentRescheduleController::class, 'slots'])
-    ->middleware(['signed', 'throttle:booking'])
+    ->middleware(['feature:public_rescheduling', 'signed', 'throttle:booking'])
     ->name('appointments.public.reschedule.slots');
 
 // --- Confirmación de reprogramación pública (Ticket #19) ---
 Route::post('/appointment/{token}/reschedule', PublicAppointmentRescheduleStoreController::class)
-    ->middleware(['signed', 'throttle:booking'])
+    ->middleware(['feature:public_rescheduling', 'signed', 'throttle:booking'])
     ->name('appointments.public.reschedule.store');
 
 // --- Cancelación pública por token (Ticket #17) ---
 Route::post('/appointment/{token}/cancel', PublicAppointmentCancellationController::class)
-    ->middleware('throttle:booking')
+    ->middleware(['feature:public_cancellation', 'throttle:booking'])
     ->name('appointments.public.cancel');
 
 Route::get('/dashboard', DashboardController::class)->name('dashboard');
@@ -106,6 +114,7 @@ Route::middleware('auth')->group(function (): void {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::resource('services', ServiceController::class)->except('show');
     Route::resource('session-types', SessionTypeController::class)->except('show');
     Route::resource('availabilities', AvailabilityController::class)->except(['show', 'edit', 'update']);
 });
@@ -139,6 +148,7 @@ Route::middleware(['auth', 'verified', 'admin'])
             ->name('appointments.day');
 
         Route::get('/activity-logs', [AdminActivityLogController::class, 'index'])
+            ->middleware('feature:visible_audit')
             ->name('activity-logs.index');
 
         Route::get('/contact-messages', [AdminContactMessageController::class, 'index'])
@@ -148,9 +158,11 @@ Route::middleware(['auth', 'verified', 'admin'])
             ->name('contact-messages.update');
 
         Route::get('/reports/appointments', [AppointmentReportController::class, 'index'])
+            ->middleware('feature:reports')
             ->name('reports.appointments.index');
 
         Route::get('/reports/appointments/export', [AppointmentReportController::class, 'export'])
+            ->middleware('feature:reports')
             ->name('reports.appointments.export');
     });
 
@@ -168,6 +180,7 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
         ->name('professional.appointments.day');
 
     Route::patch('/professional/appointments/{appointment}/payment', AppointmentPaymentController::class)
+        ->middleware('feature:manual_payments')
         ->name('professional.appointments.payment.update');
 });
 

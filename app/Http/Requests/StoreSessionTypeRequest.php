@@ -37,7 +37,7 @@ final class StoreSessionTypeRequest extends FormRequest
             ],
             'duration_minutes' => ['required', 'integer', 'in:30,60,90'],
             'price' => ['required', 'numeric', 'min:0'],
-            'currency' => ['required', 'string', 'in:ARS,USD'],
+            'currency' => ['required', 'string', Rule::in(config('booking.currencies.supported', ['ARS', 'USD']))],
             'is_active' => ['sometimes', 'boolean'],
         ];
     }

@@ -9,7 +9,7 @@ use App\Enums\PaymentStatus;
 use App\Enums\Role;
 use App\Models\Appointment;
 use App\Models\Professional;
-use App\Models\SessionType;
+use App\Models\Service;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
@@ -25,34 +25,34 @@ final class DemoSeeder extends Seeder
             'name' => 'Ana Martínez',
             'email' => 'ana.martinez@demo.test',
             'timezone' => 'America/Argentina/Buenos_Aires',
-            'bio' => 'Profesional de Demo Services con experiencia en atención remota.',
+            'bio' => 'Profesional de Demo Salud con experiencia en atención remota.',
         ],
         [
             'name' => 'Lucas Fernández',
             'email' => 'lucas.fernandez@demo.test',
             'timezone' => 'Europe/Madrid',
-            'bio' => 'Profesional de Demo Services orientado a servicios programados.',
+            'bio' => 'Profesional de Demo Salud orientado a servicios programados.',
         ],
         [
             'name' => 'Sofía Gómez',
             'email' => 'sofia.gomez@demo.test',
             'timezone' => 'America/Mexico_City',
-            'bio' => 'Profesional de Demo Services con agenda online configurable.',
+            'bio' => 'Profesional de Demo Salud con agenda online configurable.',
         ],
     ];
 
     /**
-     * @var array<int, array{name: string, duration_minutes: int, price: float, currency: string}>
+     * @var array<int, array{name: string, duration_minutes: int, price: float}>
      */
     private array $services = [
-        ['name' => 'Servicio inicial', 'duration_minutes' => 30, 'price' => 12000.00, 'currency' => 'ARS'],
-        ['name' => 'Servicio estándar', 'duration_minutes' => 60, 'price' => 22000.00, 'currency' => 'ARS'],
-        ['name' => 'Servicio extendido', 'duration_minutes' => 90, 'price' => 32000.00, 'currency' => 'ARS'],
+        ['name' => 'Consulta inicial', 'duration_minutes' => 30, 'price' => 12000.00],
+        ['name' => 'Consulta estándar', 'duration_minutes' => 60, 'price' => 22000.00],
+        ['name' => 'Consulta extendida', 'duration_minutes' => 90, 'price' => 32000.00],
     ];
 
     public function run(): void
     {
-        config(['branding.name' => 'Demo Services']);
+        config(['branding.name' => 'Demo Salud']);
 
         $this->admin();
 
@@ -69,7 +69,7 @@ final class DemoSeeder extends Seeder
     {
         return $this->upsertUser(
             email: 'admin@demo.test',
-            name: 'Admin Demo Services',
+            name: 'Admin Demo Salud',
             role: Role::ADMIN,
         );
     }
@@ -91,7 +91,7 @@ final class DemoSeeder extends Seeder
             'timezone' => $data['timezone'],
             'bio' => $data['bio'],
             'specialties' => 'Servicios profesionales, atención programada, seguimiento operativo.',
-            'therapeutic_approach' => 'Atención estructurada con agenda, recordatorios y seguimiento administrativo.',
+            'professional_approach' => 'Atención estructurada con agenda, recordatorios y seguimiento administrativo.',
             'payment_instructions' => 'Demo: registrar pago como pendiente, pagado o bonificado según el caso.',
             'google_meet_link' => 'https://meet.google.com/demo-'.$user->id,
             'preferred_locale' => 'es',
@@ -109,19 +109,19 @@ final class DemoSeeder extends Seeder
     }
 
     /**
-     * @return array<string, SessionType>
+     * @return array<string, Service>
      */
     private function servicesFor(Professional $provider): array
     {
         $services = [];
 
         foreach ($this->services as $serviceData) {
-            $service = $provider->sessionTypes()->updateOrCreate(
+            $service = $provider->services()->updateOrCreate(
                 ['name' => $serviceData['name']],
                 [
                     'duration_minutes' => $serviceData['duration_minutes'],
                     'price' => $serviceData['price'],
-                    'currency' => $serviceData['currency'],
+                    'currency' => (string) config('booking.currencies.default', 'ARS'),
                     'is_active' => true,
                 ],
             );
@@ -154,7 +154,7 @@ final class DemoSeeder extends Seeder
     }
 
     /**
-     * @param  array<string, SessionType>  $services
+     * @param  array<string, Service>  $services
      */
     private function replaceAppointments(Professional $provider, array $services): void
     {
@@ -164,9 +164,9 @@ final class DemoSeeder extends Seeder
 
         $appointments = [
             [
-                'service' => 'Servicio inicial',
-                'patient_name' => 'María Pérez',
-                'patient_email' => 'maria.perez@example.test',
+                'service' => 'Consulta inicial',
+                'customer_name' => 'María Pérez',
+                'customer_email' => 'maria.perez@example.test',
                 'starts_at' => $now->addDays(2)->setTime(13, 0),
                 'status' => AppointmentStatus::CONFIRMED,
                 'payment_status' => PaymentStatus::PENDING,
@@ -174,9 +174,9 @@ final class DemoSeeder extends Seeder
                 'reschedule_count' => 0,
             ],
             [
-                'service' => 'Servicio estándar',
-                'patient_name' => 'Julián Torres',
-                'patient_email' => 'julian.torres@example.test',
+                'service' => 'Consulta estándar',
+                'customer_name' => 'Julián Torres',
+                'customer_email' => 'julian.torres@example.test',
                 'starts_at' => $now->addDays(4)->setTime(15, 0),
                 'status' => AppointmentStatus::CONFIRMED,
                 'payment_status' => PaymentStatus::PAID,
@@ -184,9 +184,9 @@ final class DemoSeeder extends Seeder
                 'reschedule_count' => 1,
             ],
             [
-                'service' => 'Servicio extendido',
-                'patient_name' => 'Carla Ruiz',
-                'patient_email' => 'carla.ruiz@example.test',
+                'service' => 'Consulta extendida',
+                'customer_name' => 'Carla Ruiz',
+                'customer_email' => 'carla.ruiz@example.test',
                 'starts_at' => $now->subDays(3)->setTime(14, 0),
                 'status' => AppointmentStatus::COMPLETED,
                 'payment_status' => PaymentStatus::PAID,
@@ -194,9 +194,9 @@ final class DemoSeeder extends Seeder
                 'reschedule_count' => 0,
             ],
             [
-                'service' => 'Servicio estándar',
-                'patient_name' => 'Diego Molina',
-                'patient_email' => 'diego.molina@example.test',
+                'service' => 'Consulta estándar',
+                'customer_name' => 'Diego Molina',
+                'customer_email' => 'diego.molina@example.test',
                 'starts_at' => $now->subDay()->setTime(16, 0),
                 'status' => AppointmentStatus::CANCELLED,
                 'payment_status' => PaymentStatus::WAIVED,
@@ -210,13 +210,13 @@ final class DemoSeeder extends Seeder
             $startsAt = $appointmentData['starts_at'];
 
             $this->createAppointment($provider, $service, [
-                'patient_name' => $appointmentData['patient_name'],
-                'patient_email' => $appointmentData['patient_email'],
-                'patient_phone' => '+5491112345678',
-                'patient_timezone' => $provider->timezone,
-                'patient_locale' => 'es',
+                'customer_name' => $appointmentData['customer_name'],
+                'customer_email' => $appointmentData['customer_email'],
+                'customer_phone' => '+5491112345678',
+                'customer_timezone' => $provider->timezone,
+                'customer_locale' => 'es',
                 'terms_accepted_at' => $now,
-                'patient_whatsapp_opt_in_at' => $now,
+                'customer_whatsapp_opt_in_at' => $now,
                 'starts_at' => $startsAt,
                 'ends_at' => $startsAt->addMinutes((int) $service->duration_minutes),
                 'price' => $service->price,
@@ -232,18 +232,18 @@ final class DemoSeeder extends Seeder
     /**
      * @param  array<string, mixed>  $data
      */
-    private function createAppointment(Professional $provider, SessionType $service, array $data): Appointment
+    private function createAppointment(Professional $provider, Service $service, array $data): Appointment
     {
         $appointment = Appointment::query()->create([
             'professional_id' => $provider->id,
-            'session_type_id' => $service->id,
-            'patient_name' => $data['patient_name'],
-            'patient_email' => $data['patient_email'],
-            'patient_phone' => $data['patient_phone'],
-            'patient_timezone' => $data['patient_timezone'],
-            'patient_locale' => $data['patient_locale'],
+            'service_id' => $service->id,
+            'customer_name' => $data['customer_name'],
+            'customer_email' => $data['customer_email'],
+            'customer_phone' => $data['customer_phone'],
+            'customer_timezone' => $data['customer_timezone'],
+            'customer_locale' => $data['customer_locale'],
             'terms_accepted_at' => $data['terms_accepted_at'],
-            'patient_whatsapp_opt_in_at' => $data['patient_whatsapp_opt_in_at'],
+            'customer_whatsapp_opt_in_at' => $data['customer_whatsapp_opt_in_at'],
             'starts_at' => $data['starts_at'],
             'ends_at' => $data['ends_at'],
             'price' => $data['price'],

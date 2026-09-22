@@ -131,7 +131,7 @@ class AppointmentEmailNotificationsTest extends TestCase
 
         $html = (new BookingConfirmed(
             appointment: $appointment,
-            recipientType: BookingConfirmed::RECIPIENT_PATIENT,
+            recipientType: BookingConfirmed::RECIPIENT_CUSTOMER,
         ))->render();
 
         $this->assertStringContainsString(__('legal.email.patient_disclaimer'), $html);

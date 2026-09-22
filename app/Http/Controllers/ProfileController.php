@@ -90,7 +90,7 @@ class ProfileController extends Controller
             $request->user()->professional->update([
                 'bio' => $validated['bio'] ?? null,
                 'specialties' => $validated['specialties'] ?? null,
-                'therapeutic_approach' => $validated['professional_approach'] ?? null,
+                'professional_approach' => $validated['professional_approach'] ?? null,
                 'payment_instructions' => $validated['payment_instructions'] ?? null,
                 'google_meet_link' => $validated['google_meet_link'] ?? null,
                 'whatsapp_phone' => $phoneNumberNormalizer->normalize($validated['whatsapp_phone'] ?? null),

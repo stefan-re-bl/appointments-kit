@@ -150,7 +150,7 @@ final class TimezoneAuditTest extends TestCase
 
         $patientData = (new BookingConfirmed(
             $appointment,
-            BookingConfirmed::RECIPIENT_PATIENT,
+            BookingConfirmed::RECIPIENT_CUSTOMER,
         ))->content()->with;
 
         $professionalData = (new BookingConfirmed(

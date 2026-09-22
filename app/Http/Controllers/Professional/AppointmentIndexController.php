@@ -78,7 +78,7 @@ class AppointmentIndexController extends Controller implements HasMiddleware
 
             return [
                 'id' => (string) $appointment->id,
-                'title' => $appointment->patient_name,
+                'title' => $appointment->customer_name,
                 'start' => $startsAt->toIso8601String(),
                 'end' => $endsAt->toIso8601String(),
                 'backgroundColor' => $this->eventColorForStatus($appointment->status),
@@ -86,7 +86,8 @@ class AppointmentIndexController extends Controller implements HasMiddleware
                 'textColor' => '#ffffff',
                 'extendedProps' => [
                     'local_date' => $startsAt->toDateString(),
-                    'patient_name' => $appointment->patient_name,
+                    'patient_name' => $appointment->customer_name,
+                    'customer_name' => $appointment->customer_name,
                     'professional_name' => $appointment->professional->user->name,
                     'status' => $appointment->status->value,
                     'payment_status' => $appointment->payment_status->value,
@@ -123,9 +124,12 @@ class AppointmentIndexController extends Controller implements HasMiddleware
             'appointments' => $appointments->map(function (Appointment $appointment) use ($timezoneService, $timezone): array {
                 return [
                     'id' => $appointment->id,
-                    'patient_name' => $appointment->patient_name,
-                    'patient_email' => $appointment->patient_email,
-                    'patient_timezone' => $appointment->patient_timezone,
+                    'patient_name' => $appointment->customer_name,
+                    'patient_email' => $appointment->customer_email,
+                    'patient_timezone' => $appointment->customer_timezone,
+                    'customer_name' => $appointment->customer_name,
+                    'customer_email' => $appointment->customer_email,
+                    'customer_timezone' => $appointment->customer_timezone,
                     'professional_name' => $appointment->professional->user->name,
                     'time_range' => $timezoneService->formatForDisplay($appointment->starts_at, 'H:i', $timezone)
                         .' - '.$timezoneService->formatForDisplay($appointment->ends_at, 'H:i', $timezone),

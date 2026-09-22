@@ -209,8 +209,8 @@ final class CriticalBookingFlowTest extends TestCase
             ])
             ->get(route('book.date'))
             ->assertOk()
-            ->assertSee('name="patient_country"', false)
-            ->assertSee('name="patient_timezone"', false)
+            ->assertSee('name="customer_country"', false)
+            ->assertSee('name="customer_timezone"', false)
             ->assertSeeText(__('booking_timezone.country_placeholder'))
             ->assertSeeText(__('booking_timezone.countries.AR'))
             ->assertSeeText(__('booking_timezone.region_label'))
@@ -256,6 +256,28 @@ final class CriticalBookingFlowTest extends TestCase
                 'patient_timezone' => 'America/Los_Angeles',
             ])
             ->assertRedirect(route('book.time'))
+            ->assertSessionHas('booking.patient_country', 'US')
+            ->assertSessionHas('booking.patient_timezone', 'America/Los_Angeles');
+    }
+
+    public function test_booking_date_accepts_customer_country_and_timezone_aliases(): void
+    {
+        [$professional, $sessionType] = $this->makeBookableProfessional();
+
+        $this
+            ->actingAs($professional->user)
+            ->withSession([
+                'booking.professional_id' => $professional->id,
+                'booking.session_type_id' => $sessionType->id,
+            ])
+            ->post(route('book.store.date'), [
+                'date' => '2026-07-06',
+                'customer_country' => 'US',
+                'customer_timezone' => 'America/Los_Angeles',
+            ])
+            ->assertRedirect(route('book.time'))
+            ->assertSessionHas('booking.customer_country', 'US')
+            ->assertSessionHas('booking.customer_timezone', 'America/Los_Angeles')
             ->assertSessionHas('booking.patient_country', 'US')
             ->assertSessionHas('booking.patient_timezone', 'America/Los_Angeles');
     }
@@ -398,7 +420,7 @@ final class CriticalBookingFlowTest extends TestCase
 
         Mail::assertSent(
             BookingConfirmed::class,
-            fn (BookingConfirmed $mail): bool => $mail->recipientType === BookingConfirmed::RECIPIENT_PATIENT
+            fn (BookingConfirmed $mail): bool => $mail->recipientType === BookingConfirmed::RECIPIENT_CUSTOMER
                 && $mail->hasTo('patient@example.test'),
         );
 

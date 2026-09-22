@@ -20,7 +20,7 @@ final class AppointmentReminder extends Mailable
     public function __construct(
         public Appointment $appointment,
     ) {
-        $this->appointment->loadMissing(['professional.user', 'sessionType']);
+        $this->appointment->loadMissing(['professional.user', 'service']);
     }
 
     public function envelope(): Envelope
@@ -43,7 +43,7 @@ final class AppointmentReminder extends Mailable
      */
     private function viewData(): array
     {
-        $timezone = $this->appointment->patient_timezone ?: 'UTC';
+        $timezone = $this->appointment->customer_timezone ?: 'UTC';
 
         [$startsAt, $endsAt] = $this->formattedRange($timezone);
 

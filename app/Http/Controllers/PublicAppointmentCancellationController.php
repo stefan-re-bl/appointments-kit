@@ -21,7 +21,7 @@ final class PublicAppointmentCancellationController extends Controller implement
     public function __invoke(string $token, CancelAppointment $cancelAppointment): RedirectResponse|Response
     {
         $appointment = Appointment::query()
-            ->with(['professional.user', 'sessionType'])
+            ->with(['professional.user', 'service'])
             ->where('token', $token)
             ->first();
 

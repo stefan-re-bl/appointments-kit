@@ -39,7 +39,7 @@ return [
         'amounts_by_currency' => 'Montos por moneda',
         'pending_by_professional' => 'Pagos pendientes por profesional',
         'appointment_audit' => 'Detalle auditable de turnos',
-        'appointment_audit_description' => 'Cada fila cruza turno, profesional, tipo de sesión, precio, estado de pago y fecha manual de pago.',
+        'appointment_audit_description' => 'Cada fila cruza turno, profesional, servicio, precio, estado de pago y fecha manual de pago.',
     ],
 
     'table' => [
@@ -86,11 +86,13 @@ return [
     'csv' => [
         'headers' => [
             'appointment_id' => 'ID cita',
+            'customer_name' => 'Cliente',
+            'customer_email' => 'Email cliente',
             'patient_name' => 'Cliente',
             'patient_email' => 'Email cliente',
             'professional_name' => 'Profesional',
             'professional_email' => 'Email profesional',
-            'session_type' => 'Tipo de sesión',
+            'session_type' => 'Servicio',
             'starts_at_local' => 'Inicio local',
             'ends_at_local' => 'Fin local',
             'starts_at_utc' => 'Inicio UTC',

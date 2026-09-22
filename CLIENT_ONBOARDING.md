@@ -1,95 +1,151 @@
 # Onboarding De Cliente
 
-Usa esta checklist para crear una nueva instancia.
+Usa este documento para implementar una instancia nueva para un cliente.
 
 ## Modelo De Instancia
 
 ```text
-1 repositorio genérico
+1 codigo base
 1 deployment por cliente
 1 base de datos por cliente
-1 archivo .env por cliente
+1 .env por cliente
+1 set de assets por cliente
 ```
 
 No uses multitenancy en esta fase.
 
-## Checklist Técnica
+## Informacion Que Debe Entregar El Cliente
 
-1. Crear base de datos.
-2. Crear `.env` desde `.env.example`.
-3. Configurar `APP_NAME`, `APP_URL` y `APP_KEY`.
-4. Configurar `BRANDING_*`.
-5. Configurar `TERM_*`.
-6. Configurar `BOOKING_*`.
-7. Configurar `FEATURE_*`.
-8. Configurar email.
-9. Configurar WhatsApp si aplica.
-10. Cargar logo y favicon.
-11. Cargar imagen hero si aplica.
-12. Crear profesionales.
-13. Crear servicios.
-14. Crear disponibilidad.
-15. Probar una cita completa.
-16. Probar recordatorios.
-17. Probar cancelación y reprogramación.
-18. Ejecutar `deployment:check`.
-
-## Datos Que Debe Entregar El Cliente
+### Marca
 
 - Nombre comercial.
 - Logo.
 - Favicon.
 - Colores principales.
-- Texto breve de home.
-- Datos de contacto.
+- Imagen principal.
+- Video introductorio, si aplica.
 - Redes sociales.
+- Numero de WhatsApp publico.
+
+### Operacion
+
+- Lista de profesionales.
+- Email de cada profesional.
+- Zona horaria de cada profesional.
 - Servicios.
-- Duración de servicios.
-- Precios y moneda.
-- Profesionales.
-- Horarios.
-- Plazos de cancelación.
-- Plazos de reprogramación.
-- Política de pago.
-- Canales de notificación.
-- Credenciales SMTP.
-- Credenciales WhatsApp, si aplica.
+- Duracion de servicios.
+- Precio interno y moneda.
+- Disponibilidad semanal.
+- Reglas de cancelacion.
+- Reglas de reprogramacion.
+- Politica de pago.
 
-## Qué No Debe Cambiarse
+### Comunicaciones
 
-No edites controladores para un cliente.
+- Cuenta SMTP.
+- Remitente aprobado.
+- Credenciales Meta WhatsApp, si aplica.
+- Plantillas WhatsApp aprobadas, si aplica.
+- Textos legales propios.
+- Textos de emergencia si el rubro lo requiere.
 
-No edites servicios centrales para cambiar:
+## Implementacion
 
-- nombre;
-- logo;
-- terminología;
-- reglas básicas;
-- canales activos;
+1. Crear base de datos.
+2. Crear `.env` desde `.env.production.example`.
+3. Configurar `APP_*`.
+4. Configurar `DB_*`.
+5. Configurar `BRANDING_*`.
+6. Configurar `TERM_*`.
+7. Configurar `BOOKING_*`.
+8. Configurar `FEATURE_*`.
+9. Configurar email.
+10. Configurar WhatsApp si aplica.
+11. Subir assets.
+12. Ejecutar migraciones.
+13. Crear admin inicial.
+14. Cargar profesionales.
+15. Cargar servicios.
+16. Cargar disponibilidad.
+17. Probar cita completa.
+18. Probar recordatorios.
+19. Probar cancelacion y reprogramacion.
+20. Ejecutar `deployment:check`.
+
+## Personalizacion Permitida
+
+Usa configuracion para:
+
+- marca;
+- assets;
+- terminologia;
+- reglas de booking;
+- funciones activas;
+- correo;
+- WhatsApp;
+- links publicos;
+- datos de profesionales;
 - servicios;
-- profesionales.
+- disponibilidad.
 
-Usa configuración y datos.
+Usa traducciones para textos visibles.
 
-## Validación Funcional
+## Cambios Que Requieren Desarrollo
+
+Requieren codigo y tests:
+
+- nuevos estados de cita;
+- nuevo proveedor de pago;
+- nuevo canal de notificacion;
+- reglas de disponibilidad diferentes;
+- cambios en permisos;
+- cambio de modelo de datos;
+- multitenancy;
+- integraciones externas nuevas.
+
+## Validacion Funcional
 
 Antes de entregar:
 
 ```bash
+npm run build
 php artisan migrate --force
-php artisan db:seed
 php artisan test --filter=CriticalBookingFlowTest
 php artisan test --filter=SendAppointmentRemindersCommandTest
 php artisan deployment:check --url=https://dominio
 ```
 
-## Riesgos Actuales
+En desarrollo con Sail:
 
-Algunos nombres internos siguen vinculados al origen:
+```bash
+npm run build
+./vendor/bin/sail artisan test
+```
 
-- `Professional`;
-- `SessionType`;
-- campos `patient_*`.
+## Checklist De Entrega
 
-Esto no impide crear instancias.
-Pero debe refactorizarse en una fase posterior.
+- Home muestra marca correcta.
+- Logo y favicon cargan.
+- Links publicos funcionan.
+- Perfil publico de profesionales carga.
+- Admin puede aprobar profesionales.
+- Profesional puede ver su agenda.
+- Cita interna puede crearse.
+- Cliente recibe email de confirmacion.
+- Pagos manuales pueden actualizarse.
+- Reportes muestran totales.
+- Reprogramacion funciona.
+- Cancelacion funciona.
+- Recordatorios se encolan.
+- WhatsApp funciona o queda desactivado sin errores.
+- `deployment:check` pasa.
+- Hay backup inicial.
+- Credenciales reales no estan commiteadas.
+
+## Compatibilidad Legacy
+
+El kit conserva algunos redirects y alias antiguos.
+
+Solo mantenlos si el cliente migra desde una instalacion previa.
+
+En clientes nuevos, puedes planificar su eliminacion en un ticket especifico.

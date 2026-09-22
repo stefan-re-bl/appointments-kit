@@ -70,8 +70,22 @@ final class SendAppointmentReminders extends Command
             }
 
             try {
-                SendAppointmentReminderEmail::dispatch($appointment->getKey());
+                if ((bool) config('features.email_notifications', true)) {
+                    SendAppointmentReminderEmail::dispatch($appointment->getKey());
+                }
+
                 $whatsAppDeliveryDispatcher->dispatchReminder($appointment);
+
+                if (! (bool) config('features.email_notifications', true)) {
+                    Appointment::query()
+                        ->whereKey($appointment->getKey())
+                        ->update([
+                            'reminder_sent_at' => CarbonImmutable::now('UTC')->toDateTimeString(),
+                            'reminder_queued_at' => null,
+                            'reminder_failed_at' => null,
+                        ]);
+                }
+
                 $queued++;
             } catch (Throwable $exception) {
                 Appointment::query()

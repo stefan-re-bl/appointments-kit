@@ -75,7 +75,7 @@
                                     <div class="font-medium text-slate-950">
                                         #{{ $log->appointment_id }}
                                     </div>
-                                    <div>{{ $log->appointment?->patient_name }}</div>
+                                    <div>{{ $log->appointment?->customer_name }}</div>
                                     <div class="text-xs text-slate-500">
                                         {{ $log->appointment?->professional?->user?->name }}
                                     </div>

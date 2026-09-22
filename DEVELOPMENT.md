@@ -1,84 +1,128 @@
 # Desarrollo
 
-Usa este documento para trabajar en el repositorio.
+Usa este documento para trabajar en el repositorio local.
 
-## Requisitos
+## Entorno Soportado
 
-- PHP 8.3 o superior.
-- Composer.
-- Node.js y npm.
-- Base de datos local.
-- Extensión PHP `GD` para ejecutar toda la suite.
+- WSL2 con Debian.
+- Docker con Laravel Sail.
+- PHP 8.5 dentro de Sail.
+- Laravel 13.
+- MySQL 8.4 y Redis.
+- Node.js y npm para Vite.
 
-## Instalación
+Ejecuta comandos de Laravel, Composer y PHP mediante Sail.
+
+```bash
+./vendor/bin/sail artisan test
+./vendor/bin/sail composer install
+./vendor/bin/sail php vendor/bin/pint --dirty
+```
+
+Ejecuta `npm` en host local solo para Vite y dependencias frontend.
+
+## Primer Arranque
 
 ```bash
 cp .env.example .env
-composer install
-php artisan key:generate
-php artisan migrate --seed
+./vendor/bin/sail up -d
+./vendor/bin/sail composer install
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate --seed
 npm install
 npm run build
 ```
 
-## Servidor Local
+Si quieres datos demo, ejecuta:
 
 ```bash
-php artisan serve
+./vendor/bin/sail artisan demo:reset
+```
+
+## Servidor Local
+
+Levanta los servicios:
+
+```bash
+./vendor/bin/sail up -d
+```
+
+Compila assets en modo desarrollo:
+
+```bash
 npm run dev
 ```
 
-Ejecuta un worker si pruebas colas reales:
+La app queda disponible en el puerto configurado por Sail.
+
+## Pruebas
+
+Ejecuta una prueba focalizada:
 
 ```bash
-php artisan queue:work
+./vendor/bin/sail artisan test --filter=CriticalBookingFlowTest
 ```
 
-## Tests
-
-Ejecuta una prueba específica:
+Ejecuta toda la suite:
 
 ```bash
-php artisan test --filter=DemoSeederTest
+./vendor/bin/sail artisan test
 ```
 
-Ejecuta la suite completa:
+La suite cubre:
+
+- reserva y solapamientos;
+- disponibilidad;
+- pagos manuales;
+- emails;
+- WhatsApp;
+- reportes;
+- auditoria;
+- permisos;
+- paginas publicas;
+- demo;
+- deploy checks.
+
+## Calidad
+
+Ejecuta Pint para archivos PHP modificados:
 
 ```bash
-php artisan test
+./vendor/bin/sail php vendor/bin/pint --dirty
 ```
 
-Si falta `GD`, fallará la prueba de subida de foto.
-
-## Estilo
-
-Ejecuta Pint cuando modifiques PHP:
+Verifica whitespace antes de commitear:
 
 ```bash
-vendor/bin/pint --dirty
+git diff --check
 ```
 
-## Migraciones
+Compila frontend antes de entregar cambios de vistas, CSS, JS o assets:
 
-Mantén migraciones compatibles con SQLite cuando existan tests con `RefreshDatabase`.
-
-Si eliminas una columna con índice, elimina primero el índice.
+```bash
+npm run build
+```
 
 ## Reglas De Cambio
 
-- Mantén cambios pequeños.
-- Agrega tests cuando cambies reglas variables.
-- No renombres entidades internas sin plan de migración.
-- No agregues multitenancy.
-- No edites secretos reales.
-- Usa configuración antes de introducir condicionales por cliente.
+- Haz cambios pequenos y verificables.
+- Agrega tests cuando cambies reglas de negocio.
+- Mantén textos visibles en archivos `lang`.
+- No hardcodees datos de cliente en vistas, controladores o servicios.
+- Usa configuracion para branding, reglas, terminologia y funciones activas.
+- No agregues Stripe ni Mercado Pago al MVP.
+- No guardes fechas locales de citas en base de datos.
+- No modifiques `app/Http/Kernel.php`; no existe en Laravel 13.
+- Usa `HasMiddleware` en controladores que definan middleware propio.
+- Usa atributos `#[Fillable]` y `#[Hidden]` en modelos nuevos.
 
-## Comandos Útiles
+## Comandos Utiles
 
 ```bash
-php artisan demo:reset
-php artisan appointments:cleanup-expired --dry-run
-php artisan appointments:send-reminders --dry-run
-php artisan schedule:list
-php artisan deployment:check --profile=database --url=http://localhost
+./vendor/bin/sail artisan demo:reset
+./vendor/bin/sail artisan appointments:cleanup-expired --dry-run
+./vendor/bin/sail artisan appointments:send-reminders --dry-run
+./vendor/bin/sail artisan schedule:list
+./vendor/bin/sail artisan migrate:status
+./vendor/bin/sail artisan deployment:check --profile=database --url=http://localhost
 ```

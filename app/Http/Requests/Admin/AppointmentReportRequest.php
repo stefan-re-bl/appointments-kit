@@ -30,7 +30,6 @@ final class AppointmentReportRequest extends FormRequest
             'date_from' => ['nullable', 'date_format:Y-m-d'],
             'date_to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:date_from'],
             'professional_id' => ['nullable', 'integer', Rule::exists('professionals', 'id')],
-            'professional_id' => ['nullable', 'integer', Rule::exists('professionals', 'id')],
         ];
     }
 

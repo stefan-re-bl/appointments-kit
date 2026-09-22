@@ -12,16 +12,20 @@ class QueueAppointmentCancelledEmails
 {
     public function execute(Appointment $appointment): void
     {
-        $appointment->loadMissing(['professional.user', 'sessionType']);
+        if (! (bool) config('features.email_notifications', true)) {
+            return;
+        }
+
+        $appointment->loadMissing(['professional.user', 'service']);
 
         Mail::to(
-            $appointment->patient_email,
-            $appointment->patient_name,
+            $appointment->customer_email,
+            $appointment->customer_name,
         )->queue(
             new AppointmentCancelled(
                 appointment: $appointment,
-                recipientTimezone: $appointment->patient_timezone ?: 'UTC',
-                recipientType: 'patient',
+                recipientTimezone: $appointment->customer_timezone ?: 'UTC',
+                recipientType: AppointmentCancelled::RECIPIENT_CUSTOMER,
             )
         );
 
@@ -32,7 +36,7 @@ class QueueAppointmentCancelledEmails
             new AppointmentCancelled(
                 appointment: $appointment,
                 recipientTimezone: $appointment->professional->timezone ?: 'UTC',
-                recipientType: 'professional',
+                recipientType: AppointmentCancelled::RECIPIENT_PROFESSIONAL,
             )
         );
     }

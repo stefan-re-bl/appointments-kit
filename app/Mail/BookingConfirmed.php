@@ -17,7 +17,12 @@ final class BookingConfirmed extends Mailable
     use Queueable;
     use SerializesModels;
 
-    public const RECIPIENT_PATIENT = 'patient';
+    public const RECIPIENT_CUSTOMER = 'patient';
+
+    /**
+     * @deprecated Use RECIPIENT_CUSTOMER.
+     */
+    public const RECIPIENT_PATIENT = self::RECIPIENT_CUSTOMER;
 
     public const RECIPIENT_PROFESSIONAL = 'professional';
 
@@ -25,7 +30,7 @@ final class BookingConfirmed extends Mailable
         public readonly Appointment $appointment,
         public readonly string $recipientType,
     ) {
-        $this->appointment->loadMissing(['professional.user', 'sessionType']);
+        $this->appointment->loadMissing(['professional.user', 'service']);
     }
 
     public function envelope(): Envelope
@@ -85,8 +90,8 @@ final class BookingConfirmed extends Mailable
             'meetLink' => $this->appointment->professional?->google_meet_link,
             'paymentInstructions' => $this->appointment->professional?->payment_instructions,
             'professionalName' => $this->appointment->professional?->user?->name,
-            'patientName' => $this->appointment->patient_name,
-            'sessionTypeName' => $this->appointment->sessionType?->name,
+            'patientName' => $this->appointment->customer_name,
+            'sessionTypeName' => $this->appointment->service?->name,
         ];
     }
 
@@ -96,7 +101,7 @@ final class BookingConfirmed extends Mailable
             return $this->appointment->professional?->timezone ?: 'UTC';
         }
 
-        return $this->appointment->patient_timezone ?: 'UTC';
+        return $this->appointment->customer_timezone ?: 'UTC';
     }
 
     /**

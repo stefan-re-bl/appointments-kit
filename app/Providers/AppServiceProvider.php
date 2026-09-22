@@ -48,7 +48,7 @@ final class AppServiceProvider extends ServiceProvider
                 Limit::perMinute(30)->by('booking:ip:'.$request->ip()),
             ];
 
-            $patientEmail = $request->input('patient_email');
+            $patientEmail = $request->input('customer_email', $request->input('patient_email'));
 
             if (is_string($patientEmail) && $patientEmail !== '') {
                 $limits[] = Limit::perHour(10)->by(

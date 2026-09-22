@@ -58,12 +58,12 @@
             <h3 class="mb-2 font-medium text-brand-title">{{ __('app.booking_internal.patient_details') }}</h3>
 
             <div>
-                <label for="patient_name" class="mb-1 block text-sm font-medium text-slate-800">{{ __('app.name') }}</label>
+                <label for="customer_name" class="mb-1 block text-sm font-medium text-slate-800">{{ __('app.name') }}</label>
                 <input
                     type="text"
-                    name="patient_name"
-                    id="patient_name"
-                    value="{{ old('patient_name') }}"
+                    name="customer_name"
+                    id="customer_name"
+                    value="{{ old('customer_name', old('patient_name')) }}"
                     required
                     class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30 @error('patient_name') border-rose-400 @enderror"
                 >
@@ -74,12 +74,12 @@
             </div>
 
             <div>
-                <label for="patient_email" class="mb-1 block text-sm font-medium text-slate-800">{{ __('app.email') }}</label>
+                <label for="customer_email" class="mb-1 block text-sm font-medium text-slate-800">{{ __('app.email') }}</label>
                 <input
                     type="email"
-                    name="patient_email"
-                    id="patient_email"
-                    value="{{ old('patient_email') }}"
+                    name="customer_email"
+                    id="customer_email"
+                    value="{{ old('customer_email', old('patient_email')) }}"
                     required
                     class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30 @error('patient_email') border-rose-400 @enderror"
                 >
@@ -90,12 +90,12 @@
             </div>
 
             <div>
-                <label for="patient_phone" class="mb-1 block text-sm font-medium text-slate-800">{{ __('app.whatsapp.patient_phone') }}</label>
+                <label for="customer_phone" class="mb-1 block text-sm font-medium text-slate-800">{{ __('app.whatsapp.patient_phone') }}</label>
                 <input
                     type="tel"
-                    name="patient_phone"
-                    id="patient_phone"
-                    value="{{ old('patient_phone') }}"
+                    name="customer_phone"
+                    id="customer_phone"
+                    value="{{ old('customer_phone', old('patient_phone')) }}"
                     placeholder="{{ __('app.whatsapp.phone_placeholder') }}"
                     class="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-brand-accent focus:ring-brand-accent/30 @error('patient_phone') border-rose-400 @enderror"
                 >

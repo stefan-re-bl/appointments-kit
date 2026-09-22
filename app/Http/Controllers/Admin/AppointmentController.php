@@ -98,7 +98,7 @@ final class AppointmentController extends Controller implements HasMiddleware
 
             return [
                 'id' => (string) $appointment->id,
-                'title' => $appointment->professional->user->name.' - '.$appointment->patient_name,
+                'title' => $appointment->professional->user->name.' - '.$appointment->customer_name,
                 'start' => $startsAt->toIso8601String(),
                 'end' => $endsAt->toIso8601String(),
                 'backgroundColor' => $this->eventColorForStatus($appointment->status),
@@ -106,7 +106,8 @@ final class AppointmentController extends Controller implements HasMiddleware
                 'textColor' => '#ffffff',
                 'extendedProps' => [
                     'local_date' => $startsAt->toDateString(),
-                    'patient_name' => $appointment->patient_name,
+                    'patient_name' => $appointment->customer_name,
+                    'customer_name' => $appointment->customer_name,
                     'professional_name' => $appointment->professional->user->name,
                     'status' => $appointment->status->value,
                     'payment_status' => $appointment->payment_status->value,
@@ -142,11 +143,15 @@ final class AppointmentController extends Controller implements HasMiddleware
             'appointments' => $appointments->map(function (Appointment $appointment) use ($timezoneService, $timezone): array {
                 return [
                     'id' => $appointment->id,
-                    'patient_name' => $appointment->patient_name,
-                    'patient_email' => $appointment->patient_email,
-                    'patient_timezone' => $appointment->patient_timezone,
+                    'patient_name' => $appointment->customer_name,
+                    'patient_email' => $appointment->customer_email,
+                    'patient_timezone' => $appointment->customer_timezone,
+                    'customer_name' => $appointment->customer_name,
+                    'customer_email' => $appointment->customer_email,
+                    'customer_timezone' => $appointment->customer_timezone,
                     'professional_name' => $appointment->professional->user->name,
-                    'session_type' => $appointment->sessionType->name,
+                    'session_type' => $appointment->service->name,
+                    'service' => $appointment->service->name,
                     'time_range' => $timezoneService->formatForDisplay($appointment->starts_at, 'H:i', $timezone)
                         .' - '.$timezoneService->formatForDisplay($appointment->ends_at, 'H:i', $timezone),
                     'status' => $appointment->status->value,
@@ -165,7 +170,7 @@ final class AppointmentController extends Controller implements HasMiddleware
     private function appointmentsQuery(array $filters): Builder
     {
         return Appointment::query()
-            ->with(['professional.user', 'sessionType'])
+            ->with(['professional.user', 'service'])
             ->when(! empty($filters['professional_id']), function (Builder $query) use ($filters): void {
                 $query->where('professional_id', $filters['professional_id']);
             })

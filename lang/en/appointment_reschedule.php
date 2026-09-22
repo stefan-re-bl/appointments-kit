@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'badge' => 'Reschedule',
     'title' => 'Reschedule appointment',
-    'intro' => 'Choose a new available date and time. The session type and price remain unchanged.',
+    'intro' => 'Choose a new available date and time. The service and price remain unchanged.',
     'current_appointment' => 'Current appointment',
     'professional' => 'Professional',
     'session_type' => 'Session type',
@@ -21,7 +21,7 @@ return [
     'fetch_error' => 'We could not load the available times. Please try again in a few seconds.',
     'selected_slot' => 'Selected time: :slot',
     'submit' => 'Confirm reschedule',
-    'meet_note' => 'The Google Meet link, session type and price remain unchanged. Only the appointment date and time will change.',
+    'meet_note' => 'The Google Meet link, service and price remain unchanged. Only the appointment date and time will change.',
     'validation_heading' => 'Please review these details:',
     'success' => 'The appointment was rescheduled successfully. We sent you an email with the new details and a new signed reschedule link.',
     'errors' => [

@@ -13,7 +13,7 @@ final class RecipientLocaleResolver
     public function resolve(Appointment $appointment, NotificationRecipientType $recipientType): string
     {
         return match ($recipientType) {
-            NotificationRecipientType::PATIENT => SupportedLocale::normalize($appointment->patient_locale),
+            NotificationRecipientType::CUSTOMER => SupportedLocale::normalize($appointment->customer_locale),
             NotificationRecipientType::PROFESSIONAL => SupportedLocale::normalize($appointment->professional?->preferred_locale),
         };
     }

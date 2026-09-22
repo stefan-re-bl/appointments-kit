@@ -1,5 +1,5 @@
 <x-mail::message>
-# {{ __('reminders.appointment.greeting', ['name' => $appointment->patient_name]) }}
+# {{ __('reminders.appointment.greeting', ['name' => $appointment->customer_name]) }}
 
 {{ __('reminders.appointment.intro') }}
 

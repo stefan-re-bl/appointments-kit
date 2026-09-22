@@ -2,7 +2,17 @@
 
 declare(strict_types=1);
 
+$supportedCurrencies = array_values(array_filter(array_map(
+    'trim',
+    explode(',', env('BOOKING_SUPPORTED_CURRENCIES', 'ARS,USD'))
+)));
+
 return [
+    'currencies' => [
+        'default' => env('BOOKING_DEFAULT_CURRENCY', 'ARS'),
+        'supported' => $supportedCurrencies !== [] ? $supportedCurrencies : ['ARS', 'USD'],
+    ],
+
     'policies' => [
         'cancellation_notice_hours' => (int) env('BOOKING_CANCELLATION_NOTICE_HOURS', 24),
         'refund_notice_hours' => (int) env('BOOKING_REFUND_NOTICE_HOURS', 24),

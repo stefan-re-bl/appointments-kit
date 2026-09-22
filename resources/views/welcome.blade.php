@@ -7,6 +7,7 @@
 @php
     $brandName = config('branding.name', config('app.name', 'Appointments Kit'));
     $orientationSessionUrl = 'https://wa.me/' . config('branding.contact.whatsapp_number') . '?text=' . urlencode(__('app.home.orientation_whatsapp_message'));
+    $providersLabel = ucfirst((string) config('terminology.provider.plural', __('app.home.professionals.title')));
 @endphp
 
 <section
@@ -181,7 +182,7 @@
     <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_auto] lg:items-center lg:px-8">
         <div class="max-w-3xl">
             <p class="text-sm font-semibold uppercase text-brand-accent">{{ __('app.home.professionals.eyebrow') }}</p>
-            <h2 class="mt-3 text-3xl font-bold text-brand-accent sm:text-4xl">{{ __('app.home.professionals.title') }}</h2>
+            <h2 class="mt-3 text-3xl font-bold text-brand-accent sm:text-4xl">{{ $providersLabel }}</h2>
             <p class="mt-4 text-lg leading-8 text-slate-100">{{ __('app.home.professionals.description') }}</p>
         </div>
         <a href="{{ route('professionals.index') }}" class="rounded-lg bg-white px-6 py-3.5 text-center font-semibold text-slate-950 hover:bg-slate-50">

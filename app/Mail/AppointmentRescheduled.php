@@ -22,6 +22,10 @@ class AppointmentRescheduled extends Mailable implements ShouldQueue
 
     private const DISPLAY_FORMAT = 'd/m/Y H:i';
 
+    public const RECIPIENT_CUSTOMER = 'patient';
+
+    public const RECIPIENT_PROFESSIONAL = 'professional';
+
     public function __construct(
         public Appointment $appointment,
         public CarbonInterface $previousStartsAt,
@@ -50,14 +54,14 @@ class AppointmentRescheduled extends Mailable implements ShouldQueue
      */
     public function viewData(): array
     {
-        $this->appointment->loadMissing(['professional.user', 'sessionType']);
+        $this->appointment->loadMissing(['professional.user', 'service']);
 
         return [
             'appointment' => $this->appointment,
             'recipientName' => $this->recipientName(),
             'professionalName' => $this->appointment->professional->user->name,
-            'patientName' => $this->appointment->patient_name,
-            'sessionTypeName' => $this->appointment->sessionType->name,
+            'patientName' => $this->appointment->customer_name,
+            'sessionTypeName' => $this->appointment->service->name,
             'previousRange' => $this->formatRangeForRecipient(
                 $this->previousStartsAt,
                 $this->previousEndsAt,
@@ -73,11 +77,11 @@ class AppointmentRescheduled extends Mailable implements ShouldQueue
 
     private function recipientName(): string
     {
-        if ($this->recipientType === 'professional') {
+        if ($this->recipientType === self::RECIPIENT_PROFESSIONAL) {
             return $this->appointment->professional->user->name;
         }
 
-        return $this->appointment->patient_name;
+        return $this->appointment->customer_name;
     }
 
     private function formatRangeForRecipient(CarbonInterface|string $startsAt, CarbonInterface|string $endsAt): string

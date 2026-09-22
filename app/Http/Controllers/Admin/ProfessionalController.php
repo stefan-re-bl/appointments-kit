@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateProfessionalRequest;
 use App\Models\Professional;
-use App\Models\SessionType;
+use App\Models\Service;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -78,11 +78,11 @@ final class ProfessionalController extends Controller implements HasMiddleware
     public function edit(Professional $professional): View
     {
         $professional->load('user');
-        $defaultSessionType = $this->defaultSessionType($professional);
+        $defaultService = $this->defaultService($professional);
 
         return view('admin.professionals.edit', [
             'professional' => $professional,
-            'defaultSessionType' => $defaultSessionType,
+            'defaultSessionType' => $defaultService,
         ]);
     }
 
@@ -107,7 +107,7 @@ final class ProfessionalController extends Controller implements HasMiddleware
                 'is_approved' => $request->boolean('is_approved'),
             ]);
 
-            $this->updateDefaultSessionType(
+            $this->updateDefaultService(
                 $professional,
                 (float) $data['session_price'],
                 (string) $data['session_currency'],
@@ -137,25 +137,25 @@ final class ProfessionalController extends Controller implements HasMiddleware
         return back()->with('success', __('app.admin.professionals.approval_revoked'));
     }
 
-    private function defaultSessionType(Professional $professional): ?SessionType
+    private function defaultService(Professional $professional): ?Service
     {
-        return SessionType::query()
+        return Service::query()
             ->where('professional_id', $professional->id)
             ->where('is_active', true)
             ->orderBy('id')
             ->first()
-            ?? SessionType::query()
+            ?? Service::query()
                 ->where('professional_id', $professional->id)
                 ->orderBy('id')
                 ->first();
     }
 
-    private function updateDefaultSessionType(Professional $professional, float $price, string $currency): void
+    private function updateDefaultService(Professional $professional, float $price, string $currency): void
     {
-        $sessionType = $this->defaultSessionType($professional);
+        $service = $this->defaultService($professional);
 
-        if (! $sessionType) {
-            $professional->sessionTypes()->create([
+        if (! $service) {
+            $professional->services()->create([
                 'name' => 'Sesión estándar',
                 'duration_minutes' => 60,
                 'price' => $price,
@@ -166,16 +166,16 @@ final class ProfessionalController extends Controller implements HasMiddleware
             return;
         }
 
-        $sessionType->update([
+        $service->update([
             'name' => 'Sesión estándar',
             'price' => $price,
             'currency' => $currency,
             'is_active' => true,
         ]);
 
-        SessionType::query()
+        Service::query()
             ->where('professional_id', $professional->id)
-            ->where('id', '<>', $sessionType->id)
+            ->where('id', '<>', $service->id)
             ->where('is_active', true)
             ->update(['is_active' => false]);
     }

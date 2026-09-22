@@ -4,6 +4,13 @@
 ])
 
 @section('content')
+    @php
+        $currencyLabels = __('app.session_type_management.currency_options');
+        $currencyOptions = collect(config('booking.currencies.supported', ['ARS', 'USD']))
+            ->mapWithKeys(fn (string $currency): array => [$currency => $currencyLabels[$currency] ?? $currency])
+            ->all();
+    @endphp
+
     <form
         method="POST"
         action="{{ route('admin.professionals.update', $professional) }}"
@@ -99,10 +106,10 @@
                         class="w-full rounded-xl border-slate-300 text-sm shadow-sm focus:border-brand-accent focus:ring-brand-accent/30"
                         required
                     >
-                        @foreach (__('app.session_type_management.currency_options') as $currency => $label)
+                        @foreach ($currencyOptions as $currency => $label)
                             <option
                                 value="{{ $currency }}"
-                                @selected(old('session_currency', $defaultSessionType?->currency ?? 'ARS') === $currency)
+                                @selected(old('session_currency', $defaultSessionType?->currency ?? config('booking.currencies.default', 'ARS')) === $currency)
                             >
                                 {{ $label }}
                             </option>

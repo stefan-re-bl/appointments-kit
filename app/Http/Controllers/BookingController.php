@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
 use App\Enums\SupportedLocale;
 use App\Jobs\SendBookingConfirmedEmails;
 use App\Models\Professional;
-use App\Models\SessionType;
+use App\Models\Service;
 use App\Models\User;
 use App\Rules\ValidTimezone;
 use App\Services\AvailableSlotResolver;
@@ -133,10 +133,11 @@ final class BookingController extends Controller implements HasMiddleware
         }
 
         $countries = $countryTimezoneService->countries();
-        $patientCountry = strtoupper((string) $request->input('patient_country'));
+        $patientCountry = strtoupper((string) $request->input('customer_country', $request->input('patient_country')));
         $selectedDate = (string) $request->input('date');
-        $selectedTimezone = is_string($request->input('patient_timezone'))
-            ? trim((string) $request->input('patient_timezone'))
+        $customerTimezoneInput = $request->input('customer_timezone', $request->input('patient_timezone'));
+        $selectedTimezone = is_string($customerTimezoneInput)
+            ? trim($customerTimezoneInput)
             : null;
         $selectedTimezone = $selectedTimezone === '' ? null : $selectedTimezone;
         $timezoneOptions = $countryTimezoneService->timezoneOptionsForCountryOnDate($patientCountry, $selectedDate);
@@ -145,6 +146,8 @@ final class BookingController extends Controller implements HasMiddleware
         );
 
         $request->merge([
+            'customer_country' => $patientCountry,
+            'customer_timezone' => $selectedTimezone,
             'patient_country' => $patientCountry,
             'patient_timezone' => $selectedTimezone,
         ]);
@@ -164,6 +167,8 @@ final class BookingController extends Controller implements HasMiddleware
 
         session()->put([
             'booking.date' => $validated['date'],
+            'booking.customer_country' => $validated['patient_country'],
+            'booking.customer_timezone' => $normalizedTimezone,
             'booking.patient_country' => $validated['patient_country'],
             'booking.patient_timezone' => $normalizedTimezone,
         ]);
@@ -298,8 +303,8 @@ final class BookingController extends Controller implements HasMiddleware
 
         /** @var Professional $professional */
         $professional = $context['professional'];
-        /** @var SessionType $sessionType */
-        $sessionType = $context['sessionType'];
+        /** @var Service $service */
+        $service = $context['service'];
 
         if (
             ! session('booking.date') ||
@@ -308,6 +313,12 @@ final class BookingController extends Controller implements HasMiddleware
         ) {
             return Redirect::route('book.index');
         }
+
+        $request->merge([
+            'patient_name' => $request->input('customer_name', $request->input('patient_name')),
+            'patient_email' => $request->input('customer_email', $request->input('patient_email')),
+            'patient_phone' => $request->input('customer_phone', $request->input('patient_phone')),
+        ]);
 
         $validated = $request->validate([
             'patient_name' => ['required', 'string', 'max:255'],
@@ -338,7 +349,7 @@ final class BookingController extends Controller implements HasMiddleware
         $selectedSlot = $availableSlotResolver->resolve(
             $professional,
             (string) session('booking.date'),
-            (int) $sessionType->duration_minutes,
+            (int) $service->duration_minutes,
             (string) session('booking.starts_at_utc'),
             $patientTimezone,
         );
@@ -354,16 +365,16 @@ final class BookingController extends Controller implements HasMiddleware
 
         $data = [
             'professional_id' => $professional->id,
-            'session_type_id' => $sessionType->id,
-            'patient_name' => $validated['patient_name'],
-            'patient_email' => $validated['patient_email'],
-            'patient_phone' => $patientPhone,
-            'patient_timezone' => $patientTimezone,
-            'patient_locale' => SupportedLocale::normalize(app()->getLocale()),
+            'service_id' => $service->id,
+            'customer_name' => $validated['patient_name'],
+            'customer_email' => $validated['patient_email'],
+            'customer_phone' => $patientPhone,
+            'customer_timezone' => $patientTimezone,
+            'customer_locale' => SupportedLocale::normalize(app()->getLocale()),
             'terms_accepted_at' => now('UTC'),
-            'patient_whatsapp_opt_in_at' => $request->boolean('accepted_whatsapp_communications') ? now('UTC') : null,
-            'price' => $sessionType->price,
-            'currency' => $sessionType->currency,
+            'customer_whatsapp_opt_in_at' => $request->boolean('accepted_whatsapp_communications') ? now('UTC') : null,
+            'price' => $service->price,
+            'currency' => $service->currency,
             'starts_at' => $startUtc->toDateTimeString(),
             'ends_at' => $endUtc->toDateTimeString(),
         ];
@@ -377,18 +388,24 @@ final class BookingController extends Controller implements HasMiddleware
                 ]);
             }
 
-            $appointment->loadMissing(['professional.user', 'sessionType']);
+            $appointment->loadMissing(['professional.user', 'service']);
 
-            SendBookingConfirmedEmails::dispatch($appointment->id);
+            if ((bool) config('features.email_notifications', true)) {
+                SendBookingConfirmedEmails::dispatch($appointment->id);
+            }
+
             $whatsAppDeliveryDispatcher->dispatchBookingConfirmed($appointment);
 
             session()->put('booking.appointment_token', $appointment->token);
 
             session()->forget([
                 'booking.professional_id',
+                'booking.service_id',
                 'booking.session_type_id',
                 'booking.date',
                 'booking.starts_at_utc',
+                'booking.customer_country',
+                'booking.customer_timezone',
                 'booking.patient_country',
                 'booking.patient_timezone',
             ]);
@@ -437,8 +454,8 @@ final class BookingController extends Controller implements HasMiddleware
 
         /** @var Professional $professional */
         $professional = $context['professional'];
-        /** @var SessionType $sessionType */
-        $sessionType = $context['sessionType'];
+        /** @var Service $service */
+        $service = $context['service'];
 
         $timezone = ValidTimezone::normalize($validated['timezone']);
 
@@ -451,7 +468,7 @@ final class BookingController extends Controller implements HasMiddleware
         $slots = $slotGenerationService->generate(
             $professional,
             $validated['date'],
-            (int) $sessionType->duration_minutes,
+            (int) $service->duration_minutes,
             $timezone,
         );
 
@@ -459,7 +476,7 @@ final class BookingController extends Controller implements HasMiddleware
     }
 
     /**
-     * @return array{professional: Professional, sessionType: SessionType}|RedirectResponse
+     * @return array{professional: Professional, service: Service, sessionType: Service}|RedirectResponse
      */
     private function bookingContext(Request $request): array|RedirectResponse
     {
@@ -485,27 +502,29 @@ final class BookingController extends Controller implements HasMiddleware
                 ->with('warning', __('app.booking.unavailable_professional'));
         }
 
-        $sessionType = $this->defaultSessionType($professional);
+        $service = $this->defaultService($professional);
 
-        if (! $sessionType) {
+        if (! $service) {
             return Redirect::route('dashboard')
                 ->with('warning', __('app.booking.missing_internal_price'));
         }
 
         session()->put([
             'booking.professional_id' => $professional->id,
-            'booking.session_type_id' => $sessionType->id,
+            'booking.service_id' => $service->id,
+            'booking.session_type_id' => $service->id,
         ]);
 
         return [
             'professional' => $professional,
-            'sessionType' => $sessionType,
+            'service' => $service,
+            'sessionType' => $service,
         ];
     }
 
-    private function defaultSessionType(Professional $professional): ?SessionType
+    private function defaultService(Professional $professional): ?Service
     {
-        return SessionType::query()
+        return Service::query()
             ->where('professional_id', $professional->id)
             ->where('is_active', true)
             ->orderBy('id')

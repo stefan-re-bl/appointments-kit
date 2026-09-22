@@ -46,12 +46,12 @@ final class WhatsAppNotificationTest extends TestCase
             'services.meta_whatsapp.access_token' => 'test-token',
             'services.meta_whatsapp.language_codes.es' => 'es',
             'services.meta_whatsapp.language_codes.en' => 'en_US',
-            'services.meta_whatsapp.templates.patient_confirmation_es' => 'patient_booking_confirmed_es',
-            'services.meta_whatsapp.templates.patient_confirmation_en' => 'patient_booking_confirmed_en',
+            'services.meta_whatsapp.templates.customer_confirmation_es' => 'customer_booking_confirmed_es',
+            'services.meta_whatsapp.templates.customer_confirmation_en' => 'customer_booking_confirmed_en',
             'services.meta_whatsapp.templates.professional_confirmation_es' => 'professional_booking_confirmed_es',
             'services.meta_whatsapp.templates.professional_confirmation_en' => 'professional_booking_confirmed_en',
-            'services.meta_whatsapp.templates.patient_reminder_es' => 'patient_appointment_reminder_es',
-            'services.meta_whatsapp.templates.patient_reminder_en' => 'patient_appointment_reminder_en',
+            'services.meta_whatsapp.templates.customer_reminder_es' => 'customer_appointment_reminder_es',
+            'services.meta_whatsapp.templates.customer_reminder_en' => 'customer_appointment_reminder_en',
             'services.meta_whatsapp.templates.professional_reminder_es' => 'professional_appointment_reminder_es',
             'services.meta_whatsapp.templates.professional_reminder_en' => 'professional_appointment_reminder_en',
         ]);
@@ -83,7 +83,7 @@ final class WhatsAppNotificationTest extends TestCase
         $this->assertDatabaseHas('notification_deliveries', [
             'appointment_id' => $appointment->id,
             'event' => NotificationEvent::BOOKING_CONFIRMED->value,
-            'recipient_type' => NotificationRecipientType::PATIENT->value,
+            'recipient_type' => NotificationRecipientType::CUSTOMER->value,
             'recipient_locale' => 'en',
             'status' => NotificationDeliveryStatus::QUEUED->value,
         ]);
@@ -178,7 +178,7 @@ final class WhatsAppNotificationTest extends TestCase
                 'patient_phone' => '+14155552671',
                 'patient_whatsapp_opt_in_at' => now('UTC'),
             ]),
-            NotificationRecipientType::PATIENT,
+            NotificationRecipientType::CUSTOMER,
             'en',
         );
         $professionalSpanish = $this->makeDelivery(
@@ -205,7 +205,7 @@ final class WhatsAppNotificationTest extends TestCase
         );
 
         $this->assertSame('es', app()->getLocale());
-        $this->assertSame('patient_booking_confirmed_en', $sentTemplates->items[0]['template']);
+        $this->assertSame('customer_booking_confirmed_en', $sentTemplates->items[0]['template']);
         $this->assertSame('en_US', $sentTemplates->items[0]['language']);
         $this->assertSame('professional_booking_confirmed_es', $sentTemplates->items[1]['template']);
         $this->assertSame('es', $sentTemplates->items[1]['language']);
@@ -231,7 +231,7 @@ final class WhatsAppNotificationTest extends TestCase
                 'patient_phone' => '+14155552671',
                 'patient_whatsapp_opt_in_at' => now('UTC'),
             ]),
-            NotificationRecipientType::PATIENT,
+            NotificationRecipientType::CUSTOMER,
             'es',
         );
 
@@ -260,7 +260,7 @@ final class WhatsAppNotificationTest extends TestCase
 
         config(['services.meta_whatsapp.app_secret' => 'secret']);
 
-        $delivery = $this->makeDelivery($this->makeAppointment(), NotificationRecipientType::PATIENT, 'es');
+        $delivery = $this->makeDelivery($this->makeAppointment(), NotificationRecipientType::CUSTOMER, 'es');
         $delivery->forceFill([
             'provider_message_id' => 'wamid.test',
             'status' => NotificationDeliveryStatus::SUBMITTED,
@@ -301,15 +301,15 @@ final class WhatsAppNotificationTest extends TestCase
         config(['services.meta_whatsapp.app_secret' => 'fixture-secret']);
 
         $appointment = $this->makeAppointment();
-        $delivered = $this->makeDelivery($appointment, NotificationRecipientType::PATIENT, 'es');
+        $delivered = $this->makeDelivery($appointment, NotificationRecipientType::CUSTOMER, 'es');
         $read = $this->makeDelivery(
             $this->makeAppointment(['reschedule_count' => 1]),
-            NotificationRecipientType::PATIENT,
+            NotificationRecipientType::CUSTOMER,
             'es',
         );
         $failed = $this->makeDelivery(
             $this->makeAppointment(['reschedule_count' => 2]),
-            NotificationRecipientType::PATIENT,
+            NotificationRecipientType::CUSTOMER,
             'es',
         );
 
@@ -388,7 +388,7 @@ final class WhatsAppNotificationTest extends TestCase
             'event' => NotificationEvent::BOOKING_CONFIRMED->value,
             'channel' => 'whatsapp',
             'recipient_type' => $recipientType->value,
-            'recipient_address' => $recipientType === NotificationRecipientType::PATIENT
+            'recipient_address' => $recipientType === NotificationRecipientType::CUSTOMER
                 ? ($appointment->patient_phone ?: '+14155552671')
                 : ($appointment->professional?->whatsapp_phone ?: '+5491123456789'),
             'recipient_locale' => $locale,

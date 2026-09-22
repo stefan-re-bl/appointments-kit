@@ -1,104 +1,97 @@
 # Appointments Kit
 
-Appointments Kit es una plataforma Laravel para reservas y gestión de citas.
+Appointments Kit es una plataforma Laravel para gestionar citas, profesionales, disponibilidad, pagos manuales y notificaciones.
 
-El objetivo es reutilizar el mismo código en despliegues independientes por cliente.
-Cada cliente usa su propio `.env`, base de datos, branding y datos operativos.
+El producto se despliega como una instancia independiente por cliente. Cada cliente tiene su propio `.env`, base de datos, marca, assets, profesionales y reglas operativas.
 
-No implementa multitenancy.
+No usa multitenancy.
+
+## Uso Previsto
+
+- Sitios de servicios con agenda profesional.
+- Equipos que necesitan carga interna de citas.
+- Negocios que coordinan pago fuera de la plataforma.
+- Proyectos que requieren emails, recordatorios, WhatsApp opcional, reportes y auditoria.
 
 ## Stack
 
-- PHP 8.3 o superior.
 - Laravel 13.
-- MySQL o SQLite para desarrollo.
-- Redis opcional para producción.
+- PHP 8.5.
+- Laravel Sail sobre Docker para desarrollo.
+- MySQL 8.4 y Redis.
 - Blade, Tailwind CSS, Alpine.js y Vite.
-- Colas de Laravel para emails, recordatorios y notificaciones.
+- Colas de Laravel para emails, recordatorios y WhatsApp.
 
-## Instalación Local
+## Inicio Rápido
 
-Usa Composer, Node y PHP local, o Laravel Sail si está disponible.
+Usa WSL y Sail en desarrollo local.
 
 ```bash
 cp .env.example .env
-composer install
-php artisan key:generate
-php artisan migrate --seed
+./vendor/bin/sail up -d
+./vendor/bin/sail composer install
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate --seed
 npm install
 npm run build
 ```
 
-Para reconstruir una demo:
+Para crear datos ficticios:
 
 ```bash
-php artisan demo:reset
+./vendor/bin/sail artisan demo:reset
 ```
 
-El comando está protegido en producción.
-Usa `--force` solo si entiendes el impacto.
+## Documentación Principal
 
-## Accesos Demo
+Lee los documentos en este orden:
 
-La demo crea datos ficticios de `Demo Services`.
-
-- Admin: `admin@demo.test`
-- Profesionales: `ana.martinez@demo.test`, `lucas.fernandez@demo.test`, `sofia.gomez@demo.test`
-- Contraseña: `password`
-
-## Configuración Principal
-
-La configuración variable vive en archivos dedicados:
-
-- `config/branding.php`
-- `config/booking.php`
-- `config/features.php`
-- `config/terminology.php`
-- `config/services.php`
-
-Consulta [CONFIGURATION.md](CONFIGURATION.md) para el detalle.
+1. [DEVELOPMENT.md](DEVELOPMENT.md): entorno local, comandos y reglas de cambio.
+2. [CONFIGURATION.md](CONFIGURATION.md): variables por cliente y personalizacion.
+3. [ARCHITECTURE.md](ARCHITECTURE.md): modelo de dominio y servicios principales.
+4. [TIMEZONE_STRATEGY.md](TIMEZONE_STRATEGY.md): regla de UTC y conversiones.
+5. [DEPLOYMENT.md](DEPLOYMENT.md): despliegue, colas, scheduler y verificacion.
+6. [CLIENT_ONBOARDING.md](CLIENT_ONBOARDING.md): checklist de entrega a cliente.
+7. [DEMO.md](DEMO.md): datos demo y validacion.
 
 ## Flujos Principales
 
-- Cliente: consulta información pública y recibe comunicaciones de una cita.
-- Profesional: configura perfil, disponibilidad y gestiona citas.
-- Admin: aprueba profesionales, consulta agenda global, reportes y auditoría.
-- Sistema: procesa recordatorios, emails, colas, limpieza y notificaciones.
+- Cliente: consulta informacion publica y recibe comunicaciones de su cita.
+- Profesional: configura perfil, disponibilidad y gestiona citas propias.
+- Admin: aprueba profesionales, gestiona agenda global, reportes y auditoria.
+- Sistema: envia emails, recordatorios, WhatsApp opcional y limpieza programada.
 
-## Estado Del Dominio Interno
+## Reglas Centrales
 
-El producto ya tiene configuración base para branding, reglas y funciones.
+- Guarda fechas y horas de citas en UTC.
+- Convierte y formatea horarios en backend.
+- Usa `TimezoneService` y `CountryTimezoneService` para zonas horarias.
+- Usa pagos manuales. No integres Stripe ni Mercado Pago en el MVP.
+- Usa traducciones para textos visibles en Blade.
+- Usa configuracion para adaptar clientes. No agregues condicionales por cliente.
+- Conserva cada instancia con base de datos y `.env` propios.
 
-Algunos nombres internos todavía conservan el origen del proyecto:
-
-- `Professional`
-- `SessionType`
-- campos `patient_*`
-
-La interfaz debe moverse primero mediante configuración y traducciones.
-El renombrado interno debe hacerse después, en commits pequeños.
-
-## Pruebas
-
-Ejecuta pruebas focalizadas:
+## Validacion Antes De Entregar
 
 ```bash
-php artisan test --filter=DemoSeederTest
+npm run build
+./vendor/bin/sail artisan migrate:fresh --seed --force
+./vendor/bin/sail artisan test
+./vendor/bin/sail php vendor/bin/pint --test --dirty
+git diff --check
 ```
 
-Ejecuta la suite completa:
+## Compatibilidad Legacy
 
-```bash
-php artisan test
-```
+El kit conserva redirects para URLs antiguas:
 
-La prueba `ProfileTest::test_therapist_can_upload_local_profile_photo` requiere la extensión PHP `GD`.
+- `/therapists`
+- `/therapists/{slug}`
+- `/therapist/appointments`
 
-## Documentación
+Tambien acepta alias antiguos de formulario:
 
-- [ARCHITECTURE.md](ARCHITECTURE.md)
-- [CONFIGURATION.md](CONFIGURATION.md)
-- [DEVELOPMENT.md](DEVELOPMENT.md)
-- [DEPLOYMENT.md](DEPLOYMENT.md)
-- [CLIENT_ONBOARDING.md](CLIENT_ONBOARDING.md)
-- [DEMO.md](DEMO.md)
+- `therapist_country`
+- `therapist_timezone`
+
+Puedes quitarlos en una instancia nueva si no existe trafico o integraciones que dependan de esas rutas.

@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'badge' => 'Reprogramación',
     'title' => 'Reprogramar cita',
-    'intro' => 'Elegí una nueva fecha y horario disponible. El tipo de sesión y el precio se mantienen sin cambios.',
+    'intro' => 'Elegí una nueva fecha y horario disponible. El servicio y el precio se mantienen sin cambios.',
     'current_appointment' => 'Cita actual',
     'professional' => 'Profesional',
     'session_type' => 'Tipo de sesión',
@@ -21,7 +21,7 @@ return [
     'fetch_error' => 'No pudimos cargar los horarios disponibles. Probá nuevamente en unos segundos.',
     'selected_slot' => 'Horario seleccionado: :slot',
     'submit' => 'Confirmar reprogramación',
-    'meet_note' => 'El link de Google Meet, el tipo de sesión y el precio se mantienen. Solo cambia la fecha y hora de la cita.',
+    'meet_note' => 'El link de Google Meet, el servicio y el precio se mantienen. Solo cambia la fecha y hora de la cita.',
     'validation_heading' => 'Revisá estos datos:',
     'success' => 'La cita fue reprogramada correctamente. Te enviamos un email con los nuevos datos y un nuevo enlace firmado de reprogramación.',
     'errors' => [

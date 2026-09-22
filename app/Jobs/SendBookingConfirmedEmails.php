@@ -20,18 +20,22 @@ final class SendBookingConfirmedEmails implements ShouldQueue
 
     public function handle(): void
     {
+        if (! (bool) config('features.email_notifications', true)) {
+            return;
+        }
+
         $appointment = Appointment::query()
-            ->with(['professional.user', 'sessionType'])
+            ->with(['professional.user', 'service'])
             ->find($this->appointmentId);
 
         if (! $appointment) {
             return;
         }
 
-        Mail::to($appointment->patient_email)->send(
+        Mail::to($appointment->customer_email)->send(
             new BookingConfirmed(
                 appointment: $appointment,
-                recipientType: BookingConfirmed::RECIPIENT_PATIENT,
+                recipientType: BookingConfirmed::RECIPIENT_CUSTOMER,
             )
         );
 

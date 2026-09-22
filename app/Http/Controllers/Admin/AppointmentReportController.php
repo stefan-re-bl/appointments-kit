@@ -62,8 +62,8 @@ final class AppointmentReportController extends Controller implements HasMiddlew
 
             fputcsv($handle, [
                 __('reports.csv.headers.appointment_id'),
-                __('reports.csv.headers.patient_name'),
-                __('reports.csv.headers.patient_email'),
+                __('reports.csv.headers.customer_name'),
+                __('reports.csv.headers.customer_email'),
                 __('reports.csv.headers.professional_name'),
                 __('reports.csv.headers.professional_email'),
                 __('reports.csv.headers.session_type'),
@@ -85,8 +85,8 @@ final class AppointmentReportController extends Controller implements HasMiddlew
             foreach ($report['rows'] as $row) {
                 fputcsv($handle, [
                     $row['appointment_id'],
-                    $row['patient_name'],
-                    $row['patient_email'],
+                    $row['customer_name'],
+                    $row['customer_email'],
                     $row['professional_name'],
                     $row['professional_email'],
                     $row['session_type_name'],

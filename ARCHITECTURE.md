@@ -1,144 +1,212 @@
 # Arquitectura
 
-Appointments Kit es un monolito Laravel.
+Appointments Kit es un monolito Laravel para citas, disponibilidad, pagos manuales y notificaciones.
 
-El diseño actual separa tres niveles:
+El codigo central es reusable. La variacion por cliente vive en configuracion, traducciones, assets y datos.
+
+## Capas
 
 ```mermaid
 flowchart TD
-    core["Core Laravel"]
-    config["Configuración"]
-    instance["Instancia de cliente"]
+    ui["Blade, Tailwind, Alpine"]
+    http["Controllers y Requests"]
+    domain["Servicios de dominio"]
+    models["Modelos Eloquent"]
+    jobs["Jobs y comandos"]
+    external["Email, Meta WhatsApp, DB, Redis"]
 
-    core --> config
-    config --> instance
-
-    core --> appointments["appointments"]
-    core --> availability["availability"]
-    core --> providers["providers"]
-    core --> services["services"]
-    core --> notifications["notifications"]
-    core --> audit["audit"]
-    core --> auth["authentication"]
+    ui --> http
+    http --> domain
+    domain --> models
+    domain --> jobs
+    jobs --> external
+    models --> external
 ```
 
-## Core
+## Entidades Principales
 
-El core contiene lógica reusable:
+### `User`
 
-- autenticación;
-- roles;
-- citas;
-- disponibilidad;
-- generación de horarios;
-- cancelación;
-- reprogramación;
-- pagos manuales;
-- emails;
-- WhatsApp;
-- auditoría;
-- reportes;
-- monitoreo de colas.
+Representa acceso autenticado.
 
-## Configuración
+Roles:
 
-La variación por cliente vive en configuración:
+- `admin`;
+- `professional`.
 
-- `config/branding.php`: identidad visual y enlaces.
-- `config/booking.php`: reglas de citas y recordatorios.
-- `config/features.php`: funciones activas.
-- `config/terminology.php`: términos visibles.
-- `config/services.php`: proveedores externos.
+Relaciones:
 
-No uses condicionales por cliente.
+- `hasOne(Professional)`.
 
-Usa valores explícitos en `.env`.
+### `Professional`
 
-## Instancia De Cliente
+Representa al proveedor que atiende citas.
 
-Cada cliente debe tener:
+Responsabilidades:
 
-- `.env` propio;
-- base de datos propia;
-- branding propio;
-- logo y favicon propios;
-- servicios;
-- profesionales;
-- horarios;
-- reglas comerciales;
-- credenciales externas.
+- perfil publico;
+- zona horaria;
+- idioma preferido;
+- datos de WhatsApp;
+- estado activo;
+- aprobacion administrativa;
+- relacion con servicios, disponibilidad y citas.
 
-## Modelo De Datos Actual
+Un profesional es publicamente visible solo si:
 
-El código todavía usa nombres heredados:
+- esta activo;
+- esta aprobado;
+- tiene link de reunion;
+- pertenece a un usuario con rol `professional`.
 
-- `Professional` representa al profesional.
-- `SessionType` representa el servicio.
-- `Appointment` representa la cita.
-- campos `patient_*` representan al cliente.
+### `SessionType`
 
-No renombres estas entidades sin revisar migraciones, factories, relaciones, tests y rutas.
+Representa el servicio tecnico usado por una cita.
 
-## Booking
+Aunque la superficie comercial sea simple, la tabla conserva:
+
+- duracion;
+- precio interno;
+- moneda;
+- compatibilidad con citas historicas y reportes.
+
+### `Availability`
+
+Representa disponibilidad semanal del profesional.
+
+Reglas:
+
+- `day_of_week` usa ISO-8601, de `1` a `7`;
+- `start_time` y `end_time` son horas sin fecha;
+- la conversion entre hora local y UTC pasa por `TimezoneService`.
+
+### `Appointment`
+
+Representa una cita.
+
+Campos clave:
+
+- `professional_id`;
+- `session_type_id`;
+- `patient_*`;
+- `starts_at` y `ends_at` en UTC;
+- `status`;
+- `payment_status`;
+- `token` publico opaco;
+- campos de recordatorio.
+
+Reglas:
+
+- el token permite paginas publicas sin login;
+- los solapamientos se previenen con transacciones y locks;
+- citas canceladas no bloquean disponibilidad;
+- recordatorios se reclaman antes de encolarse.
+
+### `NotificationDelivery`
+
+Representa entregas WhatsApp transaccionales.
+
+La idempotencia usa:
+
+```text
+appointment_id + event + channel + recipient_type + event_version
+```
+
+No guardes tokens ni payloads completos en metadata.
+
+## Servicios Principales
+
+| Servicio | Responsabilidad |
+| --- | --- |
+| `BookingService` | Crear citas con transaccion y control de solapamientos. |
+| `SlotGenerationService` | Generar horarios disponibles. |
+| `AvailableSlotResolver` | Validar un slot seleccionado. |
+| `AvailabilityService` | Normalizar disponibilidad semanal. |
+| `CancellationPolicyService` | Evaluar cancelacion, reembolso y reprogramacion. |
+| `TimezoneService` | Convertir y formatear fechas y horas. |
+| `CountryTimezoneService` | Resolver timezone IANA desde pais y region efectiva. |
+| `AppointmentReportService` | Calcular reportes administrativos. |
+
+## Flujo De Cita Interna
 
 ```mermaid
 sequenceDiagram
-    participant User as Profesional
+    participant Pro as Profesional
     participant Web as BookingController
     participant Slots as SlotGenerationService
     participant Booking as BookingService
     participant DB as Database
     participant Jobs as Queue
 
-    User->>Web: Selecciona fecha, horario y datos
-    Web->>Slots: Valida slot disponible
+    Pro->>Web: Selecciona fecha, horario y cliente
+    Web->>Slots: Genera y valida slots
     Slots->>DB: Lee disponibilidad y citas activas
-    Web->>Booking: Crea cita
-    Booking->>DB: Transacción y lockForUpdate
+    Web->>Booking: Solicita crear cita
+    Booking->>DB: Transaccion y lockForUpdate
     Booking-->>Web: Cita confirmada
-    Web->>Jobs: Emails y notificaciones
+    Web->>Jobs: Encola emails y notificaciones
 ```
 
-## Cancelación Y Reprogramación
+## Cancelacion Y Reprogramacion
 
-Las reglas están en `CancellationPolicyService`.
+`CancellationPolicyService` lee reglas desde `config/booking.php`.
 
-Ahora leen de `config('booking.policies.*')`.
+Mantén estas garantias:
 
-Mantén:
-
-- transacciones;
-- locks;
-- validación de solapamiento;
-- conteo de reprogramaciones;
-- omisión de recordatorios pendientes cuando cambia la cita.
+- validar estado de cita;
+- verificar ventana de cancelacion;
+- verificar ventana de reprogramacion;
+- limitar cantidad de reprogramaciones;
+- excluir la misma cita al validar solapamiento;
+- omitir recordatorios pendientes cuando la cita cambia.
 
 ## Notificaciones
 
 ```mermaid
 flowchart LR
-    event["Evento de dominio"] --> notification["Notificación"]
-    notification --> email["Email"]
-    notification --> whatsapp["WhatsApp"]
+    event["Evento de cita"] --> email["Email"]
+    event --> delivery["NotificationDelivery"]
+    delivery --> whatsapp["WhatsApp job"]
     whatsapp --> meta["Meta Cloud API"]
 ```
 
+Email y WhatsApp son canales separados.
+
 WhatsApp depende de:
 
-- `features.whatsapp`;
-- `services.meta_whatsapp.enabled`;
+- feature flag activo;
+- proveedor Meta configurado;
+- telefono valido;
 - consentimiento del cliente;
-- preferencias del profesional.
+- preferencias del profesional;
+- plantilla aprobada.
 
 ## Seguridad
 
 Conserva estas protecciones:
 
 - policies;
-- mass assignment controlado;
-- URLs firmadas;
-- tokens públicos opacos;
 - CSRF;
 - rate limits;
-- locks de concurrencia;
-- logs operativos sin secretos.
+- URLs firmadas;
+- tokens UUID opacos;
+- mass assignment con atributos `#[Fillable]`;
+- campos sensibles con `#[Hidden]`;
+- auditoria inmutable;
+- logs sin secretos;
+- validacion de timezone.
+
+## Compatibilidad Legacy
+
+Existen redirects para nombres anteriores:
+
+- `/therapists` hacia `/professionals`;
+- `/therapists/{slug}` hacia perfil profesional;
+- `/therapist/appointments` hacia agenda profesional.
+
+Tambien existen alias de entrada:
+
+- `therapist_country`;
+- `therapist_timezone`.
+
+Estas compatibilidades pueden eliminarse si el cliente no necesita migrar trafico antiguo.

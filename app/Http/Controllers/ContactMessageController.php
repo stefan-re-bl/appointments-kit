@@ -40,7 +40,7 @@ final class ContactMessageController extends Controller implements HasMiddleware
             ->pluck('email')
             ->all();
 
-        if ($adminEmails !== []) {
+        if ((bool) config('features.email_notifications', true) && $adminEmails !== []) {
             Mail::to($adminEmails)->send(new ContactMessageReceived($contactMessage));
         }
 

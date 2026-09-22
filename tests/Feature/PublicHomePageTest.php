@@ -31,6 +31,7 @@ final class PublicHomePageTest extends TestCase
             'branding.logo' => 'images/demo-logo.png',
             'branding.images.home_hero' => 'images/demo-hero.jpg',
             'branding.contact.whatsapp_number' => '5491111111111',
+            'terminology.provider.plural' => 'especialistas',
             'terminology.customer.plural' => 'usuarios',
         ]);
 
@@ -40,6 +41,7 @@ final class PublicHomePageTest extends TestCase
             ->assertOk()
             ->assertSeeText('Demo Services')
             ->assertSeeText('Usuarios')
+            ->assertSeeText('Especialistas')
             ->assertSee('images/demo-logo.png', false)
             ->assertSee('images/demo-hero.jpg', false)
             ->assertSee('https://wa.me/5491111111111', false)

@@ -25,17 +25,17 @@ final readonly class WhatsAppDeliveryDispatcher
 
     public function dispatchBookingConfirmed(Appointment $appointment): void
     {
-        $appointment->loadMissing(['professional.user', 'sessionType']);
+        $appointment->loadMissing(['professional.user', 'service']);
 
-        $this->createAndDispatch($appointment, NotificationEvent::BOOKING_CONFIRMED, NotificationRecipientType::PATIENT);
+        $this->createAndDispatch($appointment, NotificationEvent::BOOKING_CONFIRMED, NotificationRecipientType::CUSTOMER);
         $this->createAndDispatch($appointment, NotificationEvent::BOOKING_CONFIRMED, NotificationRecipientType::PROFESSIONAL);
     }
 
     public function dispatchReminder(Appointment $appointment): void
     {
-        $appointment->loadMissing(['professional.user', 'sessionType']);
+        $appointment->loadMissing(['professional.user', 'service']);
 
-        $this->createAndDispatch($appointment, NotificationEvent::APPOINTMENT_REMINDER, NotificationRecipientType::PATIENT);
+        $this->createAndDispatch($appointment, NotificationEvent::APPOINTMENT_REMINDER, NotificationRecipientType::CUSTOMER);
         $this->createAndDispatch($appointment, NotificationEvent::APPOINTMENT_REMINDER, NotificationRecipientType::PROFESSIONAL);
     }
 
@@ -136,12 +136,12 @@ final readonly class WhatsAppDeliveryDispatcher
         NotificationEvent $event,
         NotificationRecipientType $recipientType,
     ): ?string {
-        if ($recipientType === NotificationRecipientType::PATIENT) {
-            if ($appointment->patient_whatsapp_opt_in_at === null || $appointment->patient_whatsapp_opt_out_at !== null) {
+        if ($recipientType === NotificationRecipientType::CUSTOMER) {
+            if ($appointment->customer_whatsapp_opt_in_at === null || $appointment->customer_whatsapp_opt_out_at !== null) {
                 return null;
             }
 
-            return filled($appointment->patient_phone) ? (string) $appointment->patient_phone : null;
+            return filled($appointment->customer_phone) ? (string) $appointment->customer_phone : null;
         }
 
         $professional = $appointment->professional;
